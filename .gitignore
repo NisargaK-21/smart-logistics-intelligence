@@ -1,2 +1,7 @@
+# Python virtual environments
+.venv/
+backend/.venv/
+
 # Large GIS datasets
-*.osm.pbf
+**/*.osm.pbf
+**/*.gpkg
