@@ -58,3 +58,8 @@ ml/data/processed/gps/
 
 # GPS simulator output
 simulator/output/
+# Historical raw data
+ml/data/raw/historical/*
+
+# Historical raw data
+ml/data/raw/historical/*
