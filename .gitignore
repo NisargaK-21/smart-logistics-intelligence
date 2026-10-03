@@ -5,3 +5,5 @@ backend/.venv/
 # Large GIS datasets
 **/*.osm.pbf
 **/*.gpkg
+
+ml/data/**/*.csv
