@@ -1,0 +1,38 @@
+GSI Landslide Historical Dataset - Quality Report
+============================================================
+
+Original extracted rows: 35717
+NER rows before duplicate removal: 10983
+Duplicate slide-ID rows detected: 0
+Final NER rows: 10983
+
+NER records by state:
+state
+Mizoram              3479
+Nagaland             1896
+Manipur              1631
+Arunachal Pradesh    1209
+Meghalaya            1048
+Assam                 851
+Sikkim                772
+Tripura                97
+Name: count, dtype: int64
+
+Missing values in final NER dataset:
+sl_no               0
+slide_id            0
+state               0
+district            1
+slide_name       7183
+road_location    1430
+latitude            0
+longitude           1
+material          101
+movement_type      60
+history          6845
+dtype: int64
+
+Rows with invalid/missing coordinates in extracted dataset: 1
+
+Unique slide IDs in final NER dataset:
+10983

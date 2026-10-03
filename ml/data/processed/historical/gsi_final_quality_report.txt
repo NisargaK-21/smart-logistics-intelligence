@@ -1,0 +1,78 @@
+GSI NORTHEAST INDIA LANDSLIDE DATASET
+Final Data Quality Report
+============================================================
+
+Total records: 10983
+Total columns: 15
+Unique slide IDs: 10983
+
+RECORDS BY STATE
+------------------------------
+state
+Mizoram              3479
+Nagaland             1896
+Manipur              1631
+Arunachal Pradesh    1209
+Meghalaya            1048
+Assam                 851
+Sikkim                772
+Tripura                97
+
+MISSING VALUES
+------------------------------
+sl_no                         0
+slide_id                      0
+state                         0
+district                      1
+slide_name                 7183
+road_location              1430
+latitude                      0
+longitude                     1
+material                    101
+material_category           101
+movement_type                60
+movement_category            89
+history                    6845
+coordinate_valid              0
+coordinate_in_ner_range       0
+
+DUPLICATE SLIDE IDs
+------------------------------
+0
+
+COORDINATE QUALITY
+------------------------------
+Valid coordinate pairs: 10982
+Outside broad NER range: 2
+
+MOVEMENT CATEGORIES
+------------------------------
+movement_category
+Slide         9993
+Fall           378
+Flow           156
+Complex        149
+Subsidence     128
+NaN             89
+Other           42
+Topple          22
+Failure         14
+Creep           11
+Spread           1
+
+MATERIAL CATEGORIES
+------------------------------
+material_category
+Debris                  7103
+Rock                    2327
+Earth/Soil              1159
+Rock + Debris            256
+NaN                      101
+Colluvium/Regolith        35
+Mixed/Unconsolidated       2
+
+COORDINATE RECORDS REQUIRING REVIEW
+------------------------------
+             slide_id   state           district   latitude  longitude  coordinate_valid  coordinate_in_ner_range
+ASM/WKA/83C09/2016/34   Assam West Karbi Anglong  25.987360        NaN             False                    False
+ MZ/AIZ/84A14/2015/70 Mizoram             Aizawl -23.736217  92.796936              True                    False

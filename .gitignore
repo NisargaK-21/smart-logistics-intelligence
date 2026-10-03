@@ -1,2 +1,18 @@
 # Large GIS datasets
 *.osm.pbf
+# Raw historical datasets
+ml/data/raw/historical/*
+# Python virtual environments
+.venv/
+venv/
+backend/.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Large GIS datasets
+*.osm.pbf
+
+# Raw historical datasets
+ml/data/raw/historical/*
