@@ -48,3 +48,13 @@ ml/data/final/terrain_features.csv
 .env
 .env.*
 !.env.example
+
+# GPS simulator output
+simulator/output/
+
+# GPS datasets
+ml/data/raw/gps/
+ml/data/processed/gps/
+
+# GPS simulator output
+simulator/output/
