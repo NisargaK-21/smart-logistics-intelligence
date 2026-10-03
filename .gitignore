@@ -1,9 +1,62 @@
+# ==============================
 # Python virtual environments
+# ==============================
 .venv/
 backend/.venv/
 
+# ==============================
+# Python cache
+# ==============================
+__pycache__/
+*.py[cod]
+
+# ==============================
 # Large GIS datasets
+# ==============================
 **/*.osm.pbf
 **/*.gpkg
 
 ml/data/**/*.csv
+**/*.shp
+**/*.shx
+**/*.dbf
+**/*.prj
+
+# ==============================
+# Terrain raw data
+# ==============================
+ml/data/raw/terrain/
+
+# Terrain processed data
+ml/data/processed/terrain/
+
+# Terrain final/ML datasets
+ml/data/final/terrain_features.csv
+
+# ==============================
+# Large raster files
+# ==============================
+**/*.tif
+**/*.tiff
+
+# ==============================
+# Jupyter
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# Environment files
+# ==============================
+.env
+.env.*
+!.env.example
+
+# GPS simulator output
+simulator/output/
+
+# GPS datasets
+ml/data/raw/gps/
+ml/data/processed/gps/
+
+# GPS simulator output
+simulator/output/

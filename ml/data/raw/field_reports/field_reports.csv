@@ -1,0 +1,16 @@
+report_id,timestamp,latitude,longitude,incident_type,severity,description,image_path,reported_by
+R001,2026-10-01T08:15:00,25.6100,91.9100,landslide,high,Road blocked by debris,,field_user
+R002,2026-10-01T09:20:00,25.6250,91.9250,flood,medium,Water accumulation on road,,field_user
+R003,2026-10-01T10:05:00,25.6400,91.9400,road_blockage,high,Fallen tree blocking road,,field_user
+R004,2026-10-01T11:30:00,25.6550,91.9550,heavy_rainfall,medium,Very heavy rainfall reported,,field_user
+R005,2026-10-01T13:10:00,25.6700,91.9700,road_damage,high,Large pothole and damaged road surface,,field_user
+R006,2026-10-02T07:45:00,26.1445,91.7362,flood,critical,Road submerged by flood water,,field_user
+R007,2026-10-02T09:00:00,27.4728,94.9119,bridge_damage,high,Bridge structure damaged after heavy rain,,field_user
+R008,2026-10-02T10:40:00,25.5788,91.8933,road_blockage,medium,Debris covering one lane,,field_user
+R009,2026-10-02T12:15:00,23.7271,92.7176,landslide,critical,Landslide completely blocking highway,,field_user
+R010,2026-10-02T14:30:00,24.8170,93.9368,heavy_rainfall,low,Continuous rainfall reported by field worker,,field_user
+R011,2026-10-03T08:10:00,25.8500,93.4300,road_damage,medium,Road surface damaged near transport route,,field_user
+R012,2026-10-03T09:25:00,24.7800,93.9500,flood,high,Water overflowing onto road,,field_user
+R013,2026-10-03T10:15:00,26.2000,91.8200,road_blockage,high,Fallen rocks blocking vehicle movement,,field_user
+R014,2026-10-03T11:40:00,27.3300,88.6200,landslide,medium,Small landslide reported near road,,field_user
+R015,2026-10-03T13:05:00,25.9000,93.7200,bridge_damage,critical,Bridge access restricted due to structural damage,,field_user
