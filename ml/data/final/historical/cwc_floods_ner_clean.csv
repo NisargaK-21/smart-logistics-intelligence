@@ -1,0 +1,117 @@
+disaster_type,state,district,flood_affected_area_ha,study_period,source,source_file,source_page
+Flood,Arunachal Pradesh,ANJAW,4403.83,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,CHANGLANG,11707.09,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,DIBANG VALLEY,6377.56,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,EAST KAMENG,2644.49,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,EAST SIANG,11019.51,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,KAMLE,1170.93,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,KRA DAADI,557.86,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,KURUNG KUMEY,1262.78,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LEPA RADA,615.18,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LOHIT,11562.04,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LONGDING,438.03,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LOWER DIBANG VALLEY,17859.44,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LOWER SIANG,4116.16,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,LOWER SUBANSIRI,383.15,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,NAMSAI,6098.0,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,PAKKE KESSANG,3006.79,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,PAPUM PARE,4930.6,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,SHI YOMI,1940.71,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,SIANG,3389.12,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,TAWANG,899.52,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,TIRAP,647.54,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,UPPER SIANG,3995.46,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,UPPER SUBANSIRI,5061.22,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,WEST KAMENG,1162.5,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Arunachal Pradesh,WEST SIANG,750.35,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,40
+Flood,Assam,BAKSA,92456.33,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,BARPETA,156516.2,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,BISWANATH,69381.06,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,BONGAIGAON,60063.82,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,CACHAR,89789.41,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,CHARAIDEO,21546.43,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,CHIRANG,54337.85,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,DARRANG,109579.84,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,DHEMAJI,72284.97,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,DHUBRI,105107.33,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,DIBRUGARH,67878.68,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,DIMA HASAO,11493.62,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,GOALPARA,81962.77,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,GOLAGHAT,107467.48,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,HAILAKANDI,25746.29,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,HOJAI,51802.01,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,JORHAT,68849.57,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,KAMRUP METROPOLITAN,28798.89,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,KAMRUP RURAL,139992.44,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,KARBI ANGLONG,43473.0,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,KARIMGANJ,49751.54,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,KOKRAJHAR,92976.93,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,LAKHIMPUR,130068.77,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,MAJULI,51542.45,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,MORIGAON,97745.89,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,NAGAON,139263.92,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,NALBARI,75372.63,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,SIVASAGAR,69174.99,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,SONITPUR,117248.8,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,SOUTH SALMARA MANKACHAR,34485.75,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,TINSUKIA,63734.28,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,UDALGURI,79696.27,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Assam,WEST KARBI ANGLONG,17306.22,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,42
+Flood,Manipur,BISHNUPUR,22632.06,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,CHANDEL,1272.74,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,CHURACHANDPUR,704.21,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,IMPHAL EAST,2335.92,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,IMPHAL WEST,14140.44,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,JIRIBAM,1764.52,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,KAKCHING,9741.69,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,KAMJONG,897.67,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,KANGPOKPI,2601.71,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,NONEY,4211.47,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,PHERZAWL,2666.83,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,SENAPATI,1909.93,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,TAMENGLONG,3862.64,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,TENGNOUPAL,0.0,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,THOUBAL,11518.05,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Manipur,UKHRUL,2531.59,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,68
+Flood,Meghalaya,EAST GARO HILLS,1970.81,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,EAST JAINTIA HILLS,3792.59,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,EAST KHASI HILLS,5448.82,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,NORTH GARO HILLS,1922.95,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,RI-BHOI,3382.67,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,SOUTH GARO HILLS,4534.18,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,SOUTH WEST GARO HILLS,3950.3,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,SOUTH WEST KHASI HILLS,2766.0,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,WEST GARO HILLS,13083.3,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,WEST JAINTIA HILLS,2851.33,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Meghalaya,WEST KHASI HILLS,5427.15,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,70
+Flood,Mizoram,AIZAWL,3108.32,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,CHAMPHAI,3539.15,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,KOLASIB,2237.26,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,LAWNGTLAI,4594.88,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,LUNGLEI,6954.02,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,MAMIT,2640.41,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,SAIHA,2051.43,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Mizoram,SERCHHIP,1182.61,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,72
+Flood,Nagaland,DIMAPUR,4106.99,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,KIPHIRE,839.22,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,KOHIMA,53.45,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,LONGLENG,858.48,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,MOKOKCHUNG,2006.03,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,MON,1755.3,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,PEREN,886.53,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,PHEK,1520.75,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,TUENSANG,540.91,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,WOKHA,2360.71,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Nagaland,ZUNHEBOTO,1100.57,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,74
+Flood,Sikkim,EAST SIKKIM,748.84,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,82
+Flood,Sikkim,NORTH SIKKIM,1705.77,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,82
+Flood,Sikkim,SOUTH SIKKIM,1110.11,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,82
+Flood,Sikkim,WEST SIKKIM,1175.86,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,82
+Flood,Tripura,DHALAI,7896.46,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,GOMATI,17841.35,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,KHOWAI,5045.21,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,NORTH TRIPURA,3132.94,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,SEPAHIJALA,9408.54,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,SOUTH TRIPURA,3184.59,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,UNAKOTI,5646.03,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
+Flood,Tripura,WEST TRIPURA,9776.1,1986-2022,Central Water Commission,cwc_flood_assessment.pdf,88
