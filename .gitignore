@@ -73,3 +73,33 @@ ml/data/raw/historical/*
 # Historical processed data
 # ==============================
 ml/data/processed/historical/
+
+# ==============================
+
+# Dataset 3 - Historical Disasters
+
+# ==============================
+
+# Exclude historical final datasets
+
+ml/data/final/historical/
+
+# Exclude generated historical disaster outputs
+
+ml/data/processed/landslides/
+ml/data/processed/floods/
+ml/data/processed/disaster/
+ml/data/processed/boundaries/
+
+# Exclude downloaded raw boundary data
+
+ml/data/raw/boundaries/
+
+# Exclude Dataset 3 ZIP package
+
+/Dataset3_Historical_Disasters.zip
+
+# Exclude dataset backup files
+
+**/*before_coordinate_fix*.csv
+**/*before_status_fix*.csv
