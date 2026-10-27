@@ -103,3 +103,6 @@ ml/data/raw/boundaries/
 
 **/*before_coordinate_fix*.csv
 **/*before_status_fix*.csv
+
+# Ignore backend virtual environment
+/backend/.venv/
