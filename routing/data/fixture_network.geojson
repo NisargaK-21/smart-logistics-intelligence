@@ -1,0 +1,389 @@
+{
+  "type": "FeatureCollection",
+  "name": "fixture_network",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-ab",
+        "osm_id": 1,
+        "road_type": "primary",
+        "road_class": "major",
+        "length_km": 1.995754,
+        "is_oneway": true,
+        "oneway": true,
+        "slope_deg": 2.0,
+        "surface": "asphalt",
+        "lat": 26.18,
+        "lon": 91.71
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.7,
+            26.18
+          ],
+          [
+            91.72,
+            26.18
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-bc",
+        "osm_id": 2,
+        "road_type": "primary",
+        "road_class": "major",
+        "length_km": 1.995754,
+        "is_oneway": true,
+        "oneway": true,
+        "slope_deg": 2.5,
+        "surface": "asphalt",
+        "lat": 26.18,
+        "lon": 91.73
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.72,
+            26.18
+          ],
+          [
+            91.74,
+            26.18
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-de",
+        "osm_id": 3,
+        "road_type": "secondary",
+        "road_class": "major",
+        "length_km": 1.996097,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 5.0,
+        "surface": "asphalt",
+        "lat": 26.16,
+        "lon": 91.71
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.7,
+            26.16
+          ],
+          [
+            91.72,
+            26.16
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-ef",
+        "osm_id": 4,
+        "road_type": "secondary",
+        "road_class": "major",
+        "length_km": 1.996097,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 6.0,
+        "surface": "asphalt",
+        "lat": 26.16,
+        "lon": 91.73
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.72,
+            26.16
+          ],
+          [
+            91.74,
+            26.16
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-gh",
+        "osm_id": 5,
+        "road_type": "tertiary",
+        "road_class": "collector",
+        "length_km": 1.996439,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 8.0,
+        "surface": "compacted",
+        "lat": 26.14,
+        "lon": 91.71
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.7,
+            26.14
+          ],
+          [
+            91.72,
+            26.14
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-hi",
+        "osm_id": 6,
+        "road_type": "tertiary",
+        "road_class": "collector",
+        "length_km": 1.996439,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 7.0,
+        "surface": "compacted",
+        "lat": 26.14,
+        "lon": 91.73
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.72,
+            26.14
+          ],
+          [
+            91.74,
+            26.14
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-ad",
+        "osm_id": 7,
+        "road_type": "residential",
+        "road_class": "local",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 9.0,
+        "surface": "asphalt",
+        "lat": 26.17,
+        "lon": 91.7
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.7,
+            26.18
+          ],
+          [
+            91.7,
+            26.16
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-dg",
+        "osm_id": 8,
+        "road_type": "residential",
+        "road_class": "local",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 11.0,
+        "surface": "gravel",
+        "lat": 26.15,
+        "lon": 91.7
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.7,
+            26.16
+          ],
+          [
+            91.7,
+            26.14
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-be",
+        "osm_id": 9,
+        "road_type": "secondary",
+        "road_class": "major",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 4.0,
+        "surface": "asphalt",
+        "lat": 26.17,
+        "lon": 91.72
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.72,
+            26.18
+          ],
+          [
+            91.72,
+            26.16
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-eh",
+        "osm_id": 10,
+        "road_type": "tertiary",
+        "road_class": "collector",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 10.0,
+        "surface": "asphalt",
+        "lat": 26.15,
+        "lon": 91.72
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.72,
+            26.16
+          ],
+          [
+            91.72,
+            26.14
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-cf",
+        "osm_id": 11,
+        "road_type": "primary",
+        "road_class": "major",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 3.0,
+        "surface": "asphalt",
+        "lat": 26.17,
+        "lon": 91.74
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.74,
+            26.18
+          ],
+          [
+            91.74,
+            26.16
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-fi",
+        "osm_id": 12,
+        "road_type": "primary",
+        "road_class": "major",
+        "length_km": 2.223899,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 3.5,
+        "surface": "asphalt",
+        "lat": 26.15,
+        "lon": 91.74
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.74,
+            26.16
+          ],
+          [
+            91.74,
+            26.14
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "seg-isolated",
+        "osm_id": 99,
+        "road_type": "service",
+        "road_class": "local",
+        "length_km": 0.996847,
+        "is_oneway": false,
+        "oneway": false,
+        "slope_deg": 1.0,
+        "surface": "dirt",
+        "lat": 26.3,
+        "lon": 91.905
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            91.9,
+            26.3
+          ],
+          [
+            91.91,
+            26.3
+          ]
+        ]
+      }
+    }
+  ]
+}
