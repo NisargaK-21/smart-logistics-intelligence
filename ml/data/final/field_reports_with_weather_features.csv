@@ -1,0 +1,16 @@
+report_id,timestamp,latitude,longitude,incident_type,severity,description,image_path,reported_by,nearest_location_id,weather_time,nearest_distance_km,temperature_c,relative_humidity_pct,precipitation_mm,cloud_cover_pct,wind_speed_kmh,precipitation_sum_3h_mm,precipitation_sum_6h_mm,precipitation_sum_24h_mm,time_difference_minutes
+R001,2026-10-01 08:15:00,25.61,91.91,landslide,high,Road blocked by debris,,field_user,6,2026-10-01 08:00:00,7.691388431866509,20.6,91,0.2,71,1.9,0.6,0.7,5.5,15.0
+R002,2026-10-01 09:20:00,25.625,91.925,flood,medium,Water accumulation on road,,field_user,7,2026-10-01 09:00:00,8.40129200327359,25.2,76,0.2,37,7.4,0.40000000000000036,0.5000000000000001,4.7,20.0
+R003,2026-10-01 10:05:00,25.64,91.94,road_blockage,high,Fallen tree blocking road,,field_user,7,2026-10-01 10:00:00,6.309857508591933,26.3,69,0.1,38,7.8,0.5000000000000003,0.5000000000000001,4.6000000000000005,5.0
+R004,2026-10-01 11:30:00,25.655,91.955,heavy_rainfall,medium,Very heavy rainfall reported,,field_user,7,2026-10-01 12:00:00,4.37405181047843,25.0,79,1.0,66,8.5,1.2000000000000004,1.6,5.5,30.0
+R005,2026-10-01 13:10:00,25.67,91.97,road_damage,high,Large pothole and damaged road surface,,field_user,7,2026-10-01 13:00:00,2.921315599445454,26.2,74,0.2,95,6.2,1.3000000000000003,1.8,5.1000000000000005,10.0
+R006,2026-10-02 07:45:00,26.1445,91.7362,flood,critical,Road submerged by flood water,,field_user,3,2026-10-02 08:00:00,7.466911088057799,29.8,70,0.0,7,12.8,0.0,0.0,1.1,15.0
+R007,2026-10-02 09:00:00,27.4728,94.9119,bridge_damage,high,Bridge structure damaged after heavy rain,,field_user,4,2026-10-02 09:00:00,3.1317595382620684,27.3,90,0.2,100,7.4,2.400000000000001,6.200000000000001,30.200000000000003,0.0
+R008,2026-10-02 10:40:00,25.5788,91.8933,road_blockage,medium,Debris covering one lane,,field_user,6,2026-10-02 11:00:00,6.738890846468899,24.3,56,0.0,33,4.2,0.4,0.5,2.8000000000000003,20.0
+R009,2026-10-02 12:15:00,23.7271,92.7176,landslide,critical,Landslide completely blocking highway,,field_user,12,2026-10-02 12:00:00,3.9186360210719937,26.5,68,0.1,94,6.0,0.29999999999999916,0.3000000000000005,2.6999999999999997,15.0
+R010,2026-10-02 14:30:00,24.817,93.9368,heavy_rainfall,low,Continuous rainfall reported by field worker,,field_user,10,2026-10-02 15:00:00,4.664911682609657,26.4,69,0.0,98,11.0,0.0,0.09999999999999995,2.4,30.0
+R011,2026-10-03 08:10:00,25.85,93.43,road_damage,medium,Road surface damaged near transport route,,field_user,9,2026-10-03 08:00:00,30.987390489864715,28.5,80,0.0,6,3.5,0.0,0.1,11.799999999999999,10.0
+R012,2026-10-03 09:25:00,24.78,93.95,flood,high,Water overflowing onto road,,field_user,10,2026-10-03 09:00:00,0.9314767601451353,25.3,80,0.0,42,6.2,0.49999999999999994,0.7999999999999999,0.9,25.0
+R013,2026-10-03 10:15:00,26.2,91.82,road_blockage,high,Fallen rocks blocking vehicle movement,,field_user,3,2026-10-03 10:00:00,14.286245238951873,31.3,58,0.0,9,15.2,0.0,0.0,0.1,15.0
+R014,2026-10-03 11:40:00,27.33,88.62,landslide,medium,Small landslide reported near road,,field_user,15,2026-10-03 12:00:00,6.338508272768906,22.7,63,0.4,49,8.0,0.4999999999999999,0.5,5.199999999999999,20.0
+R015,2026-10-03 13:05:00,25.9,93.72,bridge_damage,critical,Bridge access restricted due to structural damage,,field_user,9,2026-10-03 13:00:00,1.4754761131901293,30.5,64,0.1,12,6.8,0.4,0.9,11.7,5.0

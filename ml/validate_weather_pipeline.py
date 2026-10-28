@@ -9,9 +9,15 @@ files = {
     "Historical weather": DATA / "weather_processed.csv",
     "Rainfall features": DATA / "weather_features.csv",
     "Recent weather": DATA / "weather_recent_oct2026.csv",
+    "Extended recent weather features": (
+        DATA / "weather_recent_sep30_oct03_2026_features.csv"
+    ),
     "Weather locations": DATA / "weather_locations.csv",
     "Field reports + weather": (
         DATA / "field_reports" / "field_reports_with_weather.csv"
+    ),
+    "Field reports + extended weather features": (
+        ROOT / "data" / "final" / "field_reports_with_weather_features.csv"
     ),
 }
 
