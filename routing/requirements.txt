@@ -1,0 +1,4 @@
+# Optional. The fixture network and unit tests use the standard library only.
+# Install these to validate or route on the full roads_final.gpkg extract.
+geopandas>=1.0
+pyogrio>=0.9
