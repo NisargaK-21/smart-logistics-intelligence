@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from backend.app.core.errors import DependencyUnavailableException
+from backend.app.schemas.common import ErrorResponse
 from backend.app.schemas.health import HealthResponse, ModuleStatus
 from backend.app.services.gis_service import gis_service
 from backend.app.services.risk_service import risk_service
@@ -11,6 +12,10 @@ router = APIRouter()
     "/health",
     response_model=HealthResponse,
     summary="Status of backend orchestrator, GIS module, and risk module",
+    responses={
+        503: {"model": ErrorResponse, "description": "A required dependency is unavailable"},
+        500: {"model": ErrorResponse, "description": "Unexpected server error"},
+    },
 )
 def get_health():
     gis_status = gis_service.check_health()

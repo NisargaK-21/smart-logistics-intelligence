@@ -114,12 +114,17 @@ def register_exception_handlers(app: FastAPI) -> None:
         error_msgs = []
         for err in exc.errors():
             loc = ".".join(str(l) for l in err.get("loc", []) if l != "body")
-            msg = err.get("msg", "Invalid value")
+            msg = err.get("msg", "Invalid value").removeprefix("Value error, ")
             if loc:
                 details[loc] = msg
                 error_msgs.append(f"{loc}: {msg}")
             else:
-                details["request"] = msg
+                if msg == "Destination must differ from origin":
+                    details["field"] = "destination"
+                elif msg == "departure_time must include an ISO 8601 UTC offset":
+                    details["field"] = "departure_time"
+                else:
+                    details["field"] = "request"
                 error_msgs.append(msg)
 
         summary_message = "; ".join(error_msgs) if error_msgs else "Validation error on request payload"

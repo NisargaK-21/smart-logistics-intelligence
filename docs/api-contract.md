@@ -40,9 +40,11 @@ All endpoints return a uniform error structure across the API on failure:
 | :--- | :--- | :--- | :--- |
 | `400 Bad Request` | `INVALID_REQUEST` | Missing or invalid fields, origin equals destination, latitude outside `[-90, 90]`, longitude outside `[-180, 180]`, invalid vehicle type. | `{"field": "destination", "issue": "must differ from origin"}` |
 | `404 Not Found` | `NO_ROUTE_FOUND` | Points snapped to road network, but no traversable path connects them. | `{"origin_snapped": true, "destination_snapped": true}` |
-| `422 Unprocessable` | `OUT_OF_COVERAGE` | Point lies outside the study area bounding box. | `{"point": "origin", "coordinates": [95.0, 30.0], "bbox": [90.0, 25.0, 93.0, 27.0]}` |
+| `422 Unprocessable` | `OUT_OF_COVERAGE` | Point lies outside the active routing graph's study-area bounding box. | `{"point": "origin", "coverage_bbox": [minLng, minLat, maxLng, maxLat]}` |
 | `503 Service Unavailable` | `DEPENDENCY_UNAVAILABLE` | GIS or Risk module is down or unreachable. | `{"module": "gis"}` or `{"module": "risk"}` |
-| `500 Internal Error` | `INTERNAL_ERROR` | Unexpected unhandled server exception. | `{"error_id": "uuid"}` |
+| `500 Internal Error` | `INTERNAL_ERROR` | Unexpected unhandled server exception. | `{"error_type": "RuntimeError"}` |
+
+For `/api/v1/routes/plan`, validation errors (including missing fields and invalid coordinates) use the `400` error shape above rather than FastAPI's default `422` response. When origin and destination are identical, that validation runs before study-area coverage checks.
 
 ---
 
@@ -213,12 +215,12 @@ Accept: application/json
 
 - **Method:** `GET`
 - **Path:** `/api/v1/meta/coverage`
-- **Description:** Provides the geographic bounding box of the active road network and the list of supported vehicle types. Used by the frontend map to bound interactive clicks and zoom viewports.
+- **Description:** Provides the geographic bounding box of the active road network and the list of supported vehicle types. Values are read from Person 1's routing graph, so the fixture and full-dataset modes stay aligned. Used by the frontend map to bound interactive clicks and zoom viewports.
 
 #### Response 200 OK Example
 ```json
 {
-  "bbox": [90.0, 25.0, 93.0, 27.0],
+  "bbox": [91.6895, 26.13, 91.9205, 26.31],
   "vehicle_types": [
     "truck",
     "van",
@@ -281,11 +283,13 @@ The backend connects to the GIS module (Person 1) and Risk module (Person 2) usi
       }
     }
     ```
-- Note: Both rules baseline and trained model adhere strictly to this identical signature. A configuration switch (`RISK_SOURCE=baseline` / `RISK_SOURCE=model`) controls backend invocation. If the model fails, the backend automatically falls back to baseline with `risk_source="baseline"`.
+- Note: Both rules baseline and trained model must adhere strictly to this identical signature. A configuration switch (`RISK_SOURCE=baseline` / `RISK_SOURCE=model`) controls backend invocation. Until a trained-model adapter is supplied, or if it fails, the backend automatically falls back to baseline with `risk_source="baseline"`.
 
 ---
 
 ## 5. Mock Response Library
+
+Machine-readable copies of the success, partial-weather, and no-route examples are kept in `backend/tests/fixtures/` and validated against the API response schemas by the backend tests.
 
 ### 5.1. Success with Multi-Route Comparison & Recommendation
 ```json

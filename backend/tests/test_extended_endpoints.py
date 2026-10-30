@@ -69,3 +69,46 @@ def test_dashboard_summary(client):
     assert "overall_system_status" in data
     assert "risk_by_route" in data
     assert len(data["risk_by_route"]) >= 1
+
+
+def test_websocket_vehicles_streaming():
+    import asyncio
+    from backend.app.main import app
+
+    async def run_ws():
+        messages = []
+        incoming = asyncio.Queue()
+        await incoming.put({"type": "websocket.connect"})
+
+        async def receive():
+            return await incoming.get()
+
+        async def send(msg):
+            messages.append(msg)
+
+        scope = {
+            "type": "websocket",
+            "asgi": {"version": "3.0"},
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/ws/vehicles",
+            "raw_path": b"/ws/vehicles",
+            "query_string": b"",
+            "headers": [(b"host", b"localhost")],
+            "subprotocols": [],
+            "client": ("127.0.0.1", 12345),
+            "server": ("127.0.0.1", 8000),
+            "app": app,
+        }
+        task = asyncio.create_task(app(scope, receive, send))
+        await asyncio.sleep(0.05)
+        await incoming.put({"type": "websocket.disconnect", "code": 1000})
+        await asyncio.sleep(0.05)
+        task.cancel()
+        return messages
+
+    messages = asyncio.run(run_ws())
+    assert len(messages) >= 2
+    assert messages[0]["type"] == "websocket.accept"
+    assert any("vehicle_id" in m.get("text", "") for m in messages[1:])
+

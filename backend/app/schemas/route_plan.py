@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, model_validator
 from backend.app.schemas.common import Coordinates
@@ -7,12 +8,14 @@ class RoutePlanRequest(BaseModel):
     origin: Coordinates
     destination: Coordinates
     vehicle_type: Literal["truck", "van", "car"] = Field(..., description="Vehicle type: truck, van, or car")
-    departure_time: Optional[str] = Field(default=None, description="ISO 8601 departure timestamp")
+    departure_time: Optional[datetime] = Field(default=None, description="ISO 8601 departure timestamp with offset")
 
     @model_validator(mode="after")
     def check_origin_destination_different(self) -> "RoutePlanRequest":
         if self.origin.lat == self.destination.lat and self.origin.lng == self.destination.lng:
             raise ValueError("Destination must differ from origin")
+        if self.departure_time is not None and self.departure_time.tzinfo is None:
+            raise ValueError("departure_time must include an ISO 8601 UTC offset")
         return self
 
 

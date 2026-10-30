@@ -4,7 +4,9 @@ def test_get_coverage_metadata(client):
     data = response.json()
     assert "bbox" in data
     assert len(data["bbox"]) == 4
-    assert data["bbox"] == [90.0, 25.0, 93.0, 27.0]
+    min_lng, min_lat, max_lng, max_lat = data["bbox"]
+    assert min_lng < max_lng
+    assert min_lat < max_lat
     assert "vehicle_types" in data
     assert "truck" in data["vehicle_types"]
     assert "van" in data["vehicle_types"]

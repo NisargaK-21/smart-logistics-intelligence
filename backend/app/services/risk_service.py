@@ -25,10 +25,23 @@ class RiskService:
         self, sid: str, seg: Dict[str, Any], context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Baseline rules scoring engine."""
-        slope = seg.get("slope", 0.0)
+        raw_slope = seg.get("slope", seg.get("slope_deg"))
+        try:
+            slope = float(raw_slope) if raw_slope is not None else 0.0
+            slope_available = raw_slope is not None
+        except (TypeError, ValueError):
+            slope = 0.0
+            slope_available = False
         road_class = seg.get("road_class", "secondary")
         vehicle_type = context.get("vehicle_type", "truck")
         factors: List[Dict[str, Any]] = []
+
+        if not slope_available:
+            factors.append({
+                "name": "terrain_unavailable",
+                "contribution": 0.0,
+                "detail": "Terrain slope is unavailable; the score excludes terrain risk.",
+            })
 
         # 1. Slope & Terrain factor
         if slope >= 5.0:
@@ -81,7 +94,7 @@ class RiskService:
                     "name": "moderate_rainfall",
                     "contribution": weather_contribution,
                 })
-            data_quality = "complete"
+            data_quality = "complete" if slope_available else "partial"
         else:
             # Missing or degraded weather
             weather_contribution = 0.0
@@ -116,18 +129,13 @@ class RiskService:
         self, sid: str, seg: Dict[str, Any], context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
-        Trained model scorer (Logistic Regression / Random Forest).
-        If the model or model artifact is missing or raises an exception,
-        the service will raise an exception to trigger the baseline fallback.
+        Placeholder for Person 2's trained-model adapter.
+
+        A response must never be labelled ``model`` until a real model is wired
+        through the shared interface. Raising here activates the documented
+        baseline fallback in :meth:`score`.
         """
-        # Here we verify if model weights/artifacts are available.
-        # If not, or if simulated model failure occurs, raise to fallback.
-        # For Day 5 integration, we compute machine-learning adjusted feature weights.
-        baseline = self._score_segment_baseline(sid, seg, context)
-        # Model-adjusted score
-        model_score = int(min(max(round(baseline["score"] * 0.95), 0), 100))
-        baseline["score"] = model_score
-        return baseline
+        raise RuntimeError("No trained model adapter has been configured.")
 
     def score(
         self, segments: List[Dict[str, Any]], context: Dict[str, Any]

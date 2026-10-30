@@ -8,6 +8,7 @@ from backend.app.schemas.route_plan import (
     RoutePlanResponse,
     SegmentRisk,
 )
+from backend.app.core.errors import DependencyUnavailableException, NoRouteFoundException
 from backend.app.services.gis_service import gis_service
 from backend.app.services.risk_service import risk_service
 
@@ -45,6 +46,11 @@ class RouteOrchestrator:
             destination=dest_dict,
             vehicle_type=request.vehicle_type,
         )
+        if not candidate_routes:
+            raise NoRouteFoundException(
+                "GIS returned no candidate routes.",
+                {"origin_snapped": True, "destination_snapped": True},
+            )
 
         # 2. Collect all required segment IDs across candidates
         all_segment_ids: List[str] = []
@@ -52,6 +58,10 @@ class RouteOrchestrator:
             for sid in cr.get("segment_ids", []):
                 if sid not in all_segment_ids:
                     all_segment_ids.append(sid)
+        if not all_segment_ids:
+            raise DependencyUnavailableException(
+                module="gis", message="GIS returned a route without segments."
+            )
 
         # 3. Fetch segment attributes from GIS
         segments_data = gis_service.get_segments(all_segment_ids)
@@ -62,7 +72,7 @@ class RouteOrchestrator:
         ]
 
         # 4. Score all segments via Risk module
-        departure_time = request.departure_time or datetime.now(timezone.utc).astimezone().isoformat()
+        departure_time = (request.departure_time or datetime.now(timezone.utc)).isoformat()
         context = {
             "vehicle_type": request.vehicle_type,
             "departure_time": departure_time,
@@ -90,13 +100,21 @@ class RouteOrchestrator:
             worst_segment_score = 0
 
             for sid in cr.get("segment_ids", []):
-                seg_attr = segments_data.get(sid, {})
-                length_km = float(seg_attr.get("length_km", 10.0))
-                seg_risk_info = segment_scores.get(sid, {
-                    "score": 30,
-                    "factors": [],
-                    "data_quality": "complete",
-                })
+                seg_attr = segments_data.get(sid)
+                if not seg_attr:
+                    raise DependencyUnavailableException(
+                        module="gis", message=f"GIS omitted attributes for segment '{sid}'."
+                    )
+                seg_risk_info = segment_scores.get(sid)
+                if not seg_risk_info:
+                    raise DependencyUnavailableException(
+                        module="risk", message=f"Risk module omitted a score for segment '{sid}'."
+                    )
+                length_km = float(seg_attr.get("length_km", 0.0))
+                if length_km <= 0:
+                    raise DependencyUnavailableException(
+                        module="gis", message=f"GIS returned an invalid length for segment '{sid}'."
+                    )
 
                 score = int(seg_risk_info["score"])
                 seg_coords = seg_attr.get("coordinates", [])
