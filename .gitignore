@@ -106,3 +106,7 @@ ml/data/raw/boundaries/
 
 # Ignore backend virtual environment
 /backend/.venv/
+# ==============================
+# Windows system files
+# ==============================
+desktop.ini
