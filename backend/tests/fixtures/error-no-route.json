@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "NO_ROUTE_FOUND",
+    "message": "No connected road path between the two points.",
+    "details": {
+      "origin_snapped": true,
+      "destination_snapped": true
+    }
+  }
+}

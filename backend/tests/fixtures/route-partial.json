@@ -1,0 +1,40 @@
+{
+  "recommended_route_id": "route-1",
+  "generated_at": "2026-10-28T10:00:00+05:30",
+  "risk_source": "baseline",
+  "routes": [
+    {
+      "route_id": "route-1",
+      "distance_km": 99.4,
+      "estimated_duration_minutes": 165,
+      "risk_score": 47,
+      "risk_level": "medium",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[91.7362, 26.1445], [91.76, 25.90], [91.8933, 25.5788]]
+      },
+      "segments": [
+        {
+          "segment_id": "s-201",
+          "risk_score": 40,
+          "coordinates": [[91.7362, 26.1445], [91.76, 25.90]]
+        },
+        {
+          "segment_id": "s-202",
+          "risk_score": 52,
+          "coordinates": [[91.76, 25.90], [91.8933, 25.5788]]
+        }
+      ],
+      "risk_factors": [
+        {
+          "name": "weather_unavailable",
+          "contribution": 0,
+          "detail": "Weather data could not be fetched; score uses road and history factors only."
+        },
+        {"name": "steep_terrain", "contribution": 20},
+        {"name": "landslide_history", "contribution": 27}
+      ],
+      "data_quality": "partial"
+    }
+  ]
+}
