@@ -71,26 +71,50 @@ def _display_path(path: Path) -> str:
 
 
 def load_weather_dataset(path: Path) -> tuple[pd.DataFrame, pd.Series, dict[str, Any]]:
-    """Load, validate, and label historical weather rows without using incident reports."""
+    """Load and validate weather rows before generating disclosed synthetic labels."""
     if not path.is_file():
         raise FileNotFoundError(f"Weather feature dataset does not exist: {path}")
     try:
         frame = pd.read_csv(path)
-    except (OSError, pd.errors.ParserError, UnicodeDecodeError) as error:
+    except (OSError, pd.errors.EmptyDataError, pd.errors.ParserError, UnicodeDecodeError) as error:
         raise ValueError(f"Could not read weather feature dataset '{path}': {error}") from error
 
-    if "time" not in frame.columns:
-        raise ValueError("Weather dataset must contain a 'time' column for chronological splitting.")
+    if frame.empty:
+        raise ValueError("Weather feature dataset contains no rows.")
+
+    required_columns = {"time", *WEATHER_FEATURE_COLUMNS}
+    missing_columns = sorted(required_columns - set(frame.columns))
+    if missing_columns:
+        raise ValueError(
+            "Weather dataset is missing required columns: "
+            + ", ".join(missing_columns)
+        )
+
+    timestamps = pd.to_datetime(
+        frame["time"], format="mixed", errors="coerce", utc=True
+    )
+    if timestamps.isna().any():
+        invalid_rows = int(timestamps.isna().sum())
+        raise ValueError(
+            f"Weather dataset contains {invalid_rows} missing or invalid timestamps."
+        )
+    frame = frame.copy()
+    frame["time"] = timestamps
+
+    # A timestamp occurs once per station in the real dataset. Those cross-station
+    # repeats are valid and must stay in the same chronological split.
+    if "location_id" in frame.columns and frame.duplicated(["location_id", "time"]).any():
+        raise ValueError("Weather dataset contains duplicate location/time records.")
+
     features = prepare_weather_features(frame, allow_missing=True)
-    times = pd.to_datetime(frame["time"], errors="coerce", utc=True)
-    if times.isna().any():
-        raise ValueError("Weather dataset contains missing or invalid timestamps.")
 
     valid_rows = features.notna().all(axis=1)
     features = features.loc[valid_rows].reset_index(drop=True)
-    times = times.loc[valid_rows].reset_index(drop=True)
+    times = frame.loc[valid_rows, "time"].reset_index(drop=True)
     if features.empty:
-        raise ValueError("Weather dataset has no rows with all required features.")
+        raise ValueError(
+            "Weather dataset has no rows with all required feature values."
+        )
 
     labels = pd.Series(
         [
@@ -99,8 +123,7 @@ def load_weather_dataset(path: Path) -> tuple[pd.DataFrame, pd.Series, dict[str,
         ],
         name="synthetic_label",
     )
-    if not set(labels.unique()).issubset(CLASS_LABELS):
-        raise ValueError("Heuristic label generation produced an unsupported risk class.")
+    _validate_synthetic_labels(labels, expected_rows=len(features))
 
     labeled = features.copy()
     labeled["time"] = times
@@ -119,6 +142,24 @@ def load_weather_dataset(path: Path) -> tuple[pd.DataFrame, pd.Series, dict[str,
     return labeled, labels, provenance
 
 
+def _validate_synthetic_labels(labels: pd.Series, *, expected_rows: int) -> None:
+    """Ensure every retained feature row received one supported heuristic label."""
+    if len(labels) != expected_rows:
+        raise ValueError(
+            "Synthetic risk labels do not match the number of retained feature rows."
+        )
+    if labels.empty:
+        raise ValueError("Weather dataset produced no synthetic risk labels.")
+    if labels.isna().any():
+        raise ValueError("Synthetic risk labels contain missing values.")
+    invalid_labels = sorted(set(labels.unique()) - set(CLASS_LABELS))
+    if invalid_labels:
+        raise ValueError(
+            "Heuristic label generation produced unsupported risk labels: "
+            + ", ".join(map(str, invalid_labels))
+        )
+
+
 def _metrics(y_true: pd.Series, y_pred: np.ndarray) -> dict[str, Any]:
     return {
         "accuracy": float(accuracy_score(y_true, y_pred)),
@@ -132,7 +173,20 @@ def _chronological_split(
 ) -> tuple[pd.DataFrame, pd.DataFrame, str]:
     if not 0 < test_size < 1:
         raise ValueError("test_size must be greater than 0 and less than 1.")
-    unique_times = pd.Index(frame["time"].drop_duplicates()).sort_values()
+    if frame.empty:
+        raise ValueError("Cannot create a chronological split from an empty dataset.")
+    if "time" not in frame.columns:
+        raise ValueError("Chronological split requires a 'time' column.")
+
+    timestamps = pd.to_datetime(
+        frame["time"], format="mixed", errors="coerce", utc=True
+    )
+    if timestamps.isna().any():
+        raise ValueError("Chronological split requires valid, non-missing timestamps.")
+    frame = frame.copy()
+    frame["time"] = timestamps
+
+    unique_times = pd.Index(timestamps.drop_duplicates()).sort_values()
     if len(unique_times) < 2:
         raise ValueError("At least two distinct timestamps are required for a chronological split.")
     cutoff_index = min(max(int(len(unique_times) * (1 - test_size)), 1), len(unique_times) - 1)
@@ -141,6 +195,8 @@ def _chronological_split(
     test = frame.loc[frame["time"] >= cutoff]
     if train.empty or test.empty:
         raise ValueError("Chronological split produced an empty train or test set.")
+    if train["time"].max() >= test["time"].min():
+        raise ValueError("Chronological split has overlapping or out-of-order timestamps.")
     return train, test, cutoff.isoformat()
 
 
