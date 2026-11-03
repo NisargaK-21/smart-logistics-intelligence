@@ -1,0 +1,250 @@
+{
+  "created_at_utc": "2026-11-02T13:48:08.651300+00:00",
+  "task": "weather-risk classification, not road-disruption prediction",
+  "real_world_predictive_evidence": false,
+  "production_activation_allowed": false,
+  "evaluation_suitable_for_real_world_claims": false,
+  "evaluation_suitability_reason": "Labels are generated from the same deterministic rules being approximated; the held-out split also has insufficient support for: HIGH",
+  "data_provenance": {
+    "source_path": "ml\\data\\processed\\weather_features.csv",
+    "source_sha256": "a86c6ad54d4237636061ca0b47c7888f7ad0d16d6f6d0d6696aa131e61acf1a3",
+    "source_rows": 561024,
+    "labeled_rows": 560656,
+    "rows_dropped_for_missing_features": 368,
+    "time_start_utc": "2022-01-01T23:00:00+00:00",
+    "time_end_utc": "2025-12-31T23:00:00+00:00",
+    "label_provenance": "synthetic_heuristic: generated per row by calculate_weather_risk from the same five weather features; not an observed disruption outcome"
+  },
+  "label_provenance": {
+    "type": "synthetic_heuristic",
+    "description": "synthetic_heuristic: generated per row by calculate_weather_risk from the same five weather features; not an observed disruption outcome",
+    "generation": "calculate_weather_risk(features)['risk_level'] for every row",
+    "per_row_marker": "label_provenance"
+  },
+  "feature_columns": [
+    "precipitation_mm",
+    "precipitation_sum_3h_mm",
+    "precipitation_sum_6h_mm",
+    "precipitation_sum_24h_mm",
+    "wind_speed_kmh"
+  ],
+  "evaluation_protocol": {
+    "split": "chronological by unique observation timestamp; earlier rows train, later rows test",
+    "test_size_fraction": 0.2,
+    "cutoff_utc_inclusive_for_test": "2025-03-14T23:00:00+00:00",
+    "random_seed": 42,
+    "model": "StandardScaler + median SimpleImputer + class-weighted LogisticRegression",
+    "comparison_baselines": [
+      "most-frequent training class DummyClassifier",
+      "deterministic weather rules that generated the synthetic labels"
+    ],
+    "limitations": [
+      "Rows are repeated hourly observations from a small set of weather locations.",
+      "Heuristic labels are not observed disaster or road-disruption outcomes.",
+      "The deterministic rule baseline is an oracle for these generated labels.",
+      "Temporal evaluation covers known locations at later times, not unseen regions.",
+      "Held-out classes below the predeclared minimum support: HIGH."
+    ]
+  },
+  "acceptance_criteria": {
+    "minimum_test_support_per_class": 20,
+    "minimum_macro_f1": 0.8,
+    "minimum_accuracy": 0.8,
+    "minimum_macro_f1_improvement_over_majority": 0.1,
+    "test_support_adequate": false,
+    "macro_f1_threshold_met": false,
+    "accuracy_threshold_met": true,
+    "majority_baseline_improvement_met": true,
+    "experimental_criteria_met": false,
+    "production_acceptance": false,
+    "production_acceptance_reason": "Real-world segment-level disruption labels and validation are absent."
+  },
+  "class_distribution": {
+    "all": {
+      "LOW": 560220,
+      "MEDIUM": 413,
+      "HIGH": 23
+    },
+    "train": {
+      "LOW": 448157,
+      "MEDIUM": 334,
+      "HIGH": 21
+    },
+    "test": {
+      "LOW": 112063,
+      "MEDIUM": 79,
+      "HIGH": 2
+    }
+  },
+  "split_sizes": {
+    "train": 448512,
+    "test": 112144
+  },
+  "metrics": {
+    "logistic_regression": {
+      "accuracy": 0.998929947210729,
+      "macro_f1": 0.6839069921893843,
+      "confusion_matrix": [
+        [
+          111948,
+          115,
+          0
+        ],
+        [
+          1,
+          74,
+          4
+        ],
+        [
+          0,
+          0,
+          2
+        ]
+      ]
+    },
+    "majority_class_baseline": {
+      "accuracy": 0.9992777143672421,
+      "macro_f1": 0.33321290890412286,
+      "confusion_matrix": [
+        [
+          112063,
+          0,
+          0
+        ],
+        [
+          79,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ]
+    },
+    "deterministic_weather_rule_baseline": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "confusion_matrix": [
+        [
+          112063,
+          0,
+          0
+        ],
+        [
+          0,
+          79,
+          0
+        ],
+        [
+          0,
+          0,
+          2
+        ]
+      ]
+    }
+  },
+  "coefficients": [
+    {
+      "class": "HIGH",
+      "feature": "precipitation_mm",
+      "coefficient": 0.40378364291195673,
+      "absolute_coefficient": 0.40378364291195673
+    },
+    {
+      "class": "HIGH",
+      "feature": "precipitation_sum_3h_mm",
+      "coefficient": 0.9726174803662213,
+      "absolute_coefficient": 0.9726174803662213
+    },
+    {
+      "class": "HIGH",
+      "feature": "precipitation_sum_6h_mm",
+      "coefficient": 0.789852210512393,
+      "absolute_coefficient": 0.789852210512393
+    },
+    {
+      "class": "HIGH",
+      "feature": "precipitation_sum_24h_mm",
+      "coefficient": 1.2135368737534606,
+      "absolute_coefficient": 1.2135368737534606
+    },
+    {
+      "class": "HIGH",
+      "feature": "wind_speed_kmh",
+      "coefficient": -0.2524854620809809,
+      "absolute_coefficient": 0.2524854620809809
+    },
+    {
+      "class": "LOW",
+      "feature": "precipitation_mm",
+      "coefficient": -0.6190464969986238,
+      "absolute_coefficient": 0.6190464969986238
+    },
+    {
+      "class": "LOW",
+      "feature": "precipitation_sum_3h_mm",
+      "coefficient": -1.2654119654543705,
+      "absolute_coefficient": 1.2654119654543705
+    },
+    {
+      "class": "LOW",
+      "feature": "precipitation_sum_6h_mm",
+      "coefficient": -1.155824770809761,
+      "absolute_coefficient": 1.155824770809761
+    },
+    {
+      "class": "LOW",
+      "feature": "precipitation_sum_24h_mm",
+      "coefficient": -1.86610266757106,
+      "absolute_coefficient": 1.86610266757106
+    },
+    {
+      "class": "LOW",
+      "feature": "wind_speed_kmh",
+      "coefficient": 0.37686902993899374,
+      "absolute_coefficient": 0.37686902993899374
+    },
+    {
+      "class": "MEDIUM",
+      "feature": "precipitation_mm",
+      "coefficient": 0.21526285408744358,
+      "absolute_coefficient": 0.21526285408744358
+    },
+    {
+      "class": "MEDIUM",
+      "feature": "precipitation_sum_3h_mm",
+      "coefficient": 0.29279448508884426,
+      "absolute_coefficient": 0.29279448508884426
+    },
+    {
+      "class": "MEDIUM",
+      "feature": "precipitation_sum_6h_mm",
+      "coefficient": 0.36597256029871644,
+      "absolute_coefficient": 0.36597256029871644
+    },
+    {
+      "class": "MEDIUM",
+      "feature": "precipitation_sum_24h_mm",
+      "coefficient": 0.6525657938187304,
+      "absolute_coefficient": 0.6525657938187304
+    },
+    {
+      "class": "MEDIUM",
+      "feature": "wind_speed_kmh",
+      "coefficient": -0.12438356785804283,
+      "absolute_coefficient": 0.12438356785804283
+    }
+  ],
+  "versions": {
+    "scikit_learn": "1.9.1",
+    "pandas": "3.0.6",
+    "numpy": "2.4.6"
+  },
+  "artifact": {
+    "path": "ml\\models\\weather_risk_logistic_regression.joblib",
+    "saved": true,
+    "production_eligible": false
+  }
+}

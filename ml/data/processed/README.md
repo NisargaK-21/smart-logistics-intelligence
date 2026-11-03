@@ -107,6 +107,14 @@ These checks verify basic data consistency, not scientific accuracy or predictiv
 - Weather data alone cannot establish whether a disaster occurred.
 - Training labels and model performance require separate validation.
 
-## 11. Reproducibility
+## 11. Synthetic Weather-Model Demonstration
+
+The project permits explicitly disclosed synthetic labels for demonstrating a reproducible ML pipeline. The optional weather classifier in `ml/scripts/train_weather_risk_model.py` labels each historical weather row by applying the deterministic `calculate_weather_risk` rules to that row's precipitation and wind features. Each generated label is marked `synthetic_heuristic` in the training frame's `label_provenance` column and the saved model metadata.
+
+These labels represent the existing rule's LOW/MEDIUM/HIGH categories, not observed incidents or road disruptions. Model metrics only measure approximation of that rule and must not be presented as evidence of real-world predictive accuracy. The 15 matched field reports do not provide adequate independent positive and negative segment-time outcomes.
+
+The classifier uses the shared five-column schema in `ml/risk_model_features.py`. Its chronological evaluation report records class counts, split sizes, metrics, rule provenance, and acceptance criteria. The model remains experimental and is not used by production route scoring.
+
+## 12. Reproducibility
 
 Retain the data collection, cleaning, feature-generation, matching and validation scripts in the repository. Record source URLs, retrieval dates, API parameters and any transformations used.

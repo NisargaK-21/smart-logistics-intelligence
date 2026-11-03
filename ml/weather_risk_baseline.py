@@ -1,12 +1,22 @@
+"""Weather risk baseline calculation module.
+
+Calculates segment-level weather risk scores based on precipitation and wind thresholds.
+Risk levels aligned with backend contract:
+- LOW: 0-33
+- MEDIUM: 34-66
+- HIGH: 67-100
+"""
+
+import math
+
+try:
+    from .risk_model_features import WEATHER_FEATURE_COLUMNS
+except ImportError:  # pragma: no cover - supports direct script imports
+    from risk_model_features import WEATHER_FEATURE_COLUMNS
+
 
 def calculate_weather_risk(weather):
-    required = [
-        "precipitation_mm",
-        "precipitation_sum_3h_mm",
-        "precipitation_sum_6h_mm",
-        "precipitation_sum_24h_mm",
-        "wind_speed_kmh",
-    ]
+    required = WEATHER_FEATURE_COLUMNS
 
     missing = [key for key in required if weather.get(key) is None]
 
@@ -24,6 +34,13 @@ def calculate_weather_risk(weather):
             "risk_score": None,
             "risk_level": "UNKNOWN",
             "reasons": ["Weather features must be numeric."],
+        }
+
+    if any(math.isnan(val) or math.isinf(val) for val in values.values()):
+        return {
+            "risk_score": None,
+            "risk_level": "UNKNOWN",
+            "reasons": ["Weather features cannot be NaN or infinite."],
         }
 
     if any(value < 0 for value in values.values()):
@@ -73,9 +90,11 @@ def calculate_weather_risk(weather):
 
     score = min(score, 100)
 
-    if score >= 70:
+    # Risk level categorization aligned with backend contract:
+    # LOW: 0-33, MEDIUM: 34-66, HIGH: 67-100
+    if score >= 67:
         level = "HIGH"
-    elif score >= 35:
+    elif score >= 34:
         level = "MEDIUM"
     else:
         level = "LOW"
