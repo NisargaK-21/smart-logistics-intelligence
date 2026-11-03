@@ -3,6 +3,11 @@ from typing import Any, Dict, List, Tuple
 from backend.app.core.config import settings
 from backend.app.core.errors import DependencyUnavailableException
 
+try:
+    from ml.risk_assessment import score_segment_model as ml_score_segment_model
+except ImportError:
+    ml_score_segment_model = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -129,12 +134,14 @@ class RiskService:
         self, sid: str, seg: Dict[str, Any], context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
-        Placeholder for Person 2's trained-model adapter.
+        Person 2's trained-model adapter.
 
-        A response must never be labelled ``model`` until a real model is wired
-        through the shared interface. Raising here activates the documented
+        Delegates to `ml.risk_assessment.score_segment_model`. If no trained model
+        artifact is configured or prediction fails, raises to trigger the documented
         baseline fallback in :meth:`score`.
         """
+        if ml_score_segment_model is not None:
+            return ml_score_segment_model(seg, context)
         raise RuntimeError("No trained model adapter has been configured.")
 
     def score(

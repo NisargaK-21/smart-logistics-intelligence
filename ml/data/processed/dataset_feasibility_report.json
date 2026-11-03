@@ -1,0 +1,182 @@
+{
+  "audit_timestamp": "2026-11-02T13:49:35.088642+00:00",
+  "datasets": {
+    "gsi_landslides": {
+      "path": "ml\\data\\final\\historical\\gsi_landslides_ner_validated.csv",
+      "total_records": 10983,
+      "columns": [
+        "sl_no",
+        "slide_id",
+        "state",
+        "district",
+        "slide_name",
+        "road_location",
+        "latitude",
+        "longitude",
+        "material",
+        "material_category",
+        "movement_type",
+        "movement_category",
+        "history",
+        "coordinate_valid",
+        "coordinate_in_ner_range"
+      ],
+      "valid_coordinates": 10982,
+      "records_with_date_or_year": 4138,
+      "has_negative_labels": false,
+      "provenance": "Geological Survey of India (GSI) validated landslide inventory",
+      "spatial_coverage": [
+        "Arunachal Pradesh",
+        "Assam",
+        "Manipur",
+        "Meghalaya",
+        "Mizoram",
+        "Nagaland",
+        "Sikkim",
+        "Tripura"
+      ]
+    },
+    "cwc_floods": {
+      "path": "ml\\data\\final\\historical\\cwc_floods_ner_clean.csv",
+      "total_records": 116,
+      "columns": [
+        "disaster_type",
+        "state",
+        "district",
+        "flood_affected_area_ha",
+        "study_period",
+        "source",
+        "source_file",
+        "source_page"
+      ],
+      "granularity": "district_level_aggregate",
+      "study_period": "1986-2022",
+      "has_negative_labels": false,
+      "provenance": "Central Water Commission (CWC) flood assessment report"
+    },
+    "weather_locations": {
+      "path": "ml\\data\\processed\\weather_locations.csv",
+      "station_count": 16,
+      "station_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "provenance": "Open-Meteo ERA5 / Historical Archive coordinate grid"
+    },
+    "historical_weather": {
+      "path": "ml\\data\\processed\\weather_processed.csv",
+      "period": "2022-01-01 to 2025-12-31 (hourly)",
+      "columns": [
+        "location_id",
+        "time",
+        "temperature_c",
+        "relative_humidity_pct",
+        "precipitation_mm",
+        "cloud_cover_pct",
+        "wind_speed_kmh"
+      ],
+      "rolling_features_available": true,
+      "provenance": "Open-Meteo API (hourly)"
+    },
+    "historical_weather_features": {
+      "path": "ml\\data\\processed\\weather_features.csv",
+      "feature_columns": [
+        "location_id",
+        "time",
+        "temperature_c",
+        "relative_humidity_pct",
+        "precipitation_mm",
+        "cloud_cover_pct",
+        "wind_speed_kmh",
+        "precipitation_sum_3h_mm",
+        "precipitation_sum_6h_mm",
+        "precipitation_sum_24h_mm"
+      ],
+      "provenance": "Open-Meteo historical weather with rolling rainfall aggregates; features only, not disruption labels"
+    },
+    "recent_weather": {
+      "path": "ml\\data\\processed\\weather_recent_oct2026_features.csv",
+      "period": "2026-10-01 to 2026-10-03",
+      "total_rows": 1152,
+      "provenance": "Open-Meteo recent archive API"
+    },
+    "field_reports": {
+      "path": "ml\\data\\raw\\field_reports\\field_reports.csv",
+      "total_records": 15,
+      "columns": [
+        "report_id",
+        "timestamp",
+        "latitude",
+        "longitude",
+        "incident_type",
+        "severity",
+        "description",
+        "image_path",
+        "reported_by"
+      ],
+      "incident_types": {
+        "landslide": 3,
+        "flood": 3,
+        "road_blockage": 3,
+        "heavy_rainfall": 2,
+        "road_damage": 2,
+        "bridge_damage": 2
+      },
+      "severity_counts": {
+        "high": 6,
+        "medium": 5,
+        "critical": 3,
+        "low": 1
+      },
+      "date_range": [
+        "2026-10-01T08:15:00",
+        "2026-10-03T13:05:00"
+      ],
+      "provenance": "On-ground crowd/operator incident reports (sample test set)"
+    }
+  },
+  "feasibility_assessment": {
+    "supervised_learning_viable": false,
+    "real_world_supervised_learning_viable": false,
+    "synthetic_pipeline_demonstration_feasible": true,
+    "synthetic_labels_permitted_when_disclosed": true,
+    "sample_size_field_reports": 15,
+    "negative_controls_available": false,
+    "segment_level_ground_truth_labels_available": false,
+    "synthetic_weather_feature_columns_available": [
+      "location_id",
+      "time",
+      "temperature_c",
+      "relative_humidity_pct",
+      "precipitation_mm",
+      "cloud_cover_pct",
+      "wind_speed_kmh",
+      "precipitation_sum_3h_mm",
+      "precipitation_sum_6h_mm",
+      "precipitation_sum_24h_mm"
+    ],
+    "data_leakage_risk": "Synthetic evaluation labels are generated from the same weather features used by the model; this measures rule imitation, not disruption prediction.",
+    "justification": "The 15 incident reports are too few and lack verified non-incident traversals for real-world supervised disruption modeling. Historical landslide points and district-level flood aggregates are not synchronized segment-time outcomes. The original project plan permits explicitly disclosed synthetic labels for a reproducible pipeline demonstration. Weather features are available for such a demonstration: True. Any classifier trained on labels generated by the deterministic weather rules demonstrates rule imitation only; it is not evidence of real-world predictive accuracy. The deterministic baseline remains the production-safe default.",
+    "selected_architecture": "Deterministic production baseline with an optional, explicitly synthetic weather-classification demonstration and inactive model adapter",
+    "model_adapter_configured": false,
+    "production_model_configured": false,
+    "model_artifact_present": false,
+    "experimental_weather_model_artifact_present": true,
+    "experimental_weather_model_artifact_path": "ml\\models\\weather_risk_logistic_regression.joblib",
+    "fallback_status": "Active (all requests safely resolve to baseline)"
+  }
+}

@@ -80,7 +80,7 @@ The backend reads settings from the environment or `.env` file:
 | `API_V1_STR` | `/api/v1` | Base prefix for version 1 endpoints |
 | `PROJECT_NAME` | `Smart Logistics Intelligence API` | OpenAPI application title |
 | `VERSION` | `1.0.0` | API version string |
-| `RISK_SOURCE` | `baseline` | Request model scoring (`model`); reports `baseline` until Person 2's trained-model adapter is available |
+| `RISK_SOURCE` | `baseline` | Keeps route scoring on deterministic rules. Setting `model` does not opt the backend into experimental inference; the backend does not send the required `risk_source="experimental_model"` context. |
 | `GIS_SERVICE_ENABLED` | `true` | Toggle to simulate GIS module health/outage |
 | `RISK_SERVICE_ENABLED` | `true` | Toggle to simulate Risk module health/outage |
 | `WEATHER_AVAILABLE` | `true` | Toggle to simulate weather outage and test graceful partial scoring |
@@ -156,7 +156,7 @@ Returns the active study-area bounding box (`[minLng, minLat, maxLng, maxLat]`) 
    - Missing data is never treated as safe (0 risk).
    - If weather data is unavailable, the backend scores using terrain and road factors, sets `data_quality = "partial"`, and appends the `weather_unavailable` risk factor (`contribution: 0`).
    - If slope data is missing, `terrain_unavailable` is attached and `data_quality` is flagged `partial`.
-   - If `RISK_SOURCE=model` is selected but the trained model adapter is unavailable or errors, the backend automatically falls back to baseline rules with `risk_source="baseline"`.
+   - The backend route service does not opt into experimental model inference. If `RISK_SOURCE=model` is selected, the adapter's explicit experimental-opt-in check rejects the request and the service recomputes all segment scores with baseline rules, returning `risk_source="baseline"`.
 
 ---
 
