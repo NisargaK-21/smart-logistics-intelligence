@@ -1,8 +1,8 @@
 # Person 2 — Risk & Machine Learning Module (NER-ResQ)
 
-**Module Owner:** Person 2 (Risk & ML)\
-**Branch:** `feature/risk-ml-module`\
-**System:** AI-Based Smart Logistics and Accessibility Intelligence Platform for Northeast India\
+**Module Owner:** Person 2 (Risk & ML)<br>
+**Branch:** `feature/risk-ml-module`<br>
+**System:** AI-Based Smart Logistics and Accessibility Intelligence Platform for Northeast India
 
 ---
 
@@ -132,6 +132,11 @@ The platform enforces a core safety principle: **Missing data is never treated a
 
 ## 6. Machine Learning Feasibility & Model Adapter
 
+### Deterministic Baseline (Default)
+Production route scoring uses the deterministic `score_segment_baseline` rules in `ml/risk_assessment.py`; Logistic Regression is not the default risk source. The baseline combines road-class, slope, and surface factors with the existing `calculate_weather_risk` rainfall-and-wind thresholds and proximity to validated historical landslide points. Vehicle type adjusts the combined score. It returns an explainable 0–100 score, a LOW/MEDIUM/HIGH category, contributing factors, and a data-quality state.
+
+The weather component requires all five inputs: hourly precipitation, 3-hour, 6-hour, and 24-hour rainfall totals, and wind speed. Missing or invalid weather is not treated as zero-risk evidence; the baseline marks weather unavailable or incomplete and degrades data quality while retaining the other baseline factors. Historical points and sparse weather stations are exposure/context indicators, not verified segment-time disruption labels. The resulting score is a deterministic risk index, not a calibrated probability of a road disruption.
+
 ### Dataset Feasibility Evaluation
 The project permits synthetic labels for a clearly disclosed, reproducible pipeline demonstration. This permission does not make synthetic labels real incident outcomes or support real-world accuracy claims.
 
@@ -141,6 +146,8 @@ The historical weather feature table can support a **synthetic weather-risk clas
 
 The training script uses a chronological 80/20 split, reports class counts and metrics for Logistic Regression, a majority-class baseline, and the deterministic rule baseline, and writes a machine-readable evaluation report. Acceptance criteria are declared before evaluation and require at least 20 held-out examples per class, macro-F1 of 0.80, accuracy of 0.80, and a 0.10 macro-F1 improvement over the majority baseline. Regardless of synthetic evaluation results, production activation is disabled.
 
+Macro-F1 is the unweighted average of per-class F1 scores, so each risk class contributes equally; this makes it informative when LOW examples greatly outnumber MEDIUM and HIGH. The declared macro-F1 gate is at least 0.80. The current Logistic Regression result is 0.684, below that threshold. Its held-out HIGH support is only 2, below the required 20 examples per class. Although its accuracy and improvement over the majority baseline meet their respective thresholds, the model fails the overall experimental acceptance gates because every required gate must pass.
+
 Install the ML dependencies and run the experiment with:
 
 ```bash
@@ -148,12 +155,14 @@ python -m pip install -r ml/requirements.txt
 python ml/scripts/train_weather_risk_model.py
 ```
 
+The script trains a `SimpleImputer` + `StandardScaler` + `LogisticRegression` pipeline using the shared five-feature schema, evaluates it on a chronological holdout, and records the predefined acceptance checks. It does not activate a production model.
+
 By default, the report is written to `ml/data/processed/weather_risk_model_evaluation.json` and the experimental pipeline artifact to `ml/models/weather_risk_logistic_regression.joblib`. Existing artifacts are never overwritten. The shared feature schema is defined in `ml/risk_model_features.py`; the production weather baseline consumes the same schema.
 
 On the current historical feature file, 368 rows with incomplete rolling windows were excluded. The chronological split had 448,512 training rows and 112,144 test rows; the test set contained 112,063 LOW, 79 MEDIUM, and 2 HIGH heuristic labels. Logistic Regression scored 99.89% accuracy and 0.684 macro-F1, versus 99.93% accuracy and 0.333 macro-F1 for a majority-class classifier. The rule baseline scored 100% on its own generated labels, as expected. The predeclared minimum of 20 held-out samples per class was not met, so the experiment failed its support criterion. These figures measure rule imitation on synthetic labels only and are not real-world predictive metrics.
 
 ### Pluggable Model Adapter
-The experimental adapter (`score_segment_model`) loads only the weather classifier artifact, checks its feature schema, preprocessing pipeline, synthetic label and dataset provenance, and recomputes the declared evaluation gates from its embedded test metrics. It is callable only through the explicit `risk_source="experimental_model"` opt-in. The artifact currently fails these gates and is rejected; the public scorer discards any partial model results and recomputes every segment with deterministic rules. The backend route service does not opt in, and its normal source remains `baseline`.
+The experimental adapter (`score_segment_model`) loads only the weather classifier artifact, checks its feature schema, preprocessing pipeline, synthetic-label and dataset provenance, and recomputes the declared evaluation gates from its embedded test metrics. Module-level inference requires the explicit `risk_source="experimental_model"` opt-in and complete, fresh, nearby, valid weather features. The current artifact fails the support and macro-F1 gates and is rejected. When any segment's experimental inference fails, the public scorer discards all partial model results and recomputes every requested segment with deterministic rules. The backend route service does not pass the explicit opt-in, and its normal source remains `baseline`.
 
 Even a future synthetic artifact passing the demonstration gates remains experimental and must never be treated as production road-disruption prediction. Production model activation requires real-world segment-time labels, independent validation, and separate acceptance review. Missing, invalid, stale, distant, or incomplete weather inputs are rejected for classifier inference and cause baseline fallback.
 
@@ -166,6 +175,12 @@ All tests can be executed directly inside the repository without external networ
 ### 1. Run Risk & ML, Backend, and Routing Tests
 ```bash
 python -m pytest ml/test_risk_assessment.py ml/test_weather_risk_baseline.py ml/test_risk_module_contract.py ml/test_weather_risk_model_training.py ml/test_risk_model_inference.py backend/tests routing/tests -v
+```
+
+Run just the Risk & ML tests with:
+
+```bash
+python -m pytest ml/test_risk_assessment.py ml/test_weather_risk_baseline.py ml/test_risk_module_contract.py ml/test_weather_risk_model_training.py ml/test_risk_model_inference.py -v
 ```
 
 `ml/scripts/test_boundary_repair.py` is a GIS-specific test and requires the optional GeoPandas dependency; it is not part of the Risk & ML, backend, and routing test command above.
@@ -194,6 +209,6 @@ python -m pytest routing/tests -v
 
 The training report is `ml/data/processed/weather_risk_model_evaluation.json`; the experimental classifier and preprocessing pipeline are stored together at `ml/models/weather_risk_logistic_regression.joblib`. Artifact loading checks the feature schema, pipeline types, label/data provenance, and embedded evaluation results. Runtime acceptance checks enforce the recorded thresholds (at least 20 held-out samples per class, macro-F1 >= 0.80, accuracy >= 0.80, and macro-F1 improvement >= 0.10 over the majority baseline).
 
-The current artifact fails acceptance and is rejected. The default scorer and backend remain on deterministic baseline rules. A model inference failure discards partial model scores and recomputes all requested scores with the baseline. Only the module-level explicit `risk_source="experimental_model"` option can request the experimental weather classifier; the backend route service does not enable that option.
+The current artifact fails acceptance and is rejected: its macro-F1 is 0.684 (< 0.80), and its held-out HIGH support is 2 (< 20). The default scorer and backend remain on deterministic baseline rules. A model inference failure discards partial model scores and recomputes all requested scores with the baseline. Only the module-level explicit `risk_source="experimental_model"` option can request the experimental weather classifier; the backend route service does not enable that option.
 
 All reported classifier metrics are based on synthetic labels generated from the deterministic weather rules. They demonstrate rule imitation only, not real-world predictive accuracy. Verified segment-time disruption labels and non-incident traversal controls are still required for real-world model validation.

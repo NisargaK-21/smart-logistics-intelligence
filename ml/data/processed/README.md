@@ -107,14 +107,32 @@ These checks verify basic data consistency, not scientific accuracy or predictiv
 - Weather data alone cannot establish whether a disaster occurred.
 - Training labels and model performance require separate validation.
 
-## 11. Synthetic Weather-Model Demonstration
+## 11. Deterministic Risk Baseline
+
+The production default is the deterministic segment scorer in `ml/risk_assessment.py`, not the Logistic Regression classifier. It combines road class, slope, and surface factors with the threshold-based weather score from `calculate_weather_risk` and proximity to validated historical landslide points; vehicle type also adjusts the score. It returns an explainable 0–100 risk index, a risk category, factors, and data-quality information. The score is a heuristic index, not a calibrated probability of a disruption.
+
+Weather scoring requires hourly precipitation, 3-hour, 6-hour, and 24-hour rainfall totals, and wind speed. Missing or invalid required values remain incomplete/UNKNOWN rather than being replaced with zero. When weather is unavailable, the baseline reports degraded data quality and retains the available road and historical factors. Historical disaster inventories and sparse station observations provide context, not verified segment-time outcomes.
+
+## 12. Synthetic Weather-Model Demonstration
 
 The project permits explicitly disclosed synthetic labels for demonstrating a reproducible ML pipeline. The optional weather classifier in `ml/scripts/train_weather_risk_model.py` labels each historical weather row by applying the deterministic `calculate_weather_risk` rules to that row's precipitation and wind features. Each generated label is marked `synthetic_heuristic` in the training frame's `label_provenance` column and the saved model metadata.
 
 These labels represent the existing rule's LOW/MEDIUM/HIGH categories, not observed incidents or road disruptions. Model metrics only measure approximation of that rule and must not be presented as evidence of real-world predictive accuracy. The 15 matched field reports do not provide adequate independent positive and negative segment-time outcomes.
 
-The classifier uses the shared five-column schema in `ml/risk_model_features.py`. Its chronological evaluation report records class counts, split sizes, metrics, rule provenance, and acceptance criteria. The model remains experimental and is not used by production route scoring.
+The classifier uses the shared five-column schema in `ml/risk_model_features.py` and a chronological 80/20 split to evaluate a Logistic Regression pipeline against majority-class and deterministic-rule baselines. Its evaluation report records class counts, split sizes, metrics, rule provenance, and acceptance criteria.
 
-## 12. Reproducibility
+Macro-F1 averages the F1 score for each class equally, helping reveal poor minority-class performance hidden by high overall accuracy. The predefined gates include macro-F1 >= 0.80 and at least 20 held-out records per class. The current classifier has macro-F1 0.684 and only 2 held-out HIGH examples, so it fails both gates; the accuracy and majority-baseline-improvement gates passing does not override those failures. The model remains experimental and is not used for production route scoring.
+
+From the repository root, install the ML dependencies, train/evaluate the experiment, and run the relevant tests with:
+
+```bash
+python -m pip install -r ml/requirements.txt
+python ml/scripts/train_weather_risk_model.py
+python -m pytest ml/test_risk_assessment.py ml/test_weather_risk_baseline.py ml/test_risk_module_contract.py ml/test_weather_risk_model_training.py ml/test_risk_model_inference.py backend/tests routing/tests -v
+```
+
+The evaluation report is `ml/data/processed/weather_risk_model_evaluation.json`; the experimental model artifact is `ml/models/weather_risk_logistic_regression.joblib`. Inference requires explicit experimental opt-in and validates artifact schema, provenance, and the reported gates. Incomplete/invalid weather or artifact/inference failure is rejected; fallback discards partial model results and recomputes all requested segments with the deterministic baseline. Passing synthetic-label gates would still not establish real-world model validity.
+
+## 13. Reproducibility
 
 Retain the data collection, cleaning, feature-generation, matching and validation scripts in the repository. Record source URLs, retrieval dates, API parameters and any transformations used.
