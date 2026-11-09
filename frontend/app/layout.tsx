@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AppProvider } from "../lib/context";
+import AppShell from "../components/AppShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NER-ResQ | Smart Logistics & Accessibility Intelligence",
+  title: "NER-ResQ — Smart Logistics Intelligence",
   description:
-    "AI-based smart logistics and accessibility intelligence platform for route planning and hazard mitigation across the Northeast Region of India.",
+    "AI-powered, disaster-resilient logistics for the Northeast Region of India.",
 };
 
 export default function RootLayout({
@@ -28,7 +30,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-sky-100 selection:text-sky-900">
+        <AppProvider>
+          <AppShell>{children}</AppShell>
+        </AppProvider>
+      </body>
     </html>
   );
 }

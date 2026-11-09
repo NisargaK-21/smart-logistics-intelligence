@@ -26,55 +26,55 @@ export default function RouteDetails({
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm space-y-4">
+    <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+            <h3 className="text-sm font-bold text-slate-900">
               Route Details: {route.route_id.toUpperCase()}
             </h3>
             {isRecommended && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-500 text-white">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-600 text-white shadow-2xs">
                 Recommended
               </span>
             )}
           </div>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Total Distance: <span className="font-semibold text-zinc-800 dark:text-zinc-200">{route.distance_km} km</span> •
-            Est. Time: <span className="font-semibold text-zinc-800 dark:text-zinc-200">{Math.round(route.estimated_duration_minutes)} min</span>
+          <p className="text-xs text-slate-500 mt-1">
+            Distance: <span className="font-semibold text-slate-800">{route.distance_km} km</span> •
+            Est. Time: <span className="font-semibold text-slate-800">{Math.round(route.estimated_duration_minutes)} min</span>
           </p>
         </div>
 
         <div className="text-right">
           <div
-            className="text-xl font-black font-mono"
+            className="text-2xl font-black font-mono leading-none"
             style={{ color: levelConfig.colorHex }}
           >
             {route.risk_score}
           </div>
-          <span className="text-[10px] text-zinc-400 font-medium">Risk Index</span>
+          <span className="text-[10px] text-slate-400 font-medium">Risk Index</span>
         </div>
       </div>
 
       {/* Actual Risk Source Banner - Honest Labeling per Rule 1 */}
-      <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/80 text-xs">
-        <div className="flex items-center gap-2 font-semibold text-zinc-900 dark:text-zinc-100">
+      <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+        <div className="flex items-center gap-2 font-semibold text-slate-900">
           <span>🛡️</span>
           <span>
             Risk Calculation Source:{" "}
             {riskSource === "baseline" ? (
-              <span className="text-sky-600 dark:text-sky-400 font-mono">
+              <span className="text-sky-700 font-mono font-bold">
                 Deterministic Rules Baseline
               </span>
             ) : (
-              <span className="text-purple-600 dark:text-purple-400 font-mono">
+              <span className="text-purple-700 font-mono font-bold">
                 Experimental Model Inference
               </span>
             )}
           </span>
         </div>
-        <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+        <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
           {riskSource === "baseline"
             ? "Deterministic risk index calculated from road classification, terrain slope, rainfall hazard thresholds, and historical landslide disruption data. Not an uncalibrated black-box prediction."
             : "Experimental logistic regression/random forest classifier score trained on historical weather risk patterns."}
@@ -83,22 +83,22 @@ export default function RouteDetails({
 
       {/* Data Quality Banner */}
       <div
-        className={`p-2.5 rounded-lg border text-xs flex items-start gap-2 ${
+        className={`p-3 rounded-lg border text-xs flex items-start gap-2.5 ${
           route.data_quality === "complete"
-            ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-200"
+            ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
             : route.data_quality === "partial"
-            ? "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-200"
-            : "bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800/60 text-rose-800 dark:text-rose-200"
+            ? "bg-amber-50/70 border-amber-200 text-amber-900"
+            : "bg-rose-50/70 border-rose-200 text-rose-900"
         }`}
       >
-        <span className="text-sm">
+        <span className="text-sm mt-0.5">
           {route.data_quality === "complete" ? "✅" : "⚠️"}
         </span>
         <div>
-          <span className="font-semibold capitalize">
+          <span className="font-bold capitalize">
             Data Quality: {route.data_quality}
           </span>
-          <p className="text-[11px] opacity-90 mt-0.5">
+          <p className="text-[11px] opacity-90 mt-0.5 leading-relaxed">
             {route.data_quality === "complete"
               ? "All telemetry, road attributes, and weather data sources are fully verified."
               : route.data_quality === "partial"
@@ -108,35 +108,35 @@ export default function RouteDetails({
         </div>
       </div>
 
-      {/* Contributing Risk Factors - RAW VALUES per Rule 2 */}
+      {/* Contributing Risk Factors - RAW VALUES preserved */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+        <div className="flex items-center justify-between text-xs font-bold text-slate-800">
           <span>Contributing Risk Factors</span>
-          <span className="text-[10px] text-zinc-500 font-normal">
+          <span className="text-[10px] text-slate-500 font-normal">
             Raw Score Contribution (Points, not %)
           </span>
         </div>
 
         {route.risk_factors.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic">No significant risk factors flagged.</p>
+          <p className="text-xs text-slate-500 italic">No significant risk factors flagged.</p>
         ) : (
           <div className="space-y-2">
             {route.risk_factors.map((factor, idx) => (
               <div
                 key={idx}
-                className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800"
+                className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80"
               >
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <span className="font-semibold text-slate-800">
                     {formatFactorName(factor.name)}
                   </span>
-                  <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                  <span className="font-mono font-bold text-slate-900">
                     {factor.contribution > 0 ? `+${factor.contribution} pts` : `${factor.contribution} pts`}
                   </span>
                 </div>
 
                 {/* Progress bar visualizing relative points scale */}
-                <div className="w-full bg-zinc-200 dark:bg-zinc-700 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-500 rounded-full"
                     style={{
@@ -146,7 +146,7 @@ export default function RouteDetails({
                 </div>
 
                 {factor.detail && (
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 italic">
+                  <p className="text-[10px] text-slate-500 mt-1 italic">
                     {factor.detail}
                   </p>
                 )}
@@ -157,37 +157,37 @@ export default function RouteDetails({
       </div>
 
       {/* Segment Level Inspection */}
-      <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+      <div className="pt-2 border-t border-slate-100">
         <button
           type="button"
           onClick={() => setShowSegments(!showSegments)}
-          className="w-full flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300 py-1.5 hover:text-zinc-900 dark:hover:text-zinc-100"
+          className="w-full flex items-center justify-between text-xs font-bold text-slate-700 py-1.5 hover:text-slate-900 cursor-pointer"
         >
           <span>Segment Inspection ({route.segments.length} segments)</span>
-          <span>{showSegments ? "▲ Hide" : "▼ Show"}</span>
+          <span className="text-slate-400 font-mono text-[11px]">{showSegments ? "▲ Hide" : "▼ Show"}</span>
         </button>
 
         {showSegments && (
-          <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto pr-1">
+          <div className="mt-2.5 space-y-1.5 max-h-48 overflow-y-auto pr-1">
             {route.segments.map((seg) => {
               const segLevel = getRiskLevel(seg.risk_score);
               const segColor = getRiskColor(seg.risk_score);
               return (
                 <div
                   key={seg.segment_id}
-                  className="flex items-center justify-between p-2 rounded bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800 text-xs"
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs"
                 >
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5 rounded-full"
+                      className="w-2.5 h-2.5 rounded-full shadow-2xs"
                       style={{ backgroundColor: segColor }}
                     />
-                    <span className="font-mono text-zinc-700 dark:text-zinc-300">
+                    <span className="font-mono text-slate-700 font-medium">
                       {seg.segment_id}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="capitalize text-[11px] text-zinc-500">
+                  <div className="flex items-center gap-2.5">
+                    <span className="capitalize text-[11px] text-slate-500 font-medium">
                       {segLevel}
                     </span>
                     <span

@@ -90,7 +90,56 @@ export const DEFAULT_CORRIDOR_BBOX: [number, number, number, number] = [
 export const DEFAULT_MAP_CENTER: [number, number] = [91.7362, 26.1445];
 
 /**
- * OpenStreetMap Tile Layer URL and Mandatory Legal Attribution
+ * Default active corridor identifier
+ */
+export const DEFAULT_CORRIDOR_ID = "guwahati-shillong";
+
+/**
+ * Standard regional corridor options across Header, Settings, and Navigation.
+ * Guwahati–Shillong (NH-6) is the single active corridor supported in the MVP.
+ */
+export interface CorridorOption {
+  id: string;
+  name: string;
+  status: string;
+  isSupported: boolean;
+  notes: string;
+}
+
+export const CORRIDOR_OPTIONS: CorridorOption[] = [
+  {
+    id: "guwahati-shillong",
+    name: "Guwahati – Shillong (NH-6)",
+    status: "Active MVP Corridor",
+    isSupported: true,
+    notes: "Active Sprint MVP: Full road network graph, hazard overlay & telemetry supported",
+  },
+  {
+    id: "silchar-aizawl",
+    name: "Silchar – Aizawl (NH-306)",
+    status: "Planned Future Phase",
+    isSupported: false,
+    notes: "Planned — Future Phase (Road graph & telemetry not yet modeled in MVP)",
+  },
+  {
+    id: "jorhat-dimapur",
+    name: "Jorhat – Dimapur (NH-29)",
+    status: "Planned Future Phase",
+    isSupported: false,
+    notes: "Planned — Future Phase (Road graph & telemetry not yet modeled in MVP)",
+  },
+  {
+    id: "tezpur-tawang",
+    name: "Tezpur – Tawang (NH-13)",
+    status: "Planned High-Altitude",
+    isSupported: false,
+    notes: "Planned — High-Altitude Phase (Road graph & telemetry not yet modeled in MVP)",
+  },
+];
+
+/**
+ * OpenStreetMap Tile Layer URL and Mandatory Legal Attribution.
+ * Adheres strictly to official OSM Tile Usage Policy (canonical endpoint).
  */
 export const OSM_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 export const OSM_ATTRIBUTION =

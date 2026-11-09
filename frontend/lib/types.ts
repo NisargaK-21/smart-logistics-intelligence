@@ -100,14 +100,127 @@ export interface DashboardSummary {
 }
 
 export interface Alert {
-  alert_id?: string;
+  alert_id: string;
   id?: string;
-  route_id?: string;
+  route_id?: string | null;
+  vehicle_id?: string | null;
   severity: "low" | "medium" | "high" | "critical";
+  title: string;
   message: string;
+  location?: Coordinates | null;
+  distance_to_risk_km?: number | null;
   category?: string;
   timestamp?: string;
-  created_at?: string;
+  created_at: string;
+}
+
+export interface AlertSubscribeRequest {
+  email: string;
+  route_id: string;
+  threshold_risk_score?: number;
+}
+
+export interface AlertSubscribeResponse {
+  status: string;
+  subscription_id: string;
+  email: string;
+  route_id: string;
+  threshold_risk_score: number;
+  message: string;
+}
+
+export interface VehiclePosition {
+  vehicle_id: string;
+  lat: number;
+  lng: number;
+  speed_kmh: number;
+  heading_deg?: number;
+  ts: string;
+  vehicle_class?: VehicleType;
+  status?: "in_transit" | "idle" | "scheduled" | "maintenance";
+  assigned_route?: string;
+  risk_status?: RiskLevel;
+  driver_name?: string;
+}
+
+export interface VehicleSimulateRequest {
+  vehicle_id: string;
+  route_id: string;
+  speed_kmh?: number;
+}
+
+export interface VehicleSimulateResponse {
+  status: string;
+  vehicle_id: string;
+  route_id: string;
+  total_waypoints: number;
+  message: string;
+}
+
+export interface FieldReport {
+  report_id: string;
+  category: "landslide" | "waterlogging" | "road_blockage" | "accident" | string;
+  severity: "low" | "medium" | "high" | "critical" | string;
+  location: Coordinates;
+  location_name?: string;
+  description: string;
+  photo_url?: string | null;
+  reporter_name?: string | null;
+  created_at: string;
+  status?: "verified" | "investigating" | "resolved";
+}
+
+export interface FieldReportCreate {
+  category: string;
+  severity: string;
+  location: Coordinates;
+  location_name?: string;
+  description: string;
+  photo_url?: string | null;
+  reporter_name?: string;
+}
+
+export type HazardCategory =
+  | "all"
+  | "landslide"
+  | "flash_flood"
+  | "heavy_rainfall"
+  | "high_winds"
+  | "severe_weather"
+  | "steep_slope"
+  | "slope"
+  | "flood"
+  | "blockage";
+
+export interface HazardContributingFactor {
+  factor: string;
+  value: string;
+  impact: "High" | "Medium" | "Low";
+}
+
+export interface HazardZone {
+  id: string;
+  name: string;
+  category:
+    | "landslide"
+    | "flash_flood"
+    | "heavy_rainfall"
+    | "high_winds"
+    | "severe_weather"
+    | "steep_slope"
+    | "slope"
+    | "flood"
+    | "blockage";
+  severity: "low" | "medium" | "high" | "critical";
+  coordinates: [number, number]; // [lng, lat]
+  risk_score: number;
+  corridor_km: string;
+  description: string;
+  last_inspected: string;
+  data_source: string;
+  active_status: "Active Watch" | "Elevated Risk" | "Monitored";
+  contributing_factors?: HazardContributingFactor[];
+  data_fidelity?: "Historical Inventory" | "Topographic Calculation" | "Simulated Baseline Threshold";
 }
 
 export type MockScenario =

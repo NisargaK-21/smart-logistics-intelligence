@@ -1,297 +1,176 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Header from "../components/Header";
-import MapView from "../components/MapView";
-import RouteForm from "../components/RouteForm";
-import RouteCard from "../components/RouteCard";
-import RouteDetails from "../components/RouteDetails";
+import React from "react";
+import Link from "next/link";
+import { useApp } from "../lib/context";
 import DashboardMetrics from "../components/DashboardMetrics";
 import ErrorBanner from "../components/ErrorBanner";
-import {
-  Coordinates,
-  CoverageResponse,
-  DashboardSummary,
-  HealthResponse,
-  MockScenario,
-  RiskSource,
-  Route,
-  VehicleType,
-} from "../lib/types";
-import { getCoverage, getDashboardSummary, getHealth, planRoutes } from "../lib/api";
-import { DEFAULT_CORRIDOR_BBOX } from "../lib/constants";
+import MapView from "../components/MapView";
+import RiskDistribution from "../components/RiskDistribution";
+import WeatherTerrainOverview from "../components/WeatherTerrainOverview";
+import RecentAlerts from "../components/RecentAlerts";
 
 export default function DashboardPage() {
-  // Mode & Health state
-  const [isMockMode, setIsMockMode] = useState(false);
-  const [mockScenario, setMockScenario] = useState<MockScenario>("success");
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [isHealthLoading, setIsHealthLoading] = useState(false);
-  const [coverage, setCoverage] = useState<CoverageResponse | null>(null);
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
-
-  // Route Planning query state
-  // Default verified coordinates from backend tests: Guwahati corridor
-  const [origin, setOrigin] = useState<Coordinates | null>({
-    lat: 26.1445,
-    lng: 91.7362,
-  });
-  const [destination, setDestination] = useState<Coordinates | null>({
-    lat: 26.1801,
-    lng: 91.7001,
-  });
-  const [vehicleType, setVehicleType] = useState<VehicleType>("truck");
-  const [departureTime, setDepartureTime] = useState<string>("");
-  const [pickingMode, setPickingMode] = useState<"origin" | "destination" | null>(null);
-
-  // Results state
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [recommendedRouteId, setRecommendedRouteId] = useState<string>("");
-  const [selectedRouteId, setSelectedRouteId] = useState<string>("");
-  const [riskSource, setRiskSource] = useState<RiskSource>("baseline");
-  const [isPlanningLoading, setIsPlanningLoading] = useState(false);
-  const [error, setError] = useState<unknown | null>(null);
-
-  // Fetch telemetry and system health
-  const loadSystemStatus = useCallback(async (mock: boolean) => {
-    setIsHealthLoading(true);
-    setIsSummaryLoading(true);
-    try {
-      const [hRes, cRes, sRes] = await Promise.allSettled([
-        getHealth({ mock }),
-        getCoverage({ mock }),
-        getDashboardSummary({ mock }),
-      ]);
-
-      if (hRes.status === "fulfilled") {
-        setHealth(hRes.value);
-      } else {
-        // If live backend is down, show impaired status
-        setHealth({
-          status: "impaired",
-          modules: { gis: "unavailable", risk: "unavailable", weather: "unavailable" },
-        });
-      }
-
-      if (cRes.status === "fulfilled") {
-        setCoverage(cRes.value);
-      }
-
-      if (sRes.status === "fulfilled") {
-        setSummary(sRes.value);
-      }
-    } finally {
-      setIsHealthLoading(false);
-      setIsSummaryLoading(false);
-    }
-  }, []);
-
-  // Initial fetch on mount or mode toggle
-  useEffect(() => {
-    let isSubscribed = true;
-
-    async function fetchInitialStatus() {
-      const [hRes, cRes, sRes] = await Promise.allSettled([
-        getHealth({ mock: isMockMode }),
-        getCoverage({ mock: isMockMode }),
-        getDashboardSummary({ mock: isMockMode }),
-      ]);
-
-      if (!isSubscribed) return;
-
-      if (hRes.status === "fulfilled") {
-        setHealth(hRes.value);
-      } else {
-        setHealth({
-          status: "impaired",
-          modules: { gis: "unavailable", risk: "unavailable", weather: "unavailable" },
-        });
-      }
-
-      if (cRes.status === "fulfilled") {
-        setCoverage(cRes.value);
-      }
-
-      if (sRes.status === "fulfilled") {
-        setSummary(sRes.value);
-      }
-
-      setIsHealthLoading(false);
-      setIsSummaryLoading(false);
-    }
-
-    void fetchInitialStatus();
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [isMockMode]);
-
-  // Execute route plan
-  const handlePlanRoutes = async () => {
-    if (!origin || !destination) return;
-
-    setIsPlanningLoading(true);
-    setError(null);
-
-    try {
-      const res = await planRoutes(
-        {
-          origin,
-          destination,
-          vehicle_type: vehicleType,
-          departure_time: departureTime ? new Date(departureTime).toISOString() : undefined,
-        },
-        {
-          mock: isMockMode,
-          scenario: mockScenario,
-        }
-      );
-
-      setRoutes(res.routes || []);
-      setRecommendedRouteId(res.recommended_route_id);
-      setSelectedRouteId(res.recommended_route_id);
-      setRiskSource(res.risk_source);
-      setPickingMode(null);
-    } catch (err) {
-      setError(err);
-      setRoutes([]);
-    } finally {
-      setIsPlanningLoading(false);
-    }
-  };
-
-  // Map click coordinate handlers
-  const handleSelectOrigin = (coords: Coordinates) => {
-    setOrigin(coords);
-    setPickingMode(null);
-  };
-
-  const handleSelectDestination = (coords: Coordinates) => {
-    setDestination(coords);
-    setPickingMode(null);
-  };
-
-  const activeRoute =
-    routes.find((r) => r.route_id === selectedRouteId) ||
-    routes.find((r) => r.route_id === recommendedRouteId) ||
-    routes[0];
-
-  const activeBbox = coverage?.bbox || DEFAULT_CORRIDOR_BBOX;
+  const {
+    summary,
+    isSummaryLoading,
+    error,
+    setError,
+    routes,
+    recommendedRouteId,
+    selectedRouteId,
+    setSelectedRouteId,
+    origin,
+    destination,
+    activeBbox,
+    activeRoute,
+    health,
+    isMockMode,
+    vehicles,
+    planCurrentRoutes,
+    isPlanningLoading,
+  } = useApp();
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 flex flex-col font-sans">
-      {/* Top Header */}
-      <Header
-        health={health}
-        isHealthLoading={isHealthLoading}
-        onRefreshHealth={() => loadSystemStatus(isMockMode)}
-        isMockMode={isMockMode}
-        onToggleMockMode={(val) => {
-          setIsMockMode(val);
-          setError(null);
-        }}
-        mockScenario={mockScenario}
-        onSelectMockScenario={(sc) => {
-          setMockScenario(sc);
-          setError(null);
-        }}
+    <div className="space-y-6">
+      {/* Page Title & Operational Status Strip */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>📊</span> Operational Intelligence Overview
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real-time disaster resilience & logistics telemetry for the Northeast Region of India
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/routes"
+            className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+          >
+            <span>⚡</span>
+            <span>Plan New Route</span>
+          </Link>
+          <Link
+            href="/risk-zones"
+            className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+          >
+            <span>⚠️</span>
+            <span>Risk Zones</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Global Error Banner if any */}
+      <ErrorBanner
+        error={error as Error | null}
+        onDismiss={() => setError(null)}
+        onRetry={planCurrentRoutes}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-4 flex flex-col">
-        {/* Regional Telemetry Metrics Row */}
-        <DashboardMetrics summary={summary} isLoading={isSummaryLoading} />
+      {/* Module 3: KPI Metrics Cards */}
+      <DashboardMetrics summary={summary} isLoading={isSummaryLoading} />
 
-        {/* Global Error Banner */}
-        <ErrorBanner
-          error={error as Error | null}
-          onDismiss={() => setError(null)}
-          onRetry={handlePlanRoutes}
-        />
-
-        {/* Two-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 items-start">
-          {/* Left Column: Controls & Results (5 cols) */}
-          <div className="lg:col-span-5 space-y-4">
-            {/* Route Planning Form */}
-            <RouteForm
-              origin={origin}
-              destination={destination}
-              onOriginChange={setOrigin}
-              onDestinationChange={setDestination}
-              vehicleType={vehicleType}
-              onVehicleTypeChange={setVehicleType}
-              departureTime={departureTime}
-              onDepartureTimeChange={setDepartureTime}
-              pickingMode={pickingMode}
-              onTogglePickingMode={setPickingMode}
-              coverageBbox={activeBbox}
-              onSubmit={handlePlanRoutes}
-              isLoading={isPlanningLoading}
-            />
-
-            {/* Candidate Route Results Cards */}
-            {routes.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                    <span>🛣️</span> Candidate Routes ({routes.length})
-                  </h3>
-                  <span className="text-[11px] text-zinc-500">
-                    Click route to highlight
-                  </span>
-                </div>
-
-                <div className="space-y-2.5">
-                  {routes.map((route) => (
-                    <RouteCard
-                      key={route.route_id}
-                      route={route}
-                      isRecommended={route.route_id === recommendedRouteId}
-                      isSelected={route.route_id === (selectedRouteId || recommendedRouteId)}
-                      onSelect={() => setSelectedRouteId(route.route_id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Selected Route Explainability & Risk Details */}
-            {activeRoute && (
-              <RouteDetails
-                route={activeRoute}
-                riskSource={riskSource}
-                isRecommended={activeRoute.route_id === recommendedRouteId}
-              />
-            )}
+      {/* Main Balanced Dashboard Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Section (7 Cols): Interactive Map Overview */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span>🗺️</span> GIS Operational Map (Guwahati–Shillong NH-6)
+            </h2>
+            <span className="text-[11px] text-slate-400 font-mono">
+              Live & Monitored Layers
+            </span>
           </div>
 
-          {/* Right Column: Interactive Map (7 cols) */}
-          <div className="lg:col-span-7 h-[580px] lg:h-[720px] lg:sticky lg:top-20">
+          <div className="h-[520px] w-full rounded-xl overflow-hidden shadow-xs border border-slate-200">
             <MapView
+              mode="overview"
               routes={routes}
               recommendedRouteId={recommendedRouteId}
               selectedRouteId={selectedRouteId}
               onSelectRoute={setSelectedRouteId}
               origin={origin}
               destination={destination}
-              onSelectOrigin={handleSelectOrigin}
-              onSelectDestination={handleSelectDestination}
-              pickingMode={pickingMode}
               coverageBbox={activeBbox}
+              vehicles={vehicles}
             />
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-zinc-200 dark:border-zinc-800 py-4 px-6 text-center text-xs text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-900">
-        <p>
-          NER-ResQ Smart Logistics & Accessibility Intelligence Platform • Person 4 Frontend Implementation • OpenStreetMap Data &copy; contributors
-        </p>
-      </footer>
+        {/* Right Section (5 Cols): Corridor Telemetry & Route Quick Status */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Quick Route Status Card */}
+          <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <span>🛣️</span> Monitored Corridor Routes
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Active GIS road candidates evaluated for hazard exposure
+                </p>
+              </div>
+              <Link
+                href="/routes"
+                className="text-xs text-sky-600 hover:text-sky-700 font-bold cursor-pointer"
+              >
+                Full Workspace →
+              </Link>
+            </div>
+
+            {routes.length > 0 ? (
+              <div className="space-y-2.5">
+                <div className="p-3 rounded-lg bg-sky-50/70 border border-sky-200 text-xs text-sky-900">
+                  <div className="flex items-center justify-between font-bold">
+                    <span>Recommended Route ({recommendedRouteId.toUpperCase()})</span>
+                    <span className="font-mono text-sky-700 font-black">
+                      Score: {activeRoute?.risk_score}/100
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 mt-1">
+                    Distance: {activeRoute?.distance_km.toFixed(1)} km • Duration:{" "}
+                    {Math.round(activeRoute?.estimated_duration_minutes || 0)} min • Quality:{" "}
+                    <span className="capitalize font-semibold text-slate-800">
+                      {activeRoute?.data_quality}
+                    </span>
+                  </p>
+                </div>
+
+                {activeRoute && <RiskDistribution route={activeRoute} />}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs text-slate-500 space-y-2">
+                <span className="text-2xl block">📍</span>
+                <p className="font-medium text-slate-700">No active route planned in this session</p>
+                <p className="text-[11px] text-slate-400">
+                  Calculate safer transit routes taking slope, rainfall, and historical landslide factors into account.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={planCurrentRoutes}
+                    disabled={isPlanningLoading}
+                    className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    {isPlanningLoading ? "Calculating..." : "Evaluate Default Corridor Route"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Weather & Topography Overview */}
+          <WeatherTerrainOverview health={health} isMockMode={isMockMode} />
+        </div>
+      </div>
+
+      {/* Bottom Row: Recent Alerts & Live Field Activity Stream */}
+      <div className="pt-2">
+        <RecentAlerts summary={summary} />
+      </div>
     </div>
   );
 }

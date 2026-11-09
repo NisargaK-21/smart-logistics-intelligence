@@ -19,12 +19,23 @@ export default function SystemHealthBadge({
   const [isOpen, setIsOpen] = useState(false);
 
   const getStatusDisplay = () => {
+    if (isMockMode) {
+      return {
+        label: "Mock Telemetry (Offline)",
+        colorBg: "bg-sky-50",
+        colorDot: "bg-sky-500",
+        colorText: "text-sky-800",
+        borderColor: "border-sky-200",
+      };
+    }
+
     if (!health) {
       return {
-        label: "Checking Health",
-        colorBg: "bg-zinc-100 dark:bg-zinc-800",
-        colorDot: "bg-zinc-400",
-        colorText: "text-zinc-600 dark:text-zinc-400",
+        label: "Pinging Backend...",
+        colorBg: "bg-slate-100",
+        colorDot: "bg-slate-400",
+        colorText: "text-slate-600",
+        borderColor: "border-slate-200",
       };
     }
 
@@ -33,24 +44,27 @@ export default function SystemHealthBadge({
       if (health.modules.weather === "degraded") {
         return {
           label: "Degraded (Weather Fallback)",
-          colorBg: "bg-amber-50 dark:bg-amber-950/40",
+          colorBg: "bg-amber-50",
           colorDot: "bg-amber-500",
-          colorText: "text-amber-700 dark:text-amber-300",
+          colorText: "text-amber-800",
+          borderColor: "border-amber-200",
         };
       }
       return {
-        label: "Systems Operational",
-        colorBg: "bg-emerald-50 dark:bg-emerald-950/40",
+        label: "Live Confirmed Active",
+        colorBg: "bg-emerald-50",
         colorDot: "bg-emerald-500",
-        colorText: "text-emerald-700 dark:text-emerald-300",
+        colorText: "text-emerald-800",
+        borderColor: "border-emerald-200",
       };
     }
 
     return {
-      label: "Service Impaired",
-      colorBg: "bg-rose-50 dark:bg-rose-950/40",
+      label: "Backend Service Impaired",
+      colorBg: "bg-rose-50",
       colorDot: "bg-rose-500",
-      colorText: "text-rose-700 dark:text-rose-300",
+      colorText: "text-rose-800",
+      borderColor: "border-rose-200",
     };
   };
 
@@ -61,7 +75,7 @@ export default function SystemHealthBadge({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700 transition-all ${status.colorBg} ${status.colorText}`}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${status.colorBg} ${status.colorText} ${status.borderColor} shadow-2xs hover:shadow-xs`}
         title="View system & dependency health"
       >
         <span
@@ -75,58 +89,106 @@ export default function SystemHealthBadge({
 
       {/* Popover Breakdown */}
       {isOpen && (
-        <div className="absolute right-0 top-9 w-72 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl z-50 text-xs space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-            <span className="font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="absolute right-0 top-10 w-80 p-4 bg-white border border-slate-200 rounded-xl shadow-xl z-50 text-xs space-y-3.5">
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+            <span className="font-bold text-slate-900">
               System Dependencies Status
             </span>
             <button
               onClick={onRefresh}
               disabled={isLoading}
-              className="text-[11px] text-sky-600 hover:text-sky-500 font-semibold"
+              className="text-[11px] text-sky-600 hover:text-sky-700 font-bold cursor-pointer"
             >
               {isLoading ? "Refreshing..." : "↻ Refresh"}
             </button>
           </div>
 
-          <div className="space-y-2">
-            {/* GIS Module */}
+          <div className="space-y-2.5">
+            {/* Backend API */}
             <div className="flex items-center justify-between">
-              <span className="text-zinc-600 dark:text-zinc-400">GIS & Road Graph</span>
-              <span className="font-mono uppercase font-semibold text-emerald-600 dark:text-emerald-400">
-                {health?.modules.gis || "UNKNOWN"}
+              <span className="text-slate-600 font-medium">Backend API</span>
+              <span
+                className={`font-mono uppercase text-[10px] font-bold px-2 py-0.5 rounded border ${
+                  isMockMode
+                    ? "text-sky-700 bg-sky-50 border-sky-200"
+                    : health?.status === "ok"
+                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                    : "text-rose-700 bg-rose-50 border-rose-200"
+                }`}
+              >
+                {isMockMode ? "MOCK FIXTURE" : health?.status === "ok" ? "OPERATIONAL" : "UNREACHABLE"}
               </span>
             </div>
 
-            {/* Risk Module */}
+            {/* GIS & Routing Engine */}
             <div className="flex items-center justify-between">
-              <span className="text-zinc-600 dark:text-zinc-400">Risk Assessment Engine</span>
-              <span className="font-mono uppercase font-semibold text-emerald-600 dark:text-emerald-400">
-                {health?.modules.risk || "UNKNOWN"}
+              <span className="text-slate-600 font-medium">GIS & Routing Engine</span>
+              <span
+                className={`font-mono uppercase text-[10px] font-bold px-2 py-0.5 rounded border ${
+                  isMockMode
+                    ? "text-sky-700 bg-sky-50 border-sky-200"
+                    : health?.modules.gis === "ok"
+                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                    : "text-rose-700 bg-rose-50 border-rose-200"
+                }`}
+              >
+                {isMockMode ? "SIMULATED" : health?.modules.gis === "ok" ? "OPERATIONAL" : "UNAVAILABLE"}
               </span>
             </div>
 
-            {/* Weather Module - Explicit Labeling per Rule 4 */}
-            <div className="space-y-1 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+            {/* Risk Assessment Service */}
+            <div className="flex items-center justify-between">
+              <span className="text-slate-600 font-medium">Risk Assessment Service</span>
+              <span
+                className={`font-mono uppercase text-[10px] font-bold px-2 py-0.5 rounded border ${
+                  isMockMode
+                    ? "text-sky-700 bg-sky-50 border-sky-200"
+                    : health?.modules.risk === "ok"
+                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                    : "text-rose-700 bg-rose-50 border-rose-200"
+                }`}
+              >
+                {isMockMode ? "BASELINE (MOCK)" : health?.modules.risk === "ok" ? "OPERATIONAL" : "UNAVAILABLE"}
+              </span>
+            </div>
+
+            {/* Weather Data Service */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-100">
               <div className="flex items-center justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">Weather Telemetry Feed</span>
-                <span className="font-mono uppercase font-semibold text-amber-600 dark:text-amber-400">
-                  {health?.modules.weather || "UNKNOWN"}
+                <span className="text-slate-600 font-medium">Weather Data Service</span>
+                <span
+                  className={`font-mono uppercase text-[10px] font-bold px-2 py-0.5 rounded border ${
+                    isMockMode
+                      ? "text-sky-700 bg-sky-50 border-sky-200"
+                      : health?.modules.weather === "ok"
+                      ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                      : health?.modules.weather === "degraded"
+                      ? "text-amber-700 bg-amber-50 border-amber-200"
+                      : "text-rose-700 bg-rose-50 border-rose-200"
+                  }`}
+                >
+                  {isMockMode
+                    ? "SIMULATED"
+                    : health?.modules.weather === "ok"
+                    ? "OPERATIONAL"
+                    : health?.modules.weather === "degraded"
+                    ? "DEGRADED (FALLBACK)"
+                    : "UNAVAILABLE"}
                 </span>
               </div>
-              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 italic">
+              <p className="text-[10px] text-slate-500 italic leading-relaxed">
                 {isMockMode
-                  ? "Configured Mock Weather: Simulates monsoon rainfall hazard."
-                  : "Configured/Simulated Weather Fallback: OpenWeatherMap free-tier / cached sample. Not official live radar/satellite."}
+                  ? "Configured Mock Weather: Simulating historical Northeast monsoon precipitation anomalies along NH-6."
+                  : "Configured/Simulated Weather Fallback: OpenWeatherMap free-tier / cached sample. Certified live radar/satellite feeds unavailable."}
               </p>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500">
+          <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
             <span>Mode: {isMockMode ? "Mock Fixtures" : "Live Backend"}</span>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              className="text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
             >
               Close
             </button>

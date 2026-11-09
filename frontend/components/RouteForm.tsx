@@ -22,6 +22,24 @@ interface RouteFormProps {
   formError?: string | null;
 }
 
+const PRESET_CORRIDORS = [
+  {
+    name: "Guwahati Central → North Depot",
+    origin: { lat: 26.1445, lng: 91.7362 },
+    destination: { lat: 26.1801, lng: 91.7001 },
+  },
+  {
+    name: "Dispur Hub → Khanapara Checkpoint",
+    origin: { lat: 26.1400, lng: 91.7800 },
+    destination: { lat: 26.1320, lng: 91.8200 },
+  },
+  {
+    name: "Jalukbari Transit → Beltola Center",
+    origin: { lat: 26.1550, lng: 91.7100 },
+    destination: { lat: 26.1350, lng: 91.7900 },
+  },
+];
+
 export default function RouteForm({
   origin,
   destination,
@@ -47,7 +65,7 @@ export default function RouteForm({
   const [localDestLng, setLocalDestLng] = useState(destination?.lng.toString() || "");
   const [clientValidationMsg, setClientValidationMsg] = useState<string | null>(null);
 
-  // Sync state during rendering when prop changes (avoids setState in useEffect)
+  // Sync state during rendering when prop changes
   if (origin !== prevOrigin) {
     setPrevOrigin(origin);
     setLocalOriginLat(origin?.lat.toString() || "");
@@ -78,6 +96,16 @@ export default function RouteForm({
     if (!isNaN(lat) && !isNaN(lng)) {
       onDestinationChange({ lat, lng });
     }
+  };
+
+  const applyPreset = (preset: (typeof PRESET_CORRIDORS)[0]) => {
+    onOriginChange(preset.origin);
+    onDestinationChange(preset.destination);
+    setLocalOriginLat(preset.origin.lat.toString());
+    setLocalOriginLng(preset.origin.lng.toString());
+    setLocalDestLat(preset.destination.lat.toString());
+    setLocalDestLng(preset.destination.lng.toString());
+    setClientValidationMsg(null);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -134,20 +162,48 @@ export default function RouteForm({
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm space-y-4"
+      className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-4"
     >
-      <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-          <span>📍</span> Route Planning & Parameters
-        </h2>
-        <span className="text-[11px] text-zinc-500 font-mono">Guwahati–Shillong Corridor</span>
+      {/* Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span className="text-sky-600">📍</span> Route Planning & Parameters
+          </h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Evaluate road risks & calculate multi-segment alternatives
+          </p>
+        </div>
+        <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 rounded text-slate-600 border border-slate-200">
+          NH-6 Corridor
+        </span>
+      </div>
+
+      {/* Preset Corridor Selector */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-slate-700 block">
+          Corridor Presets (Quick Load)
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+          {PRESET_CORRIDORS.map((p, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className="text-[11px] text-left px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-300 text-slate-700 transition-colors truncate"
+              title={p.name}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Origin Input */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
-          <label className="font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+          <label className="font-semibold text-slate-800 flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs"></span>
             Origin Point (A)
           </label>
           <button
@@ -155,42 +211,48 @@ export default function RouteForm({
             onClick={() =>
               onTogglePickingMode(pickingMode === "origin" ? null : "origin")
             }
-            className={`text-[11px] px-2 py-0.5 rounded font-medium transition-colors ${
+            className={`text-[11px] px-2.5 py-1 rounded-md font-semibold transition-all ${
               pickingMode === "origin"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80"
             }`}
           >
-            {pickingMode === "origin" ? "Cancel Map Pick" : "🎯 Pick on Map"}
+            {pickingMode === "origin" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <input
-            type="number"
-            step="any"
-            placeholder="Latitude (e.g. 26.1445)"
-            value={localOriginLat}
-            onChange={(e) => handleApplyOriginInput(e.target.value, localOriginLng)}
-            className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            required
-          />
-          <input
-            type="number"
-            step="any"
-            placeholder="Longitude (e.g. 91.7362)"
-            value={localOriginLng}
-            onChange={(e) => handleApplyOriginInput(localOriginLat, e.target.value)}
-            className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            required
-          />
+          <div>
+            <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Latitude</span>
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 26.1445"
+              value={localOriginLat}
+              onChange={(e) => handleApplyOriginInput(e.target.value, localOriginLng)}
+              className="w-full text-xs font-mono px-3 py-2 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:bg-white"
+              required
+            />
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Longitude</span>
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 91.7362"
+              value={localOriginLng}
+              onChange={(e) => handleApplyOriginInput(localOriginLat, e.target.value)}
+              className="w-full text-xs font-mono px-3 py-2 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:bg-white"
+              required
+            />
+          </div>
         </div>
       </div>
 
       {/* Destination Input */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
-          <label className="font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+          <label className="font-semibold text-slate-800 flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-2xs"></span>
             Destination Point (B)
           </label>
           <button
@@ -198,40 +260,46 @@ export default function RouteForm({
             onClick={() =>
               onTogglePickingMode(pickingMode === "destination" ? null : "destination")
             }
-            className={`text-[11px] px-2 py-0.5 rounded font-medium transition-colors ${
+            className={`text-[11px] px-2.5 py-1 rounded-md font-semibold transition-all ${
               pickingMode === "destination"
-                ? "bg-rose-600 text-white shadow-sm"
-                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200"
+                ? "bg-rose-600 text-white shadow-xs"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80"
             }`}
           >
-            {pickingMode === "destination" ? "Cancel Map Pick" : "🎯 Pick on Map"}
+            {pickingMode === "destination" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <input
-            type="number"
-            step="any"
-            placeholder="Latitude (e.g. 26.1801)"
-            value={localDestLat}
-            onChange={(e) => handleApplyDestInput(e.target.value, localDestLng)}
-            className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-rose-500"
-            required
-          />
-          <input
-            type="number"
-            step="any"
-            placeholder="Longitude (e.g. 91.7001)"
-            value={localDestLng}
-            onChange={(e) => handleApplyDestInput(localDestLat, e.target.value)}
-            className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-rose-500"
-            required
-          />
+          <div>
+            <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Latitude</span>
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 26.1801"
+              value={localDestLat}
+              onChange={(e) => handleApplyDestInput(e.target.value, localDestLng)}
+              className="w-full text-xs font-mono px-3 py-2 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white"
+              required
+            />
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Longitude</span>
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 91.7001"
+              value={localDestLng}
+              onChange={(e) => handleApplyDestInput(localDestLat, e.target.value)}
+              className="w-full text-xs font-mono px-3 py-2 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white"
+              required
+            />
+          </div>
         </div>
       </div>
 
       {/* Vehicle Type Selection */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block">
+        <label className="text-xs font-semibold text-slate-800 block">
           Logistics Vehicle Class
         </label>
         <div className="grid grid-cols-3 gap-2">
@@ -242,17 +310,17 @@ export default function RouteForm({
                 key={v.id}
                 type="button"
                 onClick={() => onVehicleTypeChange(v.id as VehicleType)}
-                className={`py-2 px-2 rounded-lg border text-left text-xs transition-all flex flex-col justify-between ${
+                className={`py-2 px-2.5 rounded-lg border text-left text-xs transition-all flex flex-col justify-between ${
                   isSelected
-                    ? "border-sky-500 bg-sky-50 dark:bg-sky-950/40 text-sky-900 dark:text-sky-100 ring-1 ring-sky-500"
-                    : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/40 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100"
+                    ? "border-sky-600 bg-sky-50/80 text-sky-900 ring-1 ring-sky-600 shadow-2xs font-medium"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50/80"
                 }`}
               >
-                <div className="flex items-center gap-1.5 font-semibold">
-                  <span>{v.icon}</span>
+                <div className="flex items-center gap-1.5 font-bold">
+                  <span className="text-base">{v.icon}</span>
                   <span className="capitalize">{v.id}</span>
                 </div>
-                <span className="text-[10px] text-zinc-500 mt-1">{v.speed}</span>
+                <span className="text-[10px] text-slate-500 mt-1 font-mono">{v.speed}</span>
               </button>
             );
           })}
@@ -261,23 +329,23 @@ export default function RouteForm({
 
       {/* Departure Timestamp */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 flex items-center justify-between">
+        <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
           <span>Scheduled Departure Time</span>
-          <span className="text-[10px] text-zinc-500">Optional (Defaults to Now)</span>
+          <span className="text-[10px] text-slate-500 font-normal">Optional (Defaults to Now)</span>
         </label>
         <input
           type="datetime-local"
           value={departureTime}
           onChange={(e) => onDepartureTimeChange(e.target.value)}
-          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-sky-500"
+          className="w-full text-xs px-3 py-2 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:bg-white"
         />
       </div>
 
       {/* Validation Message */}
       {(clientValidationMsg || formError) && (
-        <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
-          <span>⚠️</span>
-          <span>{clientValidationMsg || formError}</span>
+        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2 shadow-2xs">
+          <span className="text-base leading-none">⚠️</span>
+          <span className="leading-relaxed font-medium">{clientValidationMsg || formError}</span>
         </div>
       )}
 
@@ -285,12 +353,12 @@ export default function RouteForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2"
+        className="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         {isLoading ? (
           <>
             <svg
-              className="animate-spin h-3.5 w-3.5 text-white"
+              className="animate-spin h-4 w-4 text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -309,12 +377,12 @@ export default function RouteForm({
                 d="M4 12a8 8 0 018-8v8H4z"
               ></path>
             </svg>
-            <span>Analyzing Road Network & Risk...</span>
+            <span>Evaluating Terrain, Weather & Hazard Network...</span>
           </>
         ) : (
           <>
             <span>⚡</span>
-            <span>Plan Safer Logistics Route</span>
+            <span>Plan Disaster-Resilient Route</span>
           </>
         )}
       </button>
