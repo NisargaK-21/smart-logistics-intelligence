@@ -7,29 +7,7 @@ from backend.app.schemas.reports import FieldReport, FieldReportCreate
 
 class ReportingService:
     def __init__(self):
-        # Initial seed reports in the Meghalaya / Assam corridor
-        self._reports: List[FieldReport] = [
-            FieldReport(
-                report_id="rep-001",
-                category="landslide",
-                severity="high",
-                location=Coordinates(lat=25.9000, lng=91.7600),
-                description="Mudslide across northbound lane near Umsning bypass. One lane passable.",
-                photo_url=None,
-                reporter_name="Officer Sharma",
-                created_at="2026-10-28T08:30:00+05:30",
-            ),
-            FieldReport(
-                report_id="rep-002",
-                category="waterlogging",
-                severity="medium",
-                location=Coordinates(lat=26.1120, lng=91.7510),
-                description="Surface water accumulation on low-lying culvert approach.",
-                photo_url=None,
-                reporter_name="Field Patrol B",
-                created_at="2026-10-28T09:15:00+05:30",
-            ),
-        ]
+        self._reports: List[FieldReport] = []
 
     def create_report(self, report_in: FieldReportCreate) -> FieldReport:
         now_iso = datetime.now(timezone.utc).astimezone().isoformat()

@@ -12,24 +12,7 @@ from backend.app.schemas.vehicles import (
 class SimulationService:
     def __init__(self):
         self._active_connections: Set[WebSocket] = set()
-        self._vehicles: Dict[str, VehiclePosition] = {
-            "V001": VehiclePosition(
-                vehicle_id="V001",
-                lat=26.0500,
-                lng=91.7500,
-                speed_kmh=42.0,
-                heading_deg=175.0,
-                ts="2026-10-28T10:00:00+05:30",
-            ),
-            "V002": VehiclePosition(
-                vehicle_id="V002",
-                lat=25.8200,
-                lng=91.8100,
-                speed_kmh=48.0,
-                heading_deg=160.0,
-                ts="2026-10-28T10:00:00+05:30",
-            ),
-        }
+        self._vehicles: Dict[str, VehiclePosition] = {}
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()

@@ -44,7 +44,7 @@ def test_alerts_list_and_subscribe(client):
     list_resp = client.get("/api/v1/alerts")
     assert list_resp.status_code == 200
     alerts = list_resp.json()
-    assert len(alerts) >= 1
+    assert alerts == []
 
     # Subscribe to alerts on a route
     sub_payload = {
@@ -68,7 +68,7 @@ def test_dashboard_summary(client):
     assert "active_vehicles_count" in data
     assert "overall_system_status" in data
     assert "risk_by_route" in data
-    assert len(data["risk_by_route"]) >= 1
+    assert data["risk_by_route"] == []
 
 
 def test_websocket_vehicles_streaming():

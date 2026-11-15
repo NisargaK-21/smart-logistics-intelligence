@@ -71,6 +71,11 @@ class RiskService:
             "state_highway": 20.0,
             "secondary": 28.0,
             "tertiary": 35.0,
+            "major": 12.0,
+            "collector": 20.0,
+            "local": 28.0,
+            "special": 25.0,
+            "unknown": 15.0,
         }
         road_score = class_risk_map.get(road_class, 15.0)
         if road_score >= 15.0:
@@ -83,45 +88,49 @@ class RiskService:
         # 3. Vehicle specific sensitivity factor
         vehicle_factor = 1.2 if vehicle_type == "truck" else (1.0 if vehicle_type == "van" else 0.8)
 
-        # 4. Weather factor or degradation fallback
-        if settings.WEATHER_AVAILABLE:
-            # Simulate normal or elevated weather factor based on terrain
-            if slope >= 5.0:
+        # 4. Use fetched conditions only; never infer rainfall from road terrain.
+        weather = context.get("weather") if settings.WEATHER_AVAILABLE else None
+        if weather:
+            precipitation = max(
+                float(weather.get("precipitation_mm", 0.0)),
+                float(weather.get("rain_mm", 0.0)),
+            )
+            weather_code = int(weather.get("weather_code", 0))
+            if weather_code >= 95:
+                weather_contribution = 35.0
+                weather_name = "thunderstorm"
+            elif precipitation >= 5.0:
                 weather_contribution = 25.0
-                factors.append({
-                    "name": "heavy_rainfall",
-                    "contribution": weather_contribution,
-                    "detail": "Localized precipitation increases slickness and landslide probability."
-                })
-            else:
+                weather_name = "heavy_rainfall"
+            elif precipitation >= 1.0 or 61 <= weather_code <= 82:
                 weather_contribution = 12.0
+                weather_name = "moderate_rainfall"
+            elif precipitation > 0.0 or 51 <= weather_code <= 57:
+                weather_contribution = 6.0
+                weather_name = "light_rainfall"
+            else:
+                weather_contribution = 0.0
+                weather_name = ""
+            if weather_name:
                 factors.append({
-                    "name": "moderate_rainfall",
+                    "name": weather_name,
                     "contribution": weather_contribution,
+                    "detail": (
+                        f"Open-Meteo reports {precipitation:g} mm of current precipitation "
+                        f"(weather code {weather_code})."
+                    ),
                 })
             data_quality = "complete" if slope_available else "partial"
         else:
-            # Missing or degraded weather
             weather_contribution = 0.0
             factors.append({
                 "name": "weather_unavailable",
                 "contribution": 0.0,
-                "detail": "Weather data could not be fetched; score uses road and history factors only."
+                "detail": "Current weather could not be fetched; the score excludes weather risk."
             })
             data_quality = "partial"
 
-        # 5. Historical disruptions (e.g. landslides / monsoon washouts in Guwahati-Shillong)
-        if "102" in sid or "202" in sid:
-            history_contribution = 22.0
-            factors.append({
-                "name": "landslide_history",
-                "contribution": history_contribution,
-                "detail": "Segment has historical incidence of monsoon slope failures."
-            })
-        else:
-            history_contribution = 6.0
-
-        raw_score = (slope_score + road_score + weather_contribution + history_contribution) * vehicle_factor
+        raw_score = (slope_score + road_score + weather_contribution) * vehicle_factor
         final_score = int(min(max(round(raw_score), 0), 100))
 
         return {

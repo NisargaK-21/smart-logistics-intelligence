@@ -76,8 +76,8 @@ export default function RouteDetails({
         </div>
         <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
           {riskSource === "baseline"
-            ? "Deterministic risk index calculated from road classification, terrain slope, rainfall hazard thresholds, and historical landslide disruption data. Not an uncalibrated black-box prediction."
-            : "Experimental logistic regression/random forest classifier score trained on historical weather risk patterns."}
+            ? "A heuristic score based on available road attributes and weather thresholds. Missing inputs are flagged and excluded; this is not a calibrated probability or road-closure report."
+            : "Experimental model inference is not validated for operational routing decisions."}
         </p>
       </div>
 
@@ -100,10 +100,12 @@ export default function RouteDetails({
           </span>
           <p className="text-[11px] opacity-90 mt-0.5 leading-relaxed">
             {route.data_quality === "complete"
-              ? "All telemetry, road attributes, and weather data sources are fully verified."
+              ? "All inputs used by the current scoring rules were available. The score remains a heuristic."
               : route.data_quality === "partial"
-              ? "Weather feed was unavailable or degraded during scoring. Risk calculated from road attributes and historical factors."
-              : "Telemetry was stale or missing during assessment."}
+              ? "Some weather, terrain, or road attributes were unavailable and excluded. Missing data is not evidence of safety."
+              : route.data_quality === "stale"
+              ? "One or more inputs may be stale; verify conditions before travelling."
+              : "Required route data was unavailable for this assessment."}
           </p>
         </div>
       </div>

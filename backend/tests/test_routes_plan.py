@@ -327,7 +327,7 @@ def test_weather_unavailable_partial_data_quality(client):
         # Find weather_unavailable factor
         w_factor = next(f for f in route["risk_factors"] if f["name"] == "weather_unavailable")
         assert w_factor["contribution"] == 0
-        assert "weather data could not be fetched" in w_factor["detail"].lower()
+        assert "current weather could not be fetched" in w_factor["detail"].lower()
 
     # Reset
     settings.WEATHER_AVAILABLE = True

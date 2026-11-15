@@ -113,6 +113,22 @@ class InterfaceTests(unittest.TestCase):
 
 
 class GraphUnitTests(unittest.TestCase):
+    def test_graph_builds_from_feature_iterator(self):
+        features = iter(
+            [
+                {
+                    "type": "Feature",
+                    "properties": {"road_id": "x", "length_km": 1.0},
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [[91.7, 26.1], [91.71, 26.1]],
+                    },
+                }
+            ]
+        )
+        graph = graph_from_features(features)
+        self.assertEqual(set(graph.segments), {"x"})
+
     def test_empty_linestring_skipped(self):
         graph = graph_from_features(
             [
@@ -124,6 +140,25 @@ class GraphUnitTests(unittest.TestCase):
             ]
         )
         self.assertEqual(graph.segments, {})
+
+    def test_disconnected_multiline_parts_do_not_create_a_bridge(self):
+        graph = graph_from_features(
+            [
+                {
+                    "type": "Feature",
+                    "properties": {"road_id": "multi"},
+                    "geometry": {
+                        "type": "MultiLineString",
+                        "coordinates": [
+                            [[91.7, 26.1], [91.71, 26.1]],
+                            [[91.8, 26.1], [91.81, 26.1]],
+                        ],
+                    },
+                }
+            ]
+        )
+        self.assertEqual(set(graph.segments), {"multi:part-0", "multi:part-1"})
+        self.assertEqual(len(graph.nodes), 4)
 
 
 if __name__ == "__main__":
