@@ -55,7 +55,7 @@ export default function RoutesPage() {
             <span>🛣️</span> Route Planning & Risk Optimization Workspace
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Evaluate road network topology, terrain gradient, and precipitation hazards to dispatch the safest route
+            Compare live driving routes and available weather and road factors; unavailable attributes are flagged.
           </p>
         </div>
 

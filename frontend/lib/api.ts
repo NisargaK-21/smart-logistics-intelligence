@@ -8,12 +8,14 @@ import type {
   AlertSubscribeRequest,
   AlertSubscribeResponse,
   CoverageResponse,
+  CurrentWeather,
   DashboardSummary,
   ErrorResponse,
   FieldReport,
   FieldReportCreate,
   HealthResponse,
   MockScenario,
+  PlaceResult,
   RoutePlanRequest,
   RoutePlanResponse,
   VehiclePosition,
@@ -63,6 +65,31 @@ export function getWebSocketUrl(): string {
   // Replace http(s)://host:port/api/v1 with ws(s)://host:port/ws/vehicles
   const hostPart = base.replace(/^https?:\/\//, "").replace(/\/api\/v1$/, "");
   return `${wsProto}://${hostPart}/ws/vehicles`;
+}
+
+export async function searchPlaces(
+  query: string,
+  options?: { signal?: AbortSignal }
+): Promise<PlaceResult[]> {
+  const params = new URLSearchParams({ q: query });
+  const res = await fetch(`${getApiBaseUrl()}/places/search?${params}`, {
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<PlaceResult[]>(res);
+}
+
+export async function getCurrentWeather(
+  lat: number,
+  lng: number,
+  options?: { signal?: AbortSignal }
+): Promise<CurrentWeather> {
+  const params = new URLSearchParams({ lat: String(lat), lng: String(lng) });
+  const res = await fetch(`${getApiBaseUrl()}/weather/current?${params}`, {
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<CurrentWeather>(res);
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -228,18 +255,13 @@ export async function getActiveVehicles(options?: {
     return MOCK_VEHICLES;
   }
 
-  try {
-    const url = `${getApiBaseUrl()}/vehicles/active`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      signal: options?.signal,
-    });
-    return await handleResponse<VehiclePosition[]>(res);
-  } catch {
-    // If backend endpoint is unavailable or returns 404, fallback to mock vehicles
-    return MOCK_VEHICLES;
-  }
+  const url = `${getApiBaseUrl()}/vehicles/active`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<VehiclePosition[]>(res);
 }
 
 /**
@@ -295,22 +317,18 @@ export async function getFieldReports(
     return reports;
   }
 
-  try {
-    const params = new URLSearchParams();
-    if (filters?.category) params.append("category", filters.category);
-    if (filters?.severity) params.append("severity", filters.severity);
+  const params = new URLSearchParams();
+  if (filters?.category) params.append("category", filters.category);
+  if (filters?.severity) params.append("severity", filters.severity);
 
-    const queryStr = params.toString() ? `?${params.toString()}` : "";
-    const url = `${getApiBaseUrl()}/reports${queryStr}`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      signal: options?.signal,
-    });
-    return await handleResponse<FieldReport[]>(res);
-  } catch {
-    return MOCK_FIELD_REPORTS;
-  }
+  const queryStr = params.toString() ? `?${params.toString()}` : "";
+  const url = `${getApiBaseUrl()}/reports${queryStr}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<FieldReport[]>(res);
 }
 
 /**
@@ -364,18 +382,14 @@ export async function getAlerts(
     return MOCK_ALERTS;
   }
 
-  try {
-    const query = routeId ? `?route_id=${encodeURIComponent(routeId)}` : "";
-    const url = `${getApiBaseUrl()}/alerts${query}`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      signal: options?.signal,
-    });
-    return await handleResponse<Alert[]>(res);
-  } catch {
-    return MOCK_ALERTS;
-  }
+  const query = routeId ? `?route_id=${encodeURIComponent(routeId)}` : "";
+  const url = `${getApiBaseUrl()}/alerts${query}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<Alert[]>(res);
 }
 
 /**

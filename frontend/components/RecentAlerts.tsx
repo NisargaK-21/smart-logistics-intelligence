@@ -1,57 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { DashboardSummary } from "../lib/types";
+import { Alert } from "../lib/types";
 
 interface RecentAlertsProps {
-  summary: DashboardSummary | null;
+  alerts: Alert[];
+  reportsCount: number;
 }
 
-interface IncidentItem {
-  id: string;
-  title: string;
-  location: string;
-  severity: "critical" | "high" | "medium" | "info";
-  time: string;
-  description: string;
-}
-
-const DEFAULT_INCIDENTS: IncidentItem[] = [
-  {
-    id: "inc-101",
-    title: "Slope Instability & Debris on Roadway",
-    location: "NH-6 KM 48 (Near Byrnihat)",
-    severity: "high",
-    time: "15 min ago",
-    description: "Slight mud accumulation after heavy rain. Heavy freight advised caution.",
-  },
-  {
-    id: "inc-102",
-    title: "Waterlogging at Drainage Culvert",
-    location: "Nongpoh Bypass Junction",
-    severity: "medium",
-    time: "42 min ago",
-    description: "Water level receding; standard commercial trucks operating normally.",
-  },
-  {
-    id: "inc-103",
-    title: "Field Officer Ground Verification",
-    location: "Umiam Lake Viewpoint Sector",
-    severity: "info",
-    time: "1 hr ago",
-    description: "Road geometry cleared of previous construction barriers; both lanes open.",
-  },
-];
-
-export default function RecentAlerts({ summary }: RecentAlertsProps) {
+export default function RecentAlerts({ alerts, reportsCount }: RecentAlertsProps) {
   const [filter, setFilter] = useState<"all" | "high">("all");
 
   const filteredIncidents =
     filter === "high"
-      ? DEFAULT_INCIDENTS.filter((i) => i.severity === "high" || i.severity === "critical")
-      : DEFAULT_INCIDENTS;
+      ? alerts.filter((alert) => alert.severity === "high" || alert.severity === "critical")
+      : alerts;
 
-  const getSeverityBadge = (severity: IncidentItem["severity"]) => {
+  const getSeverityBadge = (severity: Alert["severity"]) => {
     switch (severity) {
       case "critical":
         return "bg-rose-100 text-rose-800 border-rose-200";
@@ -59,7 +24,6 @@ export default function RecentAlerts({ summary }: RecentAlertsProps) {
         return "bg-amber-100 text-amber-800 border-amber-200";
       case "medium":
         return "bg-sky-100 text-sky-800 border-sky-200";
-      case "info":
       default:
         return "bg-emerald-100 text-emerald-800 border-emerald-200";
     }
@@ -73,7 +37,7 @@ export default function RecentAlerts({ summary }: RecentAlertsProps) {
             <span>🚨</span> Recent Alerts & Field Activity
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
-            Active ground incident reports along monitored logistics corridors
+            User-submitted reports and route alerts stored for this session
           </p>
         </div>
 
@@ -88,7 +52,7 @@ export default function RecentAlerts({ summary }: RecentAlertsProps) {
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            All ({DEFAULT_INCIDENTS.length})
+            All ({alerts.length})
           </button>
           <button
             type="button"
@@ -106,41 +70,44 @@ export default function RecentAlerts({ summary }: RecentAlertsProps) {
 
       {/* Incident List */}
       <div className="space-y-2.5">
-        {filteredIncidents.map((inc) => (
+        {filteredIncidents.map((alert) => (
           <div
-            key={inc.id}
+            key={alert.alert_id}
             className="p-3 rounded-lg border border-slate-200/80 bg-slate-50/60 hover:bg-slate-50 transition-colors"
           >
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-bold text-slate-800">{inc.title}</span>
+              <span className="font-bold text-slate-800">{alert.title}</span>
               <span
-                className={`text-[9px] uppercase font-bold px-1.5 py-0.2 rounded border ${getSeverityBadge(
-                  inc.severity
-                )}`}
+                className={`text-[9px] uppercase font-bold px-1.5 py-0.2 rounded border ${getSeverityBadge(alert.severity)}`}
               >
-                {inc.severity}
+                {alert.severity}
               </span>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">{inc.description}</p>
+            <p className="text-xs text-slate-600 leading-relaxed">{alert.message}</p>
             <div className="mt-2 pt-1.5 border-t border-slate-200/50 flex items-center justify-between text-[10px] text-slate-400">
               <span className="font-medium text-slate-600 flex items-center gap-1">
-                <span>📍</span> {inc.location}
+                <span>📍</span>{" "}
+                {alert.location
+                  ? `${alert.location.lat.toFixed(3)}, ${alert.location.lng.toFixed(3)}`
+                  : alert.route_id || "Route"}
               </span>
-              <span>{inc.time}</span>
+              <span>{new Date(alert.created_at).toLocaleString()}</span>
             </div>
           </div>
         ))}
+        {filteredIncidents.length === 0 && (
+          <p className="py-5 text-center text-xs text-slate-500">
+            {alerts.length === 0
+              ? "No route alerts have been reported."
+              : "No high-severity alerts are currently reported."}
+          </p>
+        )}
       </div>
 
       {/* Summary Footer */}
-      {summary && (
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-          <span>Active Telemetry Streams: 4 sensors</span>
-          <span className="font-semibold text-slate-700">
-            {summary.recent_reports_count} reports filed today
-          </span>
-        </div>
-      )}
+      <div className="pt-2 border-t border-slate-100 flex items-center justify-end text-[11px] text-slate-500">
+        <span className="font-semibold text-slate-700">{reportsCount} reports received</span>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.app.schemas.dashboard import DashboardSummary, RouteRiskSummary
+from backend.app.schemas.dashboard import DashboardSummary
 from backend.app.services.alert_service import alert_service
 from backend.app.services.gis_service import gis_service
 from backend.app.services.reporting_service import reporting_service
@@ -30,20 +30,7 @@ def get_dashboard_summary():
         recent_reports_count=reporting_service.count(),
         active_vehicles_count=simulation_service.get_active_count(),
         overall_system_status=overall_status,
-        risk_by_route=[
-            RouteRiskSummary(
-                route_id="route-1",
-                risk_score=64,
-                risk_level="medium",
-                active_vehicles=1,
-            ),
-            RouteRiskSummary(
-                route_id="route-2",
-                risk_score=38,
-                risk_level="medium",
-                active_vehicles=1,
-            ),
-        ],
-        high_risk_zones_count=2,
+        risk_by_route=[],
+        high_risk_zones_count=0,
     )
 

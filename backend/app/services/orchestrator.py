@@ -9,9 +9,13 @@ from backend.app.schemas.route_plan import (
     SegmentRisk,
 )
 from backend.app.core.errors import DependencyUnavailableException, NoRouteFoundException
+from backend.app.core.config import settings
 from backend.app.services.gis_service import gis_service
+from backend.app.services.open_data_service import open_data_service
 from backend.app.services.risk_service import risk_service
+import logging
 
+logger = logging.getLogger(__name__)
 
 class RouteOrchestrator:
     """
@@ -63,6 +67,21 @@ class RouteOrchestrator:
                 module="gis", message="GIS returned a route without segments."
             )
 
+        weather = None
+        if settings.WEATHER_AVAILABLE:
+            route_coordinates = candidate_routes[0]["geometry"]["coordinates"]
+            midpoint = route_coordinates[len(route_coordinates) // 2]
+            try:
+                weather = open_data_service.get_current_weather(
+                    lat=float(midpoint[1]),
+                    lng=float(midpoint[0]),
+                )
+            except DependencyUnavailableException:
+                logger.warning(
+                    "Current weather could not be loaded; route risk will exclude weather.",
+                    exc_info=True,
+                )
+
         # 3. Fetch segment attributes from GIS
         segments_data = gis_service.get_segments(all_segment_ids)
 
@@ -76,6 +95,7 @@ class RouteOrchestrator:
         context = {
             "vehicle_type": request.vehicle_type,
             "departure_time": departure_time,
+            "weather": weather,
         }
         segment_scores, risk_source = risk_service.score(segments_payload, context)
 

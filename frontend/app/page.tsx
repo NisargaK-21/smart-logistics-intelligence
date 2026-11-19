@@ -24,9 +24,8 @@ export default function DashboardPage() {
     destination,
     activeBbox,
     activeRoute,
-    health,
-    isMockMode,
     vehicles,
+    alerts,
     planCurrentRoutes,
     isPlanningLoading,
   } = useApp();
@@ -40,7 +39,7 @@ export default function DashboardPage() {
             <span>📊</span> Operational Intelligence Overview
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Real-time disaster resilience & logistics telemetry for the Northeast Region of India
+            Route planning and current road-weather context for Northeast India
           </p>
         </div>
 
@@ -70,7 +69,7 @@ export default function DashboardPage() {
       />
 
       {/* Module 3: KPI Metrics Cards */}
-      <DashboardMetrics summary={summary} isLoading={isSummaryLoading} />
+      <DashboardMetrics summary={summary} routes={routes} isLoading={isSummaryLoading} />
 
       {/* Main Balanced Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -78,10 +77,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <span>🗺️</span> GIS Operational Map (Guwahati–Shillong NH-6)
+              <span>🗺️</span> OpenStreetMap Route Overview
             </h2>
             <span className="text-[11px] text-slate-400 font-mono">
-              Live & Monitored Layers
+              OpenStreetMap roads and calculated routes
             </span>
           </div>
 
@@ -146,7 +145,7 @@ export default function DashboardPage() {
                 <span className="text-2xl block">📍</span>
                 <p className="font-medium text-slate-700">No active route planned in this session</p>
                 <p className="text-[11px] text-slate-400">
-                  Calculate safer transit routes taking slope, rainfall, and historical landslide factors into account.
+                  Calculate driving routes and score available road and modelled weather factors. Missing inputs are flagged.
                 </p>
                 <div className="pt-2">
                   <button
@@ -163,13 +162,13 @@ export default function DashboardPage() {
           </div>
 
           {/* Weather & Topography Overview */}
-          <WeatherTerrainOverview health={health} isMockMode={isMockMode} />
+          <WeatherTerrainOverview coordinates={origin} />
         </div>
       </div>
 
       {/* Bottom Row: Recent Alerts & Live Field Activity Stream */}
       <div className="pt-2">
-        <RecentAlerts summary={summary} />
+        <RecentAlerts alerts={alerts} reportsCount={summary?.recent_reports_count ?? 0} />
       </div>
     </div>
   );

@@ -8,6 +8,25 @@ export interface Coordinates {
   lng: number;
 }
 
+export interface PlaceResult extends Coordinates {
+  display_name: string;
+}
+
+export interface CurrentWeather {
+  latitude: number;
+  longitude: number;
+  elevation_m: number | null;
+  time: string;
+  temperature_c: number;
+  precipitation_mm: number;
+  rain_mm: number;
+  weather_code: number;
+  wind_speed_kmh: number;
+  wind_gusts_kmh: number;
+  updated_at: string;
+  source: string;
+}
+
 export type VehicleType = "truck" | "van" | "car";
 
 export interface RoutePlanRequest {

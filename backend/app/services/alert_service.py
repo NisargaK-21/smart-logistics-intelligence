@@ -11,30 +11,7 @@ from backend.app.schemas.common import Coordinates
 
 class AlertService:
     def __init__(self):
-        self._alerts: List[Alert] = [
-            Alert(
-                alert_id="alt-101",
-                route_id="route-1",
-                vehicle_id="V001",
-                severity="high",
-                title="Approaching High-Risk Landslide Zone",
-                message="Vehicle V001 is within 2.5 km of high-risk segment s-202 (Umsning sector).",
-                location=Coordinates(lat=25.7500, lng=91.8500),
-                distance_to_risk_km=2.1,
-                created_at="2026-10-28T09:45:00+05:30",
-            ),
-            Alert(
-                alert_id="alt-102",
-                route_id="route-1",
-                vehicle_id=None,
-                severity="medium",
-                title="Route Risk Elevation",
-                message="Heavy rainfall has increased route-1 aggregate risk score past threshold (64).",
-                location=None,
-                distance_to_risk_km=None,
-                created_at="2026-10-28T10:00:00+05:30",
-            ),
-        ]
+        self._alerts: List[Alert] = []
         self._subscriptions: List[dict] = []
 
     def list_alerts(self, route_id: Optional[str] = None) -> List[Alert]:

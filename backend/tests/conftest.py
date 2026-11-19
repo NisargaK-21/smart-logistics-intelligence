@@ -1,7 +1,11 @@
 import asyncio
 import json
+import os
 import pytest
 from typing import Any, Dict, Optional
+
+os.environ["OSRM_ROUTER_URL"] = ""
+
 from backend.app.main import app
 
 
@@ -96,3 +100,27 @@ class ASGIClient:
 @pytest.fixture
 def client():
     return ASGIClient(app)
+
+
+@pytest.fixture(autouse=True)
+def stub_live_weather(monkeypatch):
+    from backend.app.services.open_data_service import open_data_service
+
+    monkeypatch.setattr(
+        open_data_service,
+        "get_current_weather",
+        lambda lat, lng: {
+            "latitude": lat,
+            "longitude": lng,
+            "elevation_m": 55.0,
+            "time": "2026-11-12T10:00",
+            "temperature_c": 25.0,
+            "precipitation_mm": 0.0,
+            "rain_mm": 0.0,
+            "weather_code": 0,
+            "wind_speed_kmh": 6.0,
+            "wind_gusts_kmh": 10.0,
+            "updated_at": "2026-11-12T04:30:00+00:00",
+            "source": "Open-Meteo",
+        },
+    )

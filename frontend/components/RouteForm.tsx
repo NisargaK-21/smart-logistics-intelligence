@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Coordinates, VehicleType } from "../lib/types";
 import { VEHICLE_OPTIONS } from "../lib/constants";
 import { isPointInBbox } from "../lib/validation";
+import PlaceSearch from "./PlaceSearch";
 
 interface RouteFormProps {
   origin: Coordinates | null;
@@ -220,6 +221,12 @@ export default function RouteForm({
             {pickingMode === "origin" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
           </button>
         </div>
+        <PlaceSearch
+          label="origin"
+          location={origin}
+          allowCurrentLocation
+          onSelect={onOriginChange}
+        />
         <div className="grid grid-cols-2 gap-2">
           <div>
             <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Latitude</span>
@@ -269,6 +276,11 @@ export default function RouteForm({
             {pickingMode === "destination" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
           </button>
         </div>
+        <PlaceSearch
+          label="destination"
+          location={destination}
+          onSelect={onDestinationChange}
+        />
         <div className="grid grid-cols-2 gap-2">
           <div>
             <span className="text-[10px] text-slate-400 font-mono mb-0.5 block">Latitude</span>

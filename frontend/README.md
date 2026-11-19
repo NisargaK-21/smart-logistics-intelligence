@@ -26,11 +26,13 @@ All communication follows the strict contract defined in [`docs/api-contract.md`
                              │
              [AppShell: Sidebar + Header + Context]
                              │
-            [API Client / Offline Mock Engine]
+                        [API Client]
                              │
               POST /api/v1/routes/plan
               GET  /api/v1/health
               GET  /api/v1/meta/coverage
+              GET  /api/v1/places/search
+              GET  /api/v1/weather/current
               GET  /api/v1/dashboard/summary
               GET  /api/v1/vehicles/active
               POST /api/v1/vehicles/simulate
@@ -50,16 +52,16 @@ All communication follows the strict contract defined in [`docs/api-contract.md`
 The platform is structured as a full multi-page application with 7 independent routes wrapped in a persistent shared layout (`AppShell`, `Sidebar`, `Header`):
 
 1. **Dashboard (`/`):**
-   - High-level operational overview with 4 KPI cards (Active Hazard Alerts, High Risk Zones, Active Fleet Vehicles, Field Incidents).
-   - Interactive GIS overview map with risk zones and active fleet markers.
-   - Corridor operational status and real-time IST clock.
-   - Weather and terrain overview (elevation profile, slope gradient, rainfall hazard).
-   - Recent alerts feed and field activity log.
+   - Dashboard counts for reported alerts, planned route candidates, simulated vehicles, and session reports.
+   - Interactive OpenStreetMap view with planned route geometry.
+   - Backend service status and current route context.
+   - Modelled current-weather overview from Open-Meteo, with provider and update information.
+   - Recent user-submitted reports and route alerts.
    - Risk distribution breakdown (Low, Medium, High).
 
 2. **Routes (`/routes`):**
    - Dedicated route planning workspace.
-   - Origin/destination coordinate inputs with one-click Guwahati–Shillong corridor presets.
+   - Northeast India place search backed by OpenStreetMap Nominatim, current-location origin, and map-selected coordinates.
    - Interactive "Pick on Map" coordinate selection with visual `crosshair` cursor.
    - Vehicle class selection (`truck`, `van`, `car`) with speed and clearance constraints.
    - Multi-route candidates with prominent recommended route highlighting.
@@ -70,7 +72,7 @@ The platform is structured as a full multi-page application with 7 independent r
    - Spatial hazard monitoring along the NH-6 corridor.
    - Filterable by severity (All, High, Medium, Low) and hazard category (Landslides, Heavy Rainfall, High Winds, Severe Weather, Steep Slopes).
    - Clear distinction between physical hazard zones and dynamic contributing risk factors.
-   - Explicit data fidelity badges (Historical Inventory, Topographic Calculation, Simulated Baseline Threshold).
+   - Data provenance labels distinguish observed reports from illustrative examples.
    - Interactive map focusing on high-vulnerability road segments and slope hazard areas.
    - Detailed hazard cards with location names, coordinates, contributing factors, and data provenance.
 
@@ -88,10 +90,10 @@ The platform is structured as a full multi-page application with 7 independent r
    - Vehicle class sensitivity breakdown and weather vulnerability indices.
 
 6. **Reports (`/reports`):**
-   - Verified on-ground field incident reporting system.
+   - User-submitted field incident reporting system.
    - Submission modal (`POST /api/v1/reports`) for field officers to report hazards with GPS coordinates.
    - Filterable reports table by severity and category.
-   - **One-click CSV Data Export** for logistics compliance and reporting.
+   - **One-click CSV export** for user-submitted reports.
 
 7. **Settings (`/settings`):**
    - Regional corridor selection and bounding box inspection.
@@ -131,7 +133,7 @@ The application adheres to a strict, professional light theme and an accessible 
 
 ### 4.2. Research Integrity & Explainability
 - **Honest Risk Source Labeling:** Accurately identifies `risk_source`:
-  - `baseline`: Labeled as **Deterministic Rules Baseline** (heuristic risk calculation based on road class, terrain slope, rainfall hazard thresholds, and historical disruptions). Never labeled as an unverified "AI black-box prediction".
+  - `baseline`: Labeled as **Deterministic Rules Baseline** (heuristic calculation based on available road attributes and weather thresholds). Missing inputs are flagged; the score is not a calibrated probability or road-closure report.
   - `model`: Labeled as **Experimental Risk Classifier**.
 - **Raw Contribution Units:** Contributing risk factors are displayed as **raw score points** (e.g., `+30 pts`, `+22 pts`), NOT deceptive percentages.
 - **Data Quality Indicator:** Badges indicate whether data is `complete`, `partial` (e.g. weather data unavailable fallback), `stale`, or `unavailable`.
@@ -143,7 +145,7 @@ The application adheres to a strict, professional light theme and an accessible 
 This section is prepared for teammates taking over the frontend for staging and production deployment.
 
 ### 5.1. System Requirements & Prerequisites
-- **Node.js:** v20.x or newer (recommended LTS v22.x)
+- **Node.js:** v22.x or newer (the native TypeScript test runner requires Node 22)
 - **npm:** v10.x or newer
 - **Backend Service:** FastAPI backend running on port 8000 (or configured via environment variable)
 
