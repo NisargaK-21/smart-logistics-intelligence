@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from backend.app.database import get_db
 from backend.app.schemas.dashboard import DashboardSummary
 from backend.app.services.alert_service import alert_service
 from backend.app.services.gis_service import gis_service
@@ -14,7 +17,7 @@ router = APIRouter()
     response_model=DashboardSummary,
     summary="Centralized dashboard summary metrics",
 )
-def get_dashboard_summary():
+def get_dashboard_summary(session: Session = Depends(get_db)):
     gis_status = gis_service.check_health()
     risk_status, weather_status = risk_service.check_health()
 
@@ -26,9 +29,9 @@ def get_dashboard_summary():
         overall_status = "operational"
 
     return DashboardSummary(
-        active_alerts_count=alert_service.count(),
-        recent_reports_count=reporting_service.count(),
-        active_vehicles_count=simulation_service.get_active_count(),
+        active_alerts_count=alert_service.count(session),
+        recent_reports_count=reporting_service.count(session),
+        active_vehicles_count=simulation_service.get_active_count(session),
         overall_system_status=overall_status,
         risk_by_route=[],
         high_risk_zones_count=0,

@@ -1,5 +1,8 @@
 from typing import List, Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+
+from backend.app.database import get_db
 from backend.app.schemas.reports import FieldReport, FieldReportCreate
 from backend.app.services.reporting_service import reporting_service
 
@@ -11,8 +14,8 @@ router = APIRouter()
     response_model=FieldReport,
     summary="Submit a new geo-tagged field incident report",
 )
-def create_report(report_in: FieldReportCreate):
-    return reporting_service.create_report(report_in)
+def create_report(report_in: FieldReportCreate, session: Session = Depends(get_db)):
+    return reporting_service.create_report(session, report_in)
 
 
 @router.get(
@@ -23,5 +26,6 @@ def create_report(report_in: FieldReportCreate):
 def list_reports(
     category: Optional[str] = Query(None, description="Filter by category (e.g. landslide, flood)"),
     severity: Optional[str] = Query(None, description="Filter by severity (e.g. high, critical)"),
+    session: Session = Depends(get_db),
 ):
-    return reporting_service.list_reports(category=category, severity=severity)
+    return reporting_service.list_reports(session, category=category, severity=severity)

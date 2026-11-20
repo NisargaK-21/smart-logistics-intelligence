@@ -46,6 +46,23 @@ def test_alerts_list_and_subscribe(client):
     alerts = list_resp.json()
     assert alerts == []
 
+    # Create and query a persisted alert
+    create_resp = client.post(
+        "/api/v1/alerts",
+        json={
+            "route_id": "route-1",
+            "threshold": 70,
+            "severity": "high",
+            "title": "High route risk",
+            "message": "Risk score exceeded the configured threshold.",
+        },
+    )
+    assert create_resp.status_code == 200
+    created_alert = create_resp.json()
+    filtered_resp = client.get("/api/v1/alerts?route_id=route-1")
+    assert filtered_resp.status_code == 200
+    assert filtered_resp.json()[0]["alert_id"] == created_alert["alert_id"]
+
     # Subscribe to alerts on a route
     sub_payload = {
         "email": "logistics.manager@fmcg.in",
@@ -71,9 +88,14 @@ def test_dashboard_summary(client):
     assert data["risk_by_route"] == []
 
 
-def test_websocket_vehicles_streaming():
+def test_websocket_vehicles_streaming(client):
     import asyncio
     from backend.app.main import app
+
+    client.post(
+        "/api/v1/vehicles/simulate",
+        json={"vehicle_id": "V-WS-1", "route_id": "route-1"},
+    )
 
     async def run_ws():
         messages = []

@@ -1,14 +1,22 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
 load_dotenv()
+
+DEFAULT_DATABASE_PATH = Path(__file__).resolve().parents[2] / "smart_logistics.db"
 
 
 class Settings(BaseModel):
     API_V1_STR: str = Field(default_factory=lambda: os.getenv("API_V1_STR", "/api/v1"))
     PROJECT_NAME: str = Field(default_factory=lambda: os.getenv("PROJECT_NAME", "Smart Logistics Intelligence API"))
     VERSION: str = Field(default_factory=lambda: os.getenv("VERSION", "1.0.0"))
+    DATABASE_URL: str = Field(
+        default_factory=lambda: os.getenv(
+            "DATABASE_URL", f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
+        )
+    )
 
     OSRM_ROUTER_URL: str = Field(
         default_factory=lambda: os.getenv(
