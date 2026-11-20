@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from backend.app.models import FieldReportRecord
@@ -11,6 +11,23 @@ from backend.app.schemas.reports import FieldReport, FieldReportCreate
 
 
 class ReportingService:
+    def list_routing_blocking_reports(
+        self, session: Session
+    ) -> List[FieldReportRecord]:
+        statement = (
+            select(FieldReportRecord)
+            .where(
+                or_(
+                    func.lower(FieldReportRecord.severity) == "critical",
+                    func.lower(FieldReportRecord.category).in_(
+                        ("landslide", "road_block", "road_blockage")
+                    ),
+                ),
+            )
+            .order_by(FieldReportRecord.created_at.desc())
+        )
+        return list(session.scalars(statement))
+
     def create_report(self, session: Session, report_in: FieldReportCreate) -> FieldReport:
         record = FieldReportRecord(
             report_id=f"rep-{uuid.uuid4().hex[:12]}",

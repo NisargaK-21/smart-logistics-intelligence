@@ -1,6 +1,8 @@
 import asyncio
 from pathlib import Path
+from types import SimpleNamespace
 
+import pytest
 from starlette.requests import Request
 
 from backend.app.core.config import settings
@@ -14,6 +16,11 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures"
 CONTRACT_QUERY = {
     "origin": {"lat": 26.1445, "lng": 91.7362},
     "destination": {"lat": 26.1801, "lng": 91.7001},
+    "vehicle_type": "truck",
+}
+BLOCKAGE_ROUTE_QUERY = {
+    "origin": {"lat": 26.1801, "lng": 91.7001},
+    "destination": {"lat": 26.1401, "lng": 91.7399},
     "vehicle_type": "truck",
 }
 
@@ -75,7 +82,7 @@ def test_plan_routes_valid_contract_query(client):
     settings.WEATHER_AVAILABLE = True
     settings.RISK_SOURCE = "baseline"
 
-    response = client.post("/api/v1/routes/plan", json=CONTRACT_QUERY)
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
 
     assert response.status_code == 200
     data = response.json()
@@ -452,3 +459,310 @@ def test_validation_error_departure_time_without_offset(client):
     response = client.post("/api/v1/routes/plan", json=payload)
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "INVALID_REQUEST"
+
+
+def test_routes_remain_normal_without_active_blockages(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["incident_avoidances"] == []
+    assert any(
+        "seg-ab" in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+
+
+def test_persisted_critical_blockage_causes_and_identifies_detour(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+
+    report_response = client.post(
+        "/api/v1/reports",
+        json={
+            "category": "road_blockage",
+            "severity": "critical",
+            "location": {"lat": 26.18, "lng": 91.71},
+            "description": "Landslide debris blocks the road.",
+        },
+    )
+    assert report_response.status_code == 200
+    report_id = report_response.json()["report_id"]
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["routes"]
+    assert all(
+        "seg-ab" not in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+    assert any(
+        "seg-ad" in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+    assert data["incident_avoidances"] == [
+        {
+            "report_id": report_id,
+            "category": "road_blockage",
+            "severity": "critical",
+            "segment_id": "seg-ab",
+            "reason": (
+                f"Avoided primary road segment 'seg-ab' because report "
+                f"'{report_id}' identifies a critical road_blockage incident."
+            ),
+        }
+    ]
+
+
+def test_blockage_on_unrelated_road_does_not_change_requested_routes(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+
+    normal_response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+    assert normal_response.status_code == 200
+    normal_data = normal_response.json()
+
+    report_response = client.post(
+        "/api/v1/reports",
+        json={
+            "category": "landslide",
+            "severity": "critical",
+            "location": {"lat": 26.3, "lng": 91.905},
+            "description": "Road blocked on an isolated segment.",
+        },
+    )
+    assert report_response.status_code == 200
+
+    blocked_response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert blocked_response.status_code == 200
+    blocked_data = blocked_response.json()
+    assert blocked_data["incident_avoidances"] == []
+    assert [
+        [segment["segment_id"] for segment in route["segments"]]
+        for route in blocked_data["routes"]
+    ] == [
+        [segment["segment_id"] for segment in route["segments"]]
+        for route in normal_data["routes"]
+    ]
+    assert blocked_data["recommended_route_id"] == normal_data["recommended_route_id"]
+
+
+def test_invalid_or_missing_blockage_coordinates_are_ignored(client, monkeypatch):
+    from backend.app.services.reporting_service import reporting_service
+
+    monkeypatch.setattr(
+        reporting_service,
+        "list_routing_blocking_reports",
+        lambda session: [
+            SimpleNamespace(
+                report_id="rep-invalid",
+                category="road_blockage",
+                severity="critical",
+                latitude=95.0,
+                longitude=91.71,
+            ),
+            SimpleNamespace(
+                report_id="rep-missing",
+                category="landslide",
+                severity="high",
+                latitude=None,
+                longitude=None,
+            ),
+            SimpleNamespace(
+                report_id="rep-nan",
+                category="road_blockage",
+                severity="critical",
+                latitude=float("nan"),
+                longitude=91.71,
+            ),
+            SimpleNamespace(
+                report_id="rep-inf",
+                category="road_blockage",
+                severity="critical",
+                latitude=26.18,
+                longitude=float("inf"),
+            ),
+        ],
+    )
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    assert response.json()["incident_avoidances"] == []
+    assert any(
+        "seg-ab" in {segment["segment_id"] for segment in route["segments"]}
+        for route in response.json()["routes"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("category", "severity"),
+    [
+        ("accident", "critical"),
+        ("landslide", "low"),
+        ("road_block", "low"),
+        ("road_blockage", "medium"),
+    ],
+)
+def test_report_category_or_critical_severity_triggers_avoidance(
+    client, category, severity
+):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+    report_response = client.post(
+        "/api/v1/reports",
+        json={
+            "category": category,
+            "severity": severity,
+            "location": {"lat": 26.18, "lng": 91.71},
+            "description": "Reported obstruction on the road.",
+        },
+    )
+    assert report_response.status_code == 200
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert all(
+        "seg-ab" not in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+    assert data["incident_avoidances"][0]["report_id"] == report_response.json()["report_id"]
+
+
+def test_far_away_persisted_incident_does_not_block_route(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+    _, incident_distance_km = gis_service.nearest_segment(91.9, 26.2)
+    assert incident_distance_km > 0.5
+
+    report_response = client.post(
+        "/api/v1/reports",
+        json={
+            "category": "road_block",
+            "severity": "low",
+            "location": {"lat": 26.2, "lng": 91.9},
+            "description": "Remote road blockage report.",
+        },
+    )
+    assert report_response.status_code == 200
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["incident_avoidances"] == []
+    assert any(
+        "seg-ab" in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+
+
+def test_blocked_only_path_returns_no_route_error(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+    report_response = client.post(
+        "/api/v1/reports",
+        json={
+            "category": "road_block",
+            "severity": "low",
+            "location": {"lat": 26.3, "lng": 91.905},
+            "description": "Only connecting road is blocked.",
+        },
+    )
+    assert report_response.status_code == 200
+
+    response = client.post(
+        "/api/v1/routes/plan",
+        json={
+            "origin": {"lat": 26.3, "lng": 91.9},
+            "destination": {"lat": 26.3, "lng": 91.91},
+            "vehicle_type": "truck",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "NO_ROUTE_FOUND"
+
+
+def test_osrm_filters_candidates_near_blocked_points(monkeypatch):
+    from backend.app.services.gis_service import GISService
+
+    settings.GIS_SERVICE_ENABLED = True
+    service = GISService(router_url="https://osrm.example")
+    candidates = [
+        {"route_id": "blocked", "segment_ids": ["blocked:step-1"]},
+        {"route_id": "clear", "segment_ids": ["clear:step-1"]},
+    ]
+    segments = {
+        "blocked:step-1": {
+            "coordinates": [[91.7, 26.183], [91.72, 26.183]],
+        },
+        "clear:step-1": {
+            "coordinates": [[91.8, 26.18], [91.82, 26.18]],
+        },
+    }
+    monkeypatch.setattr(
+        service,
+        "_find_osrm_routes",
+        lambda origin, destination, vehicle_type: candidates,
+    )
+    monkeypatch.setattr(
+        service,
+        "get_segments",
+        lambda segment_ids: {segment_id: segments[segment_id] for segment_id in segment_ids},
+    )
+
+    routes = service.find_routes(
+        {"lat": 26.18, "lng": 91.71},
+        {"lat": 26.2, "lng": 91.82},
+        "truck",
+        blocked_points=[(91.71, 26.18)],
+    )
+
+    assert [route["route_id"] for route in routes] == ["clear"]
+
+
+def test_osrm_returns_no_candidates_when_all_are_near_blocked_points(monkeypatch):
+    from backend.app.services.gis_service import GISService
+
+    settings.GIS_SERVICE_ENABLED = True
+    service = GISService(router_url="https://osrm.example")
+    candidates = [
+        {"route_id": "near-1", "segment_ids": ["near-1:step-1"]},
+        {"route_id": "near-2", "segment_ids": ["near-2:step-1"]},
+    ]
+    segments = {
+        "near-1:step-1": {
+            "coordinates": [[91.7, 26.181], [91.72, 26.181]],
+        },
+        "near-2:step-1": {
+            "coordinates": [[91.71, 26.183], [91.73, 26.183]],
+        },
+    }
+    monkeypatch.setattr(
+        service,
+        "_find_osrm_routes",
+        lambda origin, destination, vehicle_type: candidates,
+    )
+    monkeypatch.setattr(
+        service,
+        "get_segments",
+        lambda segment_ids: {segment_id: segments[segment_id] for segment_id in segment_ids},
+    )
+
+    routes = service.find_routes(
+        {"lat": 26.18, "lng": 91.71},
+        {"lat": 26.2, "lng": 91.82},
+        "truck",
+        blocked_points=[(91.71, 26.18)],
+    )
+
+    assert routes == []

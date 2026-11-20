@@ -74,6 +74,15 @@ export interface RoutePlanResponse {
   risk_source: RiskSource;
   generated_at: string;
   routes: Route[];
+  incident_avoidances: IncidentAvoidance[];
+}
+
+export interface IncidentAvoidance {
+  report_id: string;
+  category: string;
+  severity: string;
+  segment_id: string;
+  reason: string;
 }
 
 export interface ErrorDetail {

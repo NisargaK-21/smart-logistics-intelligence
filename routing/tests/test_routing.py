@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 import unittest
 
 from routing.exceptions import InvalidRequestError, NoRouteFoundError, OutOfCoverageError
@@ -110,6 +111,43 @@ class InterfaceTests(unittest.TestCase):
         used = set(westbound[0].segment_ids)
         self.assertNotIn("seg-ab", used)
         self.assertNotIn("seg-bc", used)
+
+    def test_blocked_segments_are_skipped_without_mutating_graph(self):
+        routes_before = self.gis.find_routes(
+            self.origin, self.destination, "truck"
+        )
+        original_graph = deepcopy(self.gis.graph)
+
+        routes_after = self.gis.find_routes(
+            self.origin,
+            self.destination,
+            "truck",
+            blocked_segment_ids={"seg-ab"},
+        )
+
+        self.assertTrue(routes_after)
+        self.assertTrue(
+            all("seg-ab" not in route.segment_ids for route in routes_after)
+        )
+        self.assertEqual(self.gis.graph, original_graph)
+        self.assertIn("seg-ab", routes_before[0].segment_ids)
+
+    def test_blocking_unrelated_segment_preserves_route_candidates(self):
+        routes_before = self.gis.find_routes(
+            self.origin, self.destination, "truck"
+        )
+
+        routes_after = self.gis.find_routes(
+            self.origin,
+            self.destination,
+            "truck",
+            blocked_segment_ids={"seg-isolated"},
+        )
+
+        self.assertEqual(
+            [route.segment_ids for route in routes_after],
+            [route.segment_ids for route in routes_before],
+        )
 
 
 class GraphUnitTests(unittest.TestCase):

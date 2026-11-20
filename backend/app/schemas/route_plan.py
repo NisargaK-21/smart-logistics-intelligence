@@ -48,8 +48,17 @@ class Route(BaseModel):
     data_quality: Literal["complete", "partial", "stale", "unavailable"]
 
 
+class IncidentAvoidance(BaseModel):
+    report_id: str
+    category: str
+    severity: str
+    segment_id: str
+    reason: str
+
+
 class RoutePlanResponse(BaseModel):
     recommended_route_id: str
     risk_source: Literal["baseline", "model"]
     generated_at: str
     routes: List[Route]
+    incident_avoidances: List[IncidentAvoidance] = Field(default_factory=list)
