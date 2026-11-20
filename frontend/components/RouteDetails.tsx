@@ -158,6 +158,66 @@ export default function RouteDetails({
         )}
       </div>
 
+      {/* Time-of-Arrival (ToA) Weather Progression Timeline */}
+      {route.segments.some((s) => s.weather_forecast) && (
+        <div className="space-y-2 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+            <span className="flex items-center gap-1.5">
+              <span>⏱️</span> Time-of-Arrival (ToA) Weather Timeline
+            </span>
+            <span className="text-[10px] text-sky-600 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+              Open-Meteo Hourly
+            </span>
+          </div>
+          <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+            {route.segments
+              .filter((s) => s.weather_forecast)
+              .map((seg) => {
+                const wf = seg.weather_forecast!;
+                const arrivalTimeStr = wf.estimated_arrival_time
+                  ? new Date(wf.estimated_arrival_time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : wf.forecast_time;
+                return (
+                  <div
+                    key={`wf-${seg.segment_id}`}
+                    className="p-2 rounded-lg bg-sky-50/50 border border-sky-100 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-slate-600 font-semibold text-[11px]">
+                        {seg.segment_id}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        ETA: <strong className="text-slate-700">{arrivalTimeStr}</strong>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px] font-medium text-slate-700">
+                      <span>🌡️ {wf.temperature_c.toFixed(1)}°C</span>
+                      <span>
+                        🌧️{" "}
+                        <strong
+                          className={
+                            wf.precipitation_mm > 2
+                              ? "text-rose-600"
+                              : wf.precipitation_mm > 0
+                              ? "text-amber-600"
+                              : "text-slate-600"
+                          }
+                        >
+                          {wf.precipitation_mm.toFixed(1)} mm
+                        </strong>
+                      </span>
+                      <span>💨 {wf.wind_speed_kmh.toFixed(0)} km/h</span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* Segment Level Inspection */}
       <div className="pt-2 border-t border-slate-100">
         <button
@@ -177,28 +237,40 @@ export default function RouteDetails({
               return (
                 <div
                   key={seg.segment_id}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs"
+                  className="flex flex-col gap-1 p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shadow-2xs"
-                      style={{ backgroundColor: segColor }}
-                    />
-                    <span className="font-mono text-slate-700 font-medium">
-                      {seg.segment_id}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shadow-2xs"
+                        style={{ backgroundColor: segColor }}
+                      />
+                      <span className="font-mono text-slate-700 font-medium">
+                        {seg.segment_id}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="capitalize text-[11px] text-slate-500 font-medium">
+                        {segLevel}
+                      </span>
+                      <span
+                        className="font-mono font-bold"
+                        style={{ color: segColor }}
+                      >
+                        {seg.risk_score}/100
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <span className="capitalize text-[11px] text-slate-500 font-medium">
-                      {segLevel}
-                    </span>
-                    <span
-                      className="font-mono font-bold"
-                      style={{ color: segColor }}
-                    >
-                      {seg.risk_score}/100
-                    </span>
-                  </div>
+                  {seg.weather_forecast && (
+                    <div className="text-[10px] text-slate-500 flex items-center gap-2 pl-4">
+                      <span>
+                        Forecast at arrival ({seg.weather_forecast.forecast_time}):{" "}
+                        {seg.weather_forecast.temperature_c.toFixed(1)}°C,{" "}
+                        {seg.weather_forecast.precipitation_mm}mm rain,{" "}
+                        {seg.weather_forecast.wind_speed_kmh}km/h wind
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })}

@@ -41,10 +41,25 @@ export interface GeoJSONLineString {
   coordinates: [number, number][]; // [longitude, latitude]
 }
 
+export interface SegmentWeatherForecast {
+  estimated_arrival_time: string;
+  forecast_time: string;
+  temperature_c: number;
+  precipitation_mm: number;
+  rain_mm: number;
+  weather_code: number;
+  wind_speed_kmh: number;
+  wind_gusts_kmh: number;
+}
+
 export interface SegmentRisk {
   segment_id: string;
   risk_score: number; // 0–100 integer, higher = riskier
   coordinates: [number, number][]; // [[lng, lat], ...]
+  slope_deg?: number | null;
+  elevation_m?: number | null;
+  ruggedness?: number | null;
+  weather_forecast?: SegmentWeatherForecast | null;
 }
 
 export interface RiskFactor {

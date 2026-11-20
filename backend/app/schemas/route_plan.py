@@ -24,6 +24,17 @@ class GeoJSONGeometry(BaseModel):
     coordinates: List[List[float]] = Field(..., description="Array of [lng, lat] coordinate pairs")
 
 
+class SegmentWeatherForecast(BaseModel):
+    estimated_arrival_time: str = Field(..., description="ISO 8601 estimated arrival time at segment start")
+    forecast_time: str = Field(..., description="Corresponding forecast hour timestamp")
+    temperature_c: float
+    precipitation_mm: float
+    rain_mm: float
+    weather_code: int
+    wind_speed_kmh: float
+    wind_gusts_kmh: float
+
+
 class SegmentRisk(BaseModel):
     segment_id: str
     risk_score: int = Field(..., ge=0, le=100)
@@ -31,6 +42,9 @@ class SegmentRisk(BaseModel):
     slope_deg: Optional[float] = Field(default=None, description="Average terrain slope in degrees")
     elevation_m: Optional[float] = Field(default=None, description="Average elevation in meters")
     ruggedness: Optional[float] = Field(default=None, description="Average terrain ruggedness index")
+    weather_forecast: Optional[SegmentWeatherForecast] = Field(
+        default=None, description="Time-of-arrival weather forecast for this segment"
+    )
 
 
 class RiskFactor(BaseModel):
