@@ -13,8 +13,10 @@ def _dijkstra(
     source: str,
     target: str,
     penalties: dict[str, float] | None = None,
+    blocked_segment_ids: set[str] | None = None,
 ) -> list[GraphEdge] | None:
     penalties = penalties or {}
+    blocked_segment_ids = blocked_segment_ids or set()
     dist = {source: 0.0}
     prev: dict[str, GraphEdge] = {}
     heap: list[tuple[float, str]] = [(0.0, source)]
@@ -26,6 +28,8 @@ def _dijkstra(
         if node == target:
             break
         for edge in graph.adjacency.get(node, []):
+            if edge.segment_id in blocked_segment_ids:
+                continue
             weight = edge.length_km * penalties.get(edge.segment_id, 1.0)
             next_cost = cost + weight
             if next_cost < dist.get(edge.to_node, float("inf")):
@@ -83,13 +87,17 @@ def find_k_paths(
     target: str,
     vehicle_type: str,
     max_routes: int = 3,
+    blocked_segment_ids: set[str] | None = None,
 ) -> list[RouteCandidate]:
     """Return 1–3 routes. Later routes penalise segments already used."""
     routes: list[RouteCandidate] = []
     penalties: dict[str, float] = {}
+    blocked_segment_ids = blocked_segment_ids or set()
 
     for index in range(max_routes):
-        path = _dijkstra(graph, source, target, penalties)
+        path = _dijkstra(
+            graph, source, target, penalties, blocked_segment_ids
+        )
         if path is None:
             break
         segment_ids = _collapse_segment_ids(path)

@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
 from backend.app.schemas.common import ErrorResponse
 from backend.app.schemas.route_plan import RoutePlanRequest, RoutePlanResponse
+from backend.app.database import get_db
 from backend.app.services.orchestrator import orchestrator
 
 router = APIRouter()
@@ -18,5 +21,5 @@ router = APIRouter()
         500: {"model": ErrorResponse, "description": "Unexpected server error"},
     },
 )
-def plan_routes(request: RoutePlanRequest):
-    return orchestrator.plan_routes(request)
+def plan_routes(request: RoutePlanRequest, session: Session = Depends(get_db)):
+    return orchestrator.plan_routes(request, session)

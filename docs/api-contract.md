@@ -91,6 +91,7 @@ Accept: application/json
   "recommended_route_id": "route-2",
   "risk_source": "baseline",
   "generated_at": "2026-10-28T10:00:00+05:30",
+  "incident_avoidances": [],
   "routes": [
     {
       "route_id": "route-2",
@@ -174,6 +175,15 @@ Accept: application/json
 }
 ```
 
+`incident_avoidances` lists primary-road segments excluded because of persisted
+critical reports or reports categorized as `landslide`, `road_block`, or
+`road_blockage`, regardless of severity. The route planner matches report
+coordinates to road geometry within 500 m and blocks matching graph edges only
+for that route calculation. Reports without valid nearby coordinates are
+ignored. `FieldReportRecord` currently has no status, resolution, or expiry
+field, so qualifying persisted reports continue to be treated as active until
+the report lifecycle supports clearing them.
+
 ---
 
 ### 3.2. Health Check
@@ -237,7 +247,7 @@ Accept: application/json
 The backend connects to the GIS module (Person 1) and Risk module (Person 2) using defined interfaces:
 
 ### 4.1. GIS Module Interface (Person 1)
-- `find_routes(origin: dict, destination: dict, vehicle_type: str) -> list[dict]`
+- `find_routes(origin: dict, destination: dict, vehicle_type: str, blocked_segment_ids: set[str] | None = None) -> list[dict]`
   - Returns 1–3 route candidate objects:
     ```python
     [
@@ -253,6 +263,8 @@ The backend connects to the GIS module (Person 1) and Risk module (Person 2) usi
       }
     ]
     ```
+  - Blocked segment IDs are excluded only for that routing call; the road graph is not mutated.
+  - When an external OSRM router is configured, route alternatives whose geometry passes within 500 m of a persisted blocking report are filtered.
 - `get_segments(segment_ids: list[str]) -> dict[str, dict]`
   - Returns dictionary mapping `segment_id` to its road attributes:
     ```python

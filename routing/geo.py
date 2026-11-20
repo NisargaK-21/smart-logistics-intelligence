@@ -45,6 +45,50 @@ def linestring_length_km(coords: list[list[float]]) -> float:
     return total
 
 
+def point_to_linestring_distance_km(
+    lng: float, lat: float, coords: list[list[float]]
+) -> float:
+    """Return the closest local-projection distance from a point to a line."""
+    if not math.isfinite(lng) or not math.isfinite(lat) or not coords:
+        return float("inf")
+
+    km_per_degree = EARTH_RADIUS_KM * math.pi / 180.0
+    longitude_scale = km_per_degree * max(abs(math.cos(math.radians(lat))), 1e-6)
+    points: list[tuple[float, float]] = []
+    for coordinate in coords:
+        try:
+            point_lng = float(coordinate[0])
+            point_lat = float(coordinate[1])
+        except (IndexError, TypeError, ValueError):
+            continue
+        if math.isfinite(point_lng) and math.isfinite(point_lat):
+            points.append((point_lng, point_lat))
+
+    if not points:
+        return float("inf")
+    if len(points) == 1:
+        point_lng, point_lat = points[0]
+        return haversine_km(lng, lat, point_lng, point_lat)
+
+    best_distance = float("inf")
+    for (lng1, lat1), (lng2, lat2) in zip(points, points[1:]):
+        x1 = (lng1 - lng) * longitude_scale
+        y1 = (lat1 - lat) * km_per_degree
+        x2 = (lng2 - lng) * longitude_scale
+        y2 = (lat2 - lat) * km_per_degree
+        dx = x2 - x1
+        dy = y2 - y1
+        length_squared = dx * dx + dy * dy
+        fraction = (
+            0.0
+            if length_squared == 0
+            else min(max(-(x1 * dx + y1 * dy) / length_squared, 0.0), 1.0)
+        )
+        distance = math.hypot(x1 + fraction * dx, y1 + fraction * dy)
+        best_distance = min(best_distance, distance)
+    return best_distance
+
+
 def point_in_bbox(lng: float, lat: float, bbox: list[float]) -> bool:
     min_lng, min_lat, max_lng, max_lat = bbox
     return min_lng <= lng <= max_lng and min_lat <= lat <= max_lat

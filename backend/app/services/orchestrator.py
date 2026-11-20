@@ -1,6 +1,12 @@
+import logging
+import math
 from datetime import datetime, timezone
 from typing import Any, Dict, List
+
+from sqlalchemy.orm import Session
+
 from backend.app.schemas.route_plan import (
+    IncidentAvoidance,
     GeoJSONGeometry,
     RiskFactor,
     Route,
@@ -13,9 +19,11 @@ from backend.app.core.config import settings
 from backend.app.services.gis_service import gis_service
 from backend.app.services.open_data_service import open_data_service
 from backend.app.services.risk_service import risk_service
-import logging
+from backend.app.services.reporting_service import reporting_service
+from routing.geo import point_to_linestring_distance_km
 
 logger = logging.getLogger(__name__)
+MAX_INCIDENT_MATCH_DISTANCE_KM = 0.5
 
 class RouteOrchestrator:
     """
@@ -40,16 +48,85 @@ class RouteOrchestrator:
             return "stale"
         return "complete"
 
-    def plan_routes(self, request: RoutePlanRequest) -> RoutePlanResponse:
+    def plan_routes(
+        self, request: RoutePlanRequest, session: Session
+    ) -> RoutePlanResponse:
         origin_dict = {"lat": request.origin.lat, "lng": request.origin.lng}
         dest_dict = {"lat": request.destination.lat, "lng": request.destination.lng}
 
-        # 1. Fetch candidate routes from GIS
-        candidate_routes = gis_service.find_routes(
-            origin=origin_dict,
-            destination=dest_dict,
-            vehicle_type=request.vehicle_type,
-        )
+        # 1. Read persisted blocking reports and find the normal primary route.
+        blocking_reports = reporting_service.list_routing_blocking_reports(session)
+        valid_incidents: list[tuple[Any, float, float]] = []
+        for report in blocking_reports:
+            try:
+                lat = float(report.latitude)
+                lng = float(report.longitude)
+            except (TypeError, ValueError):
+                continue
+            if (
+                math.isfinite(lat)
+                and math.isfinite(lng)
+                and -90 <= lat <= 90
+                and -180 <= lng <= 180
+            ):
+                valid_incidents.append((report, lng, lat))
+
+        route_arguments = {
+            "origin": origin_dict,
+            "destination": dest_dict,
+            "vehicle_type": request.vehicle_type,
+        }
+        incident_avoidances: list[IncidentAvoidance] = []
+        if valid_incidents:
+            primary_routes = gis_service.find_routes(**route_arguments)
+            if not primary_routes:
+                raise NoRouteFoundException(
+                    "GIS returned no candidate routes.",
+                    {"origin_snapped": True, "destination_snapped": True},
+                )
+
+            blocked_segment_ids: set[str] = set()
+            blocked_points: list[tuple[float, float]] = []
+            for _, lng, lat in valid_incidents:
+                segment_id, distance_km = gis_service.nearest_segment(lng, lat)
+                if segment_id and distance_km <= MAX_INCIDENT_MATCH_DISTANCE_KM:
+                    blocked_segment_ids.add(segment_id)
+                blocked_points.append((lng, lat))
+
+            candidate_routes = gis_service.find_routes(
+                **route_arguments,
+                blocked_segment_ids=blocked_segment_ids,
+                blocked_points=blocked_points,
+            )
+
+            primary_segment_ids = primary_routes[0].get("segment_ids", [])
+            primary_segments = gis_service.get_segments(primary_segment_ids)
+            for report, lng, lat in valid_incidents:
+                segment_id, distance_km = gis_service.nearest_segment(lng, lat)
+                if segment_id is None:
+                    segment_id, distance_km = self._nearest_route_segment(
+                        primary_segment_ids, primary_segments, lng, lat
+                    )
+                if (
+                    segment_id in primary_segment_ids
+                    and distance_km <= MAX_INCIDENT_MATCH_DISTANCE_KM
+                ):
+                    incident_avoidances.append(
+                        IncidentAvoidance(
+                            report_id=report.report_id,
+                            category=report.category,
+                            severity=report.severity,
+                            segment_id=segment_id,
+                            reason=(
+                                f"Avoided primary road segment '{segment_id}' "
+                                f"because report '{report.report_id}' identifies "
+                                f"a {report.severity} {report.category} incident."
+                            ),
+                        )
+                    )
+        else:
+            candidate_routes = gis_service.find_routes(**route_arguments)
+
         if not candidate_routes:
             raise NoRouteFoundException(
                 "GIS returned no candidate routes.",
@@ -227,7 +304,29 @@ class RouteOrchestrator:
             risk_source=risk_source,
             generated_at=now_iso,
             routes=processed_routes,
+            incident_avoidances=incident_avoidances,
         )
+
+    @staticmethod
+    def _nearest_route_segment(
+        segment_ids: list[str],
+        segments: dict[str, dict[str, Any]],
+        lng: float,
+        lat: float,
+    ) -> tuple[str | None, float]:
+        nearest_id = None
+        nearest_distance = float("inf")
+        for segment_id in segment_ids:
+            segment = segments.get(segment_id)
+            if segment is None:
+                continue
+            distance = point_to_linestring_distance_km(
+                lng, lat, segment.get("coordinates", [])
+            )
+            if distance < nearest_distance:
+                nearest_id = segment_id
+                nearest_distance = distance
+        return nearest_id, nearest_distance
 
 
 orchestrator = RouteOrchestrator()

@@ -59,6 +59,7 @@ class GisService:
         destination: dict | Point,
         vehicle_type: str,
         max_routes: int = 3,
+        blocked_segment_ids: set[str] | None = None,
     ) -> list[RouteCandidate]:
         origin_pt = self._point(origin, "origin")
         dest_pt = self._point(destination, "destination")
@@ -81,7 +82,14 @@ class GisService:
                 {"origin": origin_pt.as_dict(), "destination": dest_pt.as_dict()},
             )
 
-        routes = find_k_paths(self.graph, start, end, vehicle_type, max_routes=max_routes)
+        routes = find_k_paths(
+            self.graph,
+            start,
+            end,
+            vehicle_type,
+            max_routes=max_routes,
+            blocked_segment_ids=blocked_segment_ids,
+        )
         if not routes:
             raise NoRouteFoundError(
                 "Points snapped but no connected path exists.",
@@ -119,8 +127,20 @@ def get_service() -> GisService:
     return _default_service
 
 
-def find_routes(origin, destination, vehicle_type: str, max_routes: int = 3):
-    return get_service().find_routes(origin, destination, vehicle_type, max_routes=max_routes)
+def find_routes(
+    origin,
+    destination,
+    vehicle_type: str,
+    max_routes: int = 3,
+    blocked_segment_ids: set[str] | None = None,
+):
+    return get_service().find_routes(
+        origin,
+        destination,
+        vehicle_type,
+        max_routes=max_routes,
+        blocked_segment_ids=blocked_segment_ids,
+    )
 
 
 def get_segments(segment_ids: list[str]):

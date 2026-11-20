@@ -19,7 +19,11 @@ from backend.app.core.errors import (
     NoRouteFoundException,
     OutOfCoverageException,
 )
-from routing.geo import point_in_bbox, validate_lat_lng
+from routing.geo import (
+    point_in_bbox,
+    point_to_linestring_distance_km,
+    validate_lat_lng,
+)
 from routing import (
     GisError,
     InvalidRequestError,
@@ -33,6 +37,7 @@ from routing import (
 from routing.models import VEHICLE_TYPES
 
 NORTHEAST_BBOX = [87.5, 21.5, 97.8, 29.9]
+MAX_INCIDENT_MATCH_DISTANCE_KM = 0.5
 
 
 class GISService:
@@ -81,15 +86,53 @@ class GISService:
         raise error
 
     def find_routes(
-        self, origin: dict[str, float], destination: dict[str, float], vehicle_type: str
+        self,
+        origin: dict[str, float],
+        destination: dict[str, float],
+        vehicle_type: str,
+        blocked_segment_ids: set[str] | None = None,
+        blocked_points: list[tuple[float, float]] | None = None,
     ) -> list[dict[str, Any]]:
         self._ensure_available()
         if self._use_osrm:
-            return self._find_osrm_routes(origin, destination, vehicle_type)
+            routes = self._find_osrm_routes(origin, destination, vehicle_type)
+            if not blocked_points:
+                return routes
+            return [
+                route
+                for route in routes
+                if not self._route_intersects_blocked_points(
+                    route["segment_ids"], blocked_points
+                )
+            ]
         try:
-            return [self._as_dict(route) for route in find_routes(origin, destination, vehicle_type)]
+            return [
+                self._as_dict(route)
+                for route in find_routes(
+                    origin,
+                    destination,
+                    vehicle_type,
+                    blocked_segment_ids=blocked_segment_ids,
+                )
+            ]
         except GisError as error:
             self._raise_mapped(error)
+
+    def nearest_segment(self, lng: float, lat: float) -> tuple[str | None, float]:
+        if self.graph is None:
+            return None, float("inf")
+        return self.graph.nearest_segment(lng, lat)
+
+    def _route_intersects_blocked_points(
+        self, segment_ids: list[str], blocked_points: list[tuple[float, float]]
+    ) -> bool:
+        segments = self.get_segments(segment_ids)
+        return any(
+            point_to_linestring_distance_km(lng, lat, segment["coordinates"])
+            <= MAX_INCIDENT_MATCH_DISTANCE_KM
+            for lng, lat in blocked_points
+            for segment in segments.values()
+        )
 
     @staticmethod
     def _validate_osrm_point(point: dict[str, float], label: str) -> None:

@@ -5,7 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterable
 
-from routing.geo import haversine_km, linestring_length_km, node_id, node_key
+from routing.geo import (
+    haversine_km,
+    linestring_length_km,
+    node_id,
+    node_key,
+    point_to_linestring_distance_km,
+)
 from routing.models import SPEED_KMH, SegmentRecord, VEHICLE_TYPES
 
 
@@ -45,6 +51,19 @@ class RoadGraph:
             if dist < best_km:
                 best_km = dist
                 best_id = nid
+        return best_id, best_km
+
+    def nearest_segment(self, lng: float, lat: float) -> tuple[str | None, float]:
+        """Return the nearest segment ID and its distance from a coordinate."""
+        best_id = None
+        best_km = float("inf")
+        for segment_id, segment in self.segments.items():
+            distance_km = point_to_linestring_distance_km(
+                lng, lat, segment.coordinates
+            )
+            if distance_km < best_km:
+                best_id = segment_id
+                best_km = distance_km
         return best_id, best_km
 
     def duration_min(self, segment_ids: list[str], vehicle_type: str) -> float:
