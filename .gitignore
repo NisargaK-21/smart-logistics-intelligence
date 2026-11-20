@@ -68,6 +68,13 @@ ml/data/processed/gps/
 # Historical raw data
 # ==============================
 ml/data/raw/historical/*
+ml/data/raw/floods/
+ml/data/raw/landslides/
+
+# ==============================
+# Cache files
+# ==============================
+ml/data/cache/
 
 # ==============================
 # Historical processed data

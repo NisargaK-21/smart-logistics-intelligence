@@ -32,7 +32,11 @@ from sklearn.preprocessing import StandardScaler
 from ml.risk_model_features import (
     WEATHER_FEATURE_COLUMNS,
     prepare_weather_features,
+    validate_feature_allowlist,
 )
+
+# Enforce centralized feature allowlist check on baseline feature columns
+validate_feature_allowlist(WEATHER_FEATURE_COLUMNS)
 from ml.weather_risk_baseline import calculate_weather_risk
 
 DEFAULT_DATASET = ROOT / "ml" / "data" / "processed" / "weather_features.csv"
