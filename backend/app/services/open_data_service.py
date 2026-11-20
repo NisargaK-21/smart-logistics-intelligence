@@ -135,5 +135,97 @@ class OpenDataService:
             self._weather_cache[cache_key] = (time.monotonic() + 600, weather)
         return weather
 
+    def get_hourly_forecast(self, lat: float, lng: float) -> dict[str, Any]:
+        """Fetch hourly weather forecast for a location, cached for 15 minutes."""
+        cache_key = ("hourly", round(lat, 2), round(lng, 2))
+        now = time.monotonic()
+        with self._weather_lock:
+            cached = self._weather_cache.get(cache_key)  # type: ignore[arg-type]
+            if cached and cached[0] > now:
+                return cached[1]
+
+        query_string = urlencode({
+            "latitude": lat,
+            "longitude": lng,
+            "hourly": (
+                "temperature_2m,precipitation,rain,weather_code,"
+                "wind_speed_10m,wind_gusts_10m"
+            ),
+            "wind_speed_unit": "kmh",
+            "timezone": "auto",
+            "forecast_days": 2,
+        })
+        payload = self._get_json(
+            f"https://api.open-meteo.com/v1/forecast?{query_string}",
+            "NER-ResQ/1.0 (Northeast India weather forecast)",
+        )
+        hourly = payload.get("hourly")
+        if not isinstance(hourly, dict) or "time" not in hourly:
+            raise DependencyUnavailableException(
+                module="weather",
+                message="The weather provider returned no hourly forecast.",
+            )
+
+        with self._weather_lock:
+            self._weather_cache[cache_key] = (time.monotonic() + 900, hourly)  # type: ignore[index]
+        return hourly
+
+    def get_weather_for_arrival_time(
+        self, lat: float, lng: float, arrival_time: datetime
+    ) -> dict[str, Any]:
+        """
+        Retrieves weather condition matched to the target time-of-arrival (ToA).
+        Finds the closest forecast hour from Open-Meteo's hourly array.
+        """
+        try:
+            hourly = self.get_hourly_forecast(lat, lng)
+            times = hourly.get("time", [])
+            if not times:
+                return self.get_current_weather(lat, lng)
+
+            # Match arrival_time with hourly times (ISO strings like "2026-11-21T05:00")
+            target_str = arrival_time.strftime("%Y-%m-%dT%H:00")
+            best_idx = 0
+            if target_str in times:
+                best_idx = times.index(target_str)
+            else:
+                # Find closest timestamp
+                best_diff = float("inf")
+                target_ts = arrival_time.timestamp()
+                for idx, t_str in enumerate(times):
+                    try:
+                        # parse ISO time
+                        t_dt = datetime.fromisoformat(t_str)
+                        if t_dt.tzinfo is None and arrival_time.tzinfo is not None:
+                            t_dt = t_dt.replace(tzinfo=arrival_time.tzinfo)
+                        diff = abs(t_dt.timestamp() - target_ts)
+                        if diff < best_diff:
+                            best_diff = diff
+                            best_idx = idx
+                    except Exception:
+                        continue
+
+            temps = hourly.get("temperature_2m", [])
+            precips = hourly.get("precipitation", [])
+            rains = hourly.get("rain", [])
+            codes = hourly.get("weather_code", [])
+            wind_speeds = hourly.get("wind_speed_10m", [])
+            wind_gusts = hourly.get("wind_gusts_10m", [])
+
+            return {
+                "latitude": lat,
+                "longitude": lng,
+                "time": str(times[best_idx]) if best_idx < len(times) else "",
+                "temperature_c": float(temps[best_idx]) if best_idx < len(temps) else 0.0,
+                "precipitation_mm": float(precips[best_idx]) if best_idx < len(precips) else 0.0,
+                "rain_mm": float(rains[best_idx]) if best_idx < len(rains) else 0.0,
+                "weather_code": int(codes[best_idx]) if best_idx < len(codes) else 0,
+                "wind_speed_kmh": float(wind_speeds[best_idx]) if best_idx < len(wind_speeds) else 0.0,
+                "wind_gusts_kmh": float(wind_gusts[best_idx]) if best_idx < len(wind_gusts) else 0.0,
+                "source": "Open-Meteo Hourly Forecast (ToA)",
+            }
+        except Exception:
+            return self.get_current_weather(lat, lng)
+
 
 open_data_service = OpenDataService()

@@ -13,6 +13,7 @@ from backend.app.schemas.route_plan import (
     RoutePlanRequest,
     RoutePlanResponse,
     SegmentRisk,
+    SegmentWeatherForecast,
 )
 from backend.app.core.errors import DependencyUnavailableException, NoRouteFoundException
 from backend.app.core.config import settings
@@ -162,13 +163,44 @@ class RouteOrchestrator:
         # 3. Fetch segment attributes from GIS
         segments_data = gis_service.get_segments(all_segment_ids)
 
-        # Build segment payload list for Risk service
-        segments_payload = [
-            {"segment_id": sid, **attrs} for sid, attrs in segments_data.items()
-        ]
+        # Calculate time-of-arrival (ETA) for segments based on vehicle speed & route progression
+        dep_dt = request.departure_time or datetime.now(timezone.utc)
+        vehicle_speed_kmh = 45.0 if request.vehicle_type == "truck" else (55.0 if request.vehicle_type == "van" else 65.0)
+
+        # Estimate arrival time for each segment based on cumulative length in candidate routes
+        segment_arrival_times: Dict[str, datetime] = {}
+        for cr in candidate_routes:
+            cum_minutes = 0.0
+            for sid in cr.get("segment_ids", []):
+                if sid not in segment_arrival_times:
+                    from datetime import timedelta
+                    segment_arrival_times[sid] = dep_dt + timedelta(minutes=cum_minutes)
+                seg_attr = segments_data.get(sid, {})
+                seg_len = float(seg_attr.get("length_km", 1.0))
+                cum_minutes += (seg_len / max(vehicle_speed_kmh, 10.0)) * 60.0
+
+        # Build segment payload list for Risk service with time-of-arrival weather
+        segment_weather_map: Dict[str, Any] = {}
+        segments_payload = []
+        for sid, attrs in segments_data.items():
+            seg_payload = {"segment_id": sid, **attrs}
+            if settings.WEATHER_AVAILABLE:
+                seg_coords = attrs.get("coordinates", [])
+                seg_lat = float(seg_coords[0][1]) if seg_coords else float(candidate_routes[0]["geometry"]["coordinates"][0][1])
+                seg_lng = float(seg_coords[0][0]) if seg_coords else float(candidate_routes[0]["geometry"]["coordinates"][0][0])
+                target_eta = segment_arrival_times.get(sid, dep_dt)
+                try:
+                    seg_weather = open_data_service.get_weather_for_arrival_time(seg_lat, seg_lng, target_eta)
+                    seg_payload["weather"] = seg_weather
+                    segment_weather_map[sid] = (target_eta, seg_weather)
+                except Exception:
+                    if weather:
+                        seg_payload["weather"] = weather
+                        segment_weather_map[sid] = (target_eta, weather)
+            segments_payload.append(seg_payload)
 
         # 4. Score all segments via Risk module
-        departure_time = (request.departure_time or datetime.now(timezone.utc)).isoformat()
+        departure_time = dep_dt.isoformat()
         context = {
             "vehicle_type": request.vehicle_type,
             "departure_time": departure_time,
@@ -216,6 +248,24 @@ class RouteOrchestrator:
                 score = int(seg_risk_info["score"])
                 seg_coords = seg_attr.get("coordinates", [])
 
+                # Assemble weather forecast if available
+                weather_forecast_obj = None
+                if sid in segment_weather_map:
+                    target_eta, sw = segment_weather_map[sid]
+                    try:
+                        weather_forecast_obj = SegmentWeatherForecast(
+                            estimated_arrival_time=target_eta.isoformat(),
+                            forecast_time=str(sw.get("time", "")),
+                            temperature_c=float(sw.get("temperature_c", 0.0)),
+                            precipitation_mm=float(sw.get("precipitation_mm", 0.0)),
+                            rain_mm=float(sw.get("rain_mm", 0.0)),
+                            weather_code=int(sw.get("weather_code", 0)),
+                            wind_speed_kmh=float(sw.get("wind_speed_kmh", 0.0)),
+                            wind_gusts_kmh=float(sw.get("wind_gusts_kmh", 0.0)),
+                        )
+                    except Exception:
+                        weather_forecast_obj = None
+
                 route_segments.append(
                     SegmentRisk(
                         segment_id=sid,
@@ -224,6 +274,7 @@ class RouteOrchestrator:
                         slope_deg=seg_attr.get("slope_deg"),
                         elevation_m=seg_attr.get("elevation_m"),
                         ruggedness=seg_attr.get("ruggedness"),
+                        weather_forecast=weather_forecast_obj,
                     )
                 )
 

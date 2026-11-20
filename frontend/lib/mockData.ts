@@ -42,6 +42,16 @@ export const MOCK_ROUTE_SUCCESS: RoutePlanResponse = {
             [91.7362, 26.1445],
             [91.8, 25.98],
           ],
+          weather_forecast: {
+            estimated_arrival_time: "2026-10-28T10:00:00+05:30",
+            forecast_time: "2026-10-28T10:00",
+            temperature_c: 24.5,
+            precipitation_mm: 0.0,
+            rain_mm: 0.0,
+            weather_code: 1,
+            wind_speed_kmh: 8.5,
+            wind_gusts_kmh: 12.0,
+          },
         },
         {
           segment_id: "s-102",
@@ -50,6 +60,16 @@ export const MOCK_ROUTE_SUCCESS: RoutePlanResponse = {
             [91.8, 25.98],
             [91.8933, 25.5788],
           ],
+          weather_forecast: {
+            estimated_arrival_time: "2026-10-28T11:45:00+05:30",
+            forecast_time: "2026-10-28T12:00",
+            temperature_c: 19.8,
+            precipitation_mm: 3.2,
+            rain_mm: 3.2,
+            weather_code: 61,
+            wind_speed_kmh: 18.2,
+            wind_gusts_kmh: 26.0,
+          },
         },
       ],
       risk_factors: [

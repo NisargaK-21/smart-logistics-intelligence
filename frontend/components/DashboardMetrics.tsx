@@ -5,13 +5,12 @@ import { DashboardSummary, Route } from "../lib/types";
 
 interface DashboardMetricsProps {
   summary: DashboardSummary | null;
-  routes: Route[];
+  routes?: Route[];
   isLoading: boolean;
 }
 
 export default function DashboardMetrics({
   summary,
-  routes,
   isLoading,
 }: DashboardMetricsProps) {
   if (isLoading) {
@@ -31,10 +30,10 @@ export default function DashboardMetrics({
   }
 
   if (!summary) return null;
-  const highRiskRouteCount = routes.filter((route) => route.risk_level === "high").length;
+  // const highRiskRouteCount = routes.filter((route) => route.risk_level === "high").length;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* 1. Active Hazard Alerts */}
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
@@ -58,7 +57,7 @@ export default function DashboardMetrics({
         </div>
       </div>
 
-      {/* 2. High-risk route candidates */}
+      {/* 2. High-risk route candidates (Commented out as requested)
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
@@ -80,6 +79,7 @@ export default function DashboardMetrics({
           <span className="font-medium text-rose-600">Rule-based score</span>
         </div>
       </div>
+      */}
 
       {/* 3. Active Fleet Vehicles */}
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">

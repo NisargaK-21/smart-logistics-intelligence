@@ -108,7 +108,8 @@ class RiskService:
         vehicle_factor = 1.2 if vehicle_type == "truck" else (1.0 if vehicle_type == "van" else 0.8)
 
         # 4. Use fetched conditions only; never infer rainfall from road terrain.
-        weather = context.get("weather") if settings.WEATHER_AVAILABLE else None
+        # Prefer segment-specific arrival weather (ToA), fallback to global context weather
+        weather = seg.get("weather") or context.get("weather") if settings.WEATHER_AVAILABLE else None
         if weather:
             precipitation = max(
                 float(weather.get("precipitation_mm", 0.0)),
@@ -131,13 +132,17 @@ class RiskService:
                 weather_contribution = 0.0
                 weather_name = ""
             if weather_name:
+                source_label = weather.get("source", "Open-Meteo")
+                toa_time = weather.get("time")
+                detail_msg = f"{source_label} reports {precipitation:g} mm precipitation (code {weather_code})"
+                if toa_time:
+                    detail_msg += f" at forecast time {toa_time}."
+                else:
+                    detail_msg += "."
                 factors.append({
                     "name": weather_name,
                     "contribution": weather_contribution,
-                    "detail": (
-                        f"Open-Meteo reports {precipitation:g} mm of current precipitation "
-                        f"(weather code {weather_code})."
-                    ),
+                    "detail": detail_msg,
                 })
             data_quality = "complete" if slope_available else "partial"
         else:
