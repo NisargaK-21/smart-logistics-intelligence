@@ -244,7 +244,7 @@ export default function MapView({
     hazardMarkersRef.current.forEach((m) => m.remove());
     hazardMarkersRef.current = [];
 
-    if (!showHazards && mode !== "risk-zones") return;
+    if (mode !== "risk-zones" || !showHazards) return;
 
     const filtered = MOCK_HAZARD_ZONES.filter((hzd) => {
       if (hazardSeverityFilter !== "all" && hzd.severity !== hazardSeverityFilter) return false;
@@ -651,17 +651,19 @@ export default function MapView({
         >
           <span>🗺️</span> Reset Corridor
         </button>
-        <button
-          onClick={() => setShowHazards(!showHazards)}
-          title="Toggle corridor hazard markers"
-          className={`border text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-xs flex items-center gap-1.5 transition-all cursor-pointer ${
-            showHazards
-              ? "bg-amber-50 text-amber-800 border-amber-300"
-              : "bg-white/95 text-slate-700 border-slate-200 hover:bg-slate-50"
-          }`}
-        >
-          <span>⚠️</span> Hazards {showHazards ? "On" : "Off"}
-        </button>
+        {mode === "risk-zones" && (
+          <button
+            onClick={() => setShowHazards(!showHazards)}
+            title="Toggle corridor hazard markers"
+            className={`border text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+              showHazards
+                ? "bg-amber-50 text-amber-800 border-amber-300"
+                : "bg-white/95 text-slate-700 border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            <span>⚠️</span> Hazards {showHazards ? "On" : "Off"}
+          </button>
+        )}
       </div>
 
       {/* Segment Risk Legend */}

@@ -42,7 +42,7 @@ export default function Header(props: HeaderProps) {
   const activeAlertCount =
     props.activeAlertCount !== undefined
       ? props.activeAlertCount
-      : context.summary?.active_alerts_count || 3;
+      : context.summary?.active_alerts_count ?? 0;
   const selectedCorridor =
     props.selectedCorridor !== undefined ? props.selectedCorridor : context.selectedCorridor;
   const onSelectCorridor =
@@ -184,24 +184,31 @@ export default function Header(props: HeaderProps) {
                   </span>
                 </div>
                 <div className="space-y-2 max-h-56 overflow-y-auto">
-                  <div className="p-2 rounded-lg bg-amber-50 border border-amber-200/80 text-amber-900">
-                    <div className="flex items-center justify-between font-semibold">
-                      <span>Landslide Risk Advisory</span>
-                      <span className="text-[10px] text-amber-600">10m ago</span>
-                    </div>
-                    <p className="text-[11px] text-amber-800 mt-0.5">
-                      Monsoon warning active along NH-6 Byrnihat-Nongpoh stretch.
+                  {context.alerts.length === 0 ? (
+                    <p className="py-4 text-center text-slate-500">
+                      No active alerts.
                     </p>
-                  </div>
-                  <div className="p-2 rounded-lg bg-sky-50 border border-sky-200/80 text-sky-900">
-                    <div className="flex items-center justify-between font-semibold">
-                      <span>Corridor Clearance</span>
-                      <span className="text-[10px] text-sky-600">35m ago</span>
-                    </div>
-                    <p className="text-[11px] text-sky-800 mt-0.5">
-                      GS Road Khanapara checkpoint fully operational for heavy vehicles.
-                    </p>
-                  </div>
+                  ) : (
+                    context.alerts.map((alert) => (
+                      <div
+                        key={alert.alert_id}
+                        className="p-2 rounded-lg bg-slate-50 border border-slate-200"
+                      >
+                        <div className="flex items-center justify-between font-semibold text-slate-800">
+                          <span>{alert.title}</span>
+                          <span className="text-[10px] uppercase text-slate-500">
+                            {alert.severity}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 mt-0.5">
+                          {alert.message}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          {new Date(alert.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
                 <div className="pt-2 border-t border-slate-100 text-center">
                   <button

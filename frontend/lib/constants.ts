@@ -3,7 +3,7 @@
  * Strictly adheres to docs/api-contract.md.
  */
 
-import type { RiskLevel } from "./types.ts";
+import type { Coordinates, RiskLevel } from "./types.ts";
 
 /**
  * Risk Thresholds per API contract:
@@ -81,8 +81,18 @@ export function getRiskColor(score: number): string {
  * [minLng, minLat, maxLng, maxLat]
  */
 export const DEFAULT_CORRIDOR_BBOX: [number, number, number, number] = [
-  91.6895, 26.13, 91.9205, 26.31,
+  91.63, 25.48, 92.0, 26.24,
 ];
+
+export const DEFAULT_ROUTE_ORIGIN: Coordinates = {
+  lat: 26.1445,
+  lng: 91.7362,
+};
+
+export const DEFAULT_ROUTE_DESTINATION: Coordinates = {
+  lat: 25.5788,
+  lng: 91.8933,
+};
 
 /**
  * Default map center [lng, lat]

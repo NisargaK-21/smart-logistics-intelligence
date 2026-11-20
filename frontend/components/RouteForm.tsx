@@ -2,7 +2,11 @@
 
 import React, { useState } from "react";
 import { Coordinates, VehicleType } from "../lib/types";
-import { VEHICLE_OPTIONS } from "../lib/constants";
+import {
+  DEFAULT_ROUTE_DESTINATION,
+  DEFAULT_ROUTE_ORIGIN,
+  VEHICLE_OPTIONS,
+} from "../lib/constants";
 import { isPointInBbox } from "../lib/validation";
 import PlaceSearch from "./PlaceSearch";
 
@@ -25,9 +29,9 @@ interface RouteFormProps {
 
 const PRESET_CORRIDORS = [
   {
-    name: "Guwahati Central → North Depot",
-    origin: { lat: 26.1445, lng: 91.7362 },
-    destination: { lat: 26.1801, lng: 91.7001 },
+    name: "Guwahati → Shillong (NH-6)",
+    origin: DEFAULT_ROUTE_ORIGIN,
+    destination: DEFAULT_ROUTE_DESTINATION,
   },
   {
     name: "Dispur Hub → Khanapara Checkpoint",

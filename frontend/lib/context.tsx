@@ -25,7 +25,12 @@ import {
   getHealth,
   planRoutes,
 } from "./api";
-import { DEFAULT_CORRIDOR_BBOX, DEFAULT_CORRIDOR_ID } from "./constants";
+import {
+  DEFAULT_CORRIDOR_BBOX,
+  DEFAULT_CORRIDOR_ID,
+  DEFAULT_ROUTE_DESTINATION,
+  DEFAULT_ROUTE_ORIGIN,
+} from "./constants";
 
 interface AppContextType {
   // Mode & Health
@@ -104,14 +109,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Route Planning state
-  const [origin, setOrigin] = useState<Coordinates | null>({
-    lat: 26.1445,
-    lng: 91.7362,
-  });
-  const [destination, setDestination] = useState<Coordinates | null>({
-    lat: 26.1801,
-    lng: 91.7001,
-  });
+  const [origin, setOriginState] = useState<Coordinates | null>(DEFAULT_ROUTE_ORIGIN);
+  const [destination, setDestinationState] = useState<Coordinates | null>(
+    DEFAULT_ROUTE_DESTINATION
+  );
   const [vehicleType, setVehicleType] = useState<VehicleType>("truck");
   const [departureTime, setDepartureTime] = useState<string>("");
   const [pickingMode, setPickingMode] = useState<"origin" | "destination" | null>(null);
@@ -123,6 +124,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [riskSource, setRiskSource] = useState<RiskSource>("baseline");
   const [isPlanningLoading, setIsPlanningLoading] = useState(false);
   const [error, setError] = useState<unknown | null>(null);
+
+  const updateOrigin = useCallback((coords: Coordinates | null) => {
+    setOriginState(coords);
+    setRoutes([]);
+    setRecommendedRouteId("");
+    setSelectedRouteId("");
+    setError(null);
+  }, []);
+
+  const updateDestination = useCallback((coords: Coordinates | null) => {
+    setDestinationState(coords);
+    setRoutes([]);
+    setRecommendedRouteId("");
+    setSelectedRouteId("");
+    setError(null);
+  }, []);
 
   // Vehicles, Reports, Alerts
   const [vehicles, setVehicles] = useState<VehiclePosition[]>([]);
@@ -303,9 +320,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
         origin,
-        setOrigin,
+        setOrigin: updateOrigin,
         destination,
-        setDestination,
+        setDestination: updateDestination,
         vehicleType,
         setVehicleType,
         departureTime,
