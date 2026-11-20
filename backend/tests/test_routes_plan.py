@@ -519,6 +519,59 @@ def test_persisted_critical_blockage_causes_and_identifies_detour(client):
     ]
 
 
+def test_multiple_persisted_blockages_avoid_all_corridor_segments(client):
+    settings.GIS_SERVICE_ENABLED = True
+    settings.RISK_SERVICE_ENABLED = True
+    incidents = [
+        {
+            "segment_id": "seg-ab",
+            "category": "road_blockage",
+            "severity": "critical",
+            "location": {"lat": 26.18, "lng": 91.71},
+        },
+        {
+            "segment_id": "seg-cf",
+            "category": "landslide",
+            "severity": "low",
+            "location": {"lat": 26.17, "lng": 91.74},
+        },
+    ]
+    report_ids = {}
+    for incident in incidents:
+        report_response = client.post(
+            "/api/v1/reports",
+            json={
+                "category": incident["category"],
+                "severity": incident["severity"],
+                "location": incident["location"],
+                "description": f"Blockage reported near {incident['segment_id']}.",
+            },
+        )
+        assert report_response.status_code == 200
+        report_ids[incident["segment_id"]] = report_response.json()["report_id"]
+
+    response = client.post("/api/v1/routes/plan", json=BLOCKAGE_ROUTE_QUERY)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["routes"]
+    for route in data["routes"]:
+        segment_ids = {segment["segment_id"] for segment in route["segments"]}
+        assert "seg-ab" not in segment_ids
+        assert "seg-cf" not in segment_ids
+    assert any(
+        "seg-ad" in {segment["segment_id"] for segment in route["segments"]}
+        for route in data["routes"]
+    )
+    assert {
+        (avoidance["report_id"], avoidance["segment_id"])
+        for avoidance in data["incident_avoidances"]
+    } == {
+        (report_ids["seg-ab"], "seg-ab"),
+        (report_ids["seg-cf"], "seg-cf"),
+    }
+
+
 def test_blockage_on_unrelated_road_does_not_change_requested_routes(client):
     settings.GIS_SERVICE_ENABLED = True
     settings.RISK_SERVICE_ENABLED = True
