@@ -34,6 +34,8 @@ class SegmentRecord:
     is_oneway: bool
     coordinates: list[list[float]]
     surface: str | None = None
+    elevation_m: float | None = None
+    ruggedness: float | None = None
 
     def as_dict(self) -> dict:
         return {
@@ -42,6 +44,8 @@ class SegmentRecord:
             "road_class": self.road_class,
             "road_type": self.road_type,
             "slope_deg": self.slope_deg,
+            "elevation_m": self.elevation_m,
+            "ruggedness": self.ruggedness,
             "is_oneway": self.is_oneway,
             "coordinates": self.coordinates,
             "surface": self.surface,

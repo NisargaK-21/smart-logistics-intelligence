@@ -648,6 +648,19 @@ def score_segment_baseline(
     else:
         slope_score = 0.0
 
+    # 1b. Ruggedness
+    raw_ruggedness = segment.get("ruggedness")
+    ruggedness = _as_float(raw_ruggedness)
+    if ruggedness is not None and ruggedness >= 15.0:
+        ruggedness_score = min(15.0, round(ruggedness * 0.5))
+        factors.append({
+            "name": "rugged_terrain",
+            "contribution": float(ruggedness_score),
+            "detail": f"Terrain ruggedness index is {ruggedness:.1f}, indicating high surface roughness.",
+        })
+    else:
+        ruggedness_score = 0.0
+
     # 2. Road infrastructure & class
     road_class = str(segment.get("road_class", "secondary")).lower()
     class_risk_map = {
@@ -790,7 +803,7 @@ def score_segment_baseline(
 
     # Compute Final Score
     raw_score = (
-        slope_score + road_score + surface_score + weather_contrib + history_contrib
+        slope_score + ruggedness_score + road_score + surface_score + weather_contrib + history_contrib
     ) * vehicle_multiplier
     final_score = int(min(max(round(raw_score), 0), 100))
 

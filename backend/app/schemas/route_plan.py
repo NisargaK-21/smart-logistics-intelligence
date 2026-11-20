@@ -28,6 +28,9 @@ class SegmentRisk(BaseModel):
     segment_id: str
     risk_score: int = Field(..., ge=0, le=100)
     coordinates: List[List[float]] = Field(..., description="Segment coordinate pairs [[lng, lat], ...]")
+    slope_deg: Optional[float] = Field(default=None, description="Average terrain slope in degrees")
+    elevation_m: Optional[float] = Field(default=None, description="Average elevation in meters")
+    ruggedness: Optional[float] = Field(default=None, description="Average terrain ruggedness index")
 
 
 class RiskFactor(BaseModel):

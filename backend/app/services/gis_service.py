@@ -19,6 +19,7 @@ from backend.app.core.errors import (
     NoRouteFoundException,
     OutOfCoverageException,
 )
+from backend.app.services.terrain_service import terrain_service
 from routing.geo import (
     point_in_bbox,
     point_to_linestring_distance_km,
@@ -215,12 +216,15 @@ class GISService:
                         continue
                     segment_id = f"{route_id}:step-{len(segment_ids) + 1}"
                     segment_ids.append(segment_id)
+                    terrain_attrs = terrain_service.query_linestring(coordinates)
                     route_segments[segment_id] = {
                         "segment_id": segment_id,
                         "length_km": distance_m / 1000.0,
                         "road_class": "unknown",
                         "road_type": "unknown",
-                        "slope_deg": None,
+                        "slope_deg": terrain_attrs.get("slope_deg"),
+                        "elevation_m": terrain_attrs.get("elevation_m"),
+                        "ruggedness": terrain_attrs.get("ruggedness"),
                         "is_oneway": False,
                         "coordinates": coordinates,
                         "surface": None,
@@ -235,12 +239,15 @@ class GISService:
             if not segment_ids:
                 segment_id = f"{route_id}:step-1"
                 segment_ids.append(segment_id)
+                terrain_attrs = terrain_service.query_linestring(geometry["coordinates"])
                 route_segments[segment_id] = {
                     "segment_id": segment_id,
                     "length_km": float(route.get("distance", 0.0)) / 1000.0,
                     "road_class": "unknown",
                     "road_type": "unknown",
-                    "slope_deg": None,
+                    "slope_deg": terrain_attrs.get("slope_deg"),
+                    "elevation_m": terrain_attrs.get("elevation_m"),
+                    "ruggedness": terrain_attrs.get("ruggedness"),
                     "is_oneway": False,
                     "coordinates": geometry["coordinates"],
                     "surface": None,
@@ -282,7 +289,22 @@ class GISService:
             records = get_segments(segment_ids)
         except GisError as error:
             self._raise_mapped(error)
-        return {record.segment_id: self._as_dict(record) for record in records}
+        results: dict[str, dict[str, Any]] = {}
+        for record in records:
+            rec_dict = self._as_dict(record)
+            coords = rec_dict.get("coordinates", [])
+            if coords:
+                terrain_attrs = terrain_service.query_linestring(coords)
+                if terrain_attrs.get("terrain_available"):
+                    rec_dict["slope_deg"] = terrain_attrs.get("slope_deg")
+                    rec_dict["elevation_m"] = terrain_attrs.get("elevation_m")
+                    rec_dict["ruggedness"] = terrain_attrs.get("ruggedness")
+                elif getattr(settings, "TERRAIN_ENABLED", True):
+                    rec_dict["slope_deg"] = None
+                    rec_dict["elevation_m"] = None
+                    rec_dict["ruggedness"] = None
+            results[record.segment_id] = rec_dict
+        return results
 
     def get_coverage(self) -> dict[str, Any]:
         if self._use_osrm:

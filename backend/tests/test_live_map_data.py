@@ -116,7 +116,9 @@ def test_route_plan_accepts_osrm_route_response(client, monkeypatch):
     body = response.json()
     assert body["routes"][0]["distance_km"] == 12
     assert body["routes"][0]["estimated_duration_minutes"] == 15
-    assert body["routes"][0]["data_quality"] == "partial"
+    assert body["routes"][0]["data_quality"] == "complete"
+    assert body["routes"][0]["segments"][0]["slope_deg"] is not None
+    assert body["routes"][0]["segments"][0]["elevation_m"] is not None
     assert len(body["routes"][0]["segments"]) == 1
 
 

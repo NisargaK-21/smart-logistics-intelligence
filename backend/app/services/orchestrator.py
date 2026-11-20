@@ -221,6 +221,9 @@ class RouteOrchestrator:
                         segment_id=sid,
                         risk_score=score,
                         coordinates=seg_coords,
+                        slope_deg=seg_attr.get("slope_deg"),
+                        elevation_m=seg_attr.get("elevation_m"),
+                        ruggedness=seg_attr.get("ruggedness"),
                     )
                 )
 
