@@ -8,7 +8,7 @@ import { useApp } from "../lib/context";
 export default function Sidebar() {
   const pathname = usePathname();
   const { isMobileSidebarOpen, setIsMobileSidebarOpen, summary } = useApp();
-  const activeAlertCount = summary?.active_alerts_count || 3;
+  const activeAlertCount = summary?.active_alerts_count ?? 0;
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: "📊" },

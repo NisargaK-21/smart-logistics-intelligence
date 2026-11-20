@@ -1,7 +1,11 @@
 from typing import List, Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+
+from backend.app.database import get_db
 from backend.app.schemas.alerts import (
     Alert,
+    AlertCreate,
     AlertSubscribeRequest,
     AlertSubscribeResponse,
 )
@@ -17,8 +21,18 @@ router = APIRouter()
 )
 def list_alerts(
     route_id: Optional[str] = Query(None, description="Filter alerts by route_id"),
+    session: Session = Depends(get_db),
 ):
-    return alert_service.list_alerts(route_id=route_id)
+    return alert_service.list_alerts(session, route_id=route_id)
+
+
+@router.post(
+    "",
+    response_model=Alert,
+    summary="Create a corridor alert",
+)
+def create_alert(alert_in: AlertCreate, session: Session = Depends(get_db)):
+    return alert_service.create_alert(session, alert_in)
 
 
 @router.post(
@@ -26,5 +40,7 @@ def list_alerts(
     response_model=AlertSubscribeResponse,
     summary="Register email or webhook for alerts on a route",
 )
-def subscribe_to_alerts(sub_req: AlertSubscribeRequest):
-    return alert_service.subscribe(sub_req)
+def subscribe_to_alerts(
+    sub_req: AlertSubscribeRequest, session: Session = Depends(get_db)
+):
+    return alert_service.subscribe(session, sub_req)

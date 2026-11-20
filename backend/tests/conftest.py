@@ -4,9 +4,14 @@ import os
 import pytest
 from typing import Any, Dict, Optional
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
 os.environ["OSRM_ROUTER_URL"] = ""
 
 from backend.app.main import app
+from backend.app.database import get_db, upgrade_database
 
 
 class ASGIResponse:
@@ -100,6 +105,30 @@ class ASGIClient:
 @pytest.fixture
 def client():
     return ASGIClient(app)
+
+
+@pytest.fixture(autouse=True)
+def isolate_database():
+    test_engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    upgrade_database(test_engine)
+    test_session = sessionmaker(
+        bind=test_engine, autoflush=False, expire_on_commit=False
+    )
+
+    def override_get_db():
+        with test_session() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_get_db
+    try:
+        yield
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        test_engine.dispose()
 
 
 @pytest.fixture(autouse=True)

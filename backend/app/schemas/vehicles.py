@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
 class VehicleSimulateRequest(BaseModel):
     vehicle_id: str = Field(..., json_schema_extra={"example": "V001"})
     route_id: str = Field(..., json_schema_extra={"example": "route-1"})
+    vehicle_type: Literal["truck", "van", "car"] = "truck"
     speed_kmh: Optional[float] = Field(default=45.0, ge=10.0, le=120.0)
 
 

@@ -80,6 +80,7 @@ The backend reads settings from process environment variables and a discoverable
 | `API_V1_STR` | `/api/v1` | Base prefix for version 1 endpoints |
 | `PROJECT_NAME` | `Smart Logistics Intelligence API` | OpenAPI application title |
 | `VERSION` | `1.0.0` | API version string |
+| `DATABASE_URL` | SQLite file at `backend/smart_logistics.db` | SQLAlchemy URL for persisted reports, alerts, subscriptions, and vehicle state. Use a PostgreSQL URL for a shared deployment. |
 | `RISK_SOURCE` | `baseline` | Keeps route scoring on deterministic rules. Setting `model` does not opt the backend into experimental inference; the backend does not send the required `risk_source="experimental_model"` context. |
 | `OSRM_ROUTER_URL` | `https://router.project-osrm.org` | OSRM routing endpoint. Set to an empty string to use the local routing fixture instead. Use a managed or self-hosted endpoint for production. |
 | `GIS_SERVICE_ENABLED` | `true` | Toggle to simulate GIS module health/outage |
@@ -92,6 +93,24 @@ The backend reads settings from process environment variables and a discoverable
 - **Place search:** `/api/v1/places/search` uses OpenStreetMap Nominatim, restricted to Northeast India and cached. Requests are rate-limited; production deployments should review Nominatim's usage policy and use a compliant provider or self-hosted instance at scale.
 - **Weather:** `/api/v1/weather/current` uses Open-Meteo modelled current conditions, cached for ten minutes. These are not roadside observations.
 - **Risk scores:** The route risk score is a heuristic, not a calibrated probability. OSRM route steps currently lack verified slope and road-surface attributes, so those factors are marked unavailable rather than inferred from coordinates. Do not treat the score as a real-time road-closure or safety guarantee.
+
+### Persistent operational data
+
+Alembic manages the database schema, and the backend applies pending migrations at startup. SQLite is the local default; set `DATABASE_URL` to a SQLAlchemy PostgreSQL URL to use PostgreSQL. Field reports, alerts, alert subscriptions, and current simulated vehicle states survive backend restarts.
+
+Run migrations manually from the repository root with:
+
+```bash
+python -m alembic -c backend/alembic.ini upgrade head
+```
+
+Create a new migration after changing models with:
+
+```bash
+python -m alembic -c backend/alembic.ini revision --autogenerate -m "describe schema change"
+```
+
+Review generated migrations before applying them. The initial migration adopts a matching schema created by the earlier startup table initializer without dropping its data.
 
 ### Risk & ML source and readiness
 
@@ -222,8 +241,7 @@ In addition to core sprint endpoints, the backend provides prototype services fo
    Initiate simulated trips along planned routes and retrieve active vehicle coordinates.
 3. **`POST /api/v1/reports` & `GET /api/v1/reports`**  
    Submit and query geo-tagged field incident reports (mudslides, waterlogging, accidents) with category and severity filters.
-4. **`GET /api/v1/alerts` & `POST /api/v1/alerts/subscribe`**  
-   Query proximity/hazard alerts and register subscriptions for automated notifications.
+4. **`GET /api/v1/alerts`, `POST /api/v1/alerts`, and `POST /api/v1/alerts/subscribe`** Query and persist corridor alerts, and register subscriptions for automated notifications.
 5. **`GET /api/v1/dashboard/summary`**  
    Provides operational dashboard KPIs (active alerts, recent reports, vehicle counts, route summaries, and dynamic system status).
 
@@ -286,7 +304,7 @@ Published contract fixtures are maintained in `backend/tests/fixtures/`:
 2. **Road Network Modes (Person 1):**
    - The default development and test environment uses the committed Guwahati–Shillong fixture network.
    - Running the full Northeast OSM road network requires the external GeoPackage and optional GIS dependencies (`geopandas`, `shapely`) with `ROUTING_USE_FULL=1`.
-3. **Prototype In-Memory Storage:**
-   - Extended prototype endpoints (vehicle simulations, field incident reports, and alert subscriptions) store state in-memory within singleton service instances. Data resets upon server restart.
+3. **Prototype Operational Data:**
+   - Reports, alerts, subscriptions, and vehicle positions persist in the configured SQL database. Vehicle simulation remains a prototype and currently records its initial position rather than advancing along a route.
 4. **Static Route Re-routing:**
    - The Sprint MVP evaluates risk over candidate routes provided by the GIS routing engine. Dynamically adjusting GIS graph edge weights based on real-time risk before pathfinding is scheduled for post-sprint milestones.

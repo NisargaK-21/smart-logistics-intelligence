@@ -51,7 +51,7 @@ export default function SystemHealthBadge({
         };
       }
       return {
-        label: "Live Confirmed Active",
+        label: "Backend Operational",
         colorBg: "bg-emerald-50",
         colorDot: "bg-emerald-500",
         colorText: "text-emerald-800",

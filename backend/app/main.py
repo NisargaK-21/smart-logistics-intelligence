@@ -1,9 +1,21 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from contextlib import asynccontextmanager
+
+from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
 from backend.app.api.v1.api import api_router
 from backend.app.core.config import settings
 from backend.app.core.errors import register_exception_handlers
+from backend.app.database import get_db, upgrade_database
 from backend.app.services.simulation_service import simulation_service
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    upgrade_database()
+    yield
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -11,6 +23,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # Enable CORS for frontend integration
@@ -30,12 +43,12 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
 @app.websocket("/ws/vehicles")
-async def websocket_vehicles(websocket: WebSocket):
+async def websocket_vehicles(websocket: WebSocket, session: Session = Depends(get_db)):
     """
     WebSocket endpoint streaming real-time simulated vehicle positions:
     {vehicle_id, lat, lng, speed_kmh, heading_deg, ts}
     """
-    await simulation_service.connect(websocket)
+    await simulation_service.connect(websocket, session)
     try:
         while True:
             # Keep socket open and receive heartbeat/ping from client

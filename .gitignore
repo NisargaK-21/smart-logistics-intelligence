@@ -106,6 +106,8 @@ ml/data/raw/boundaries/
 
 # Ignore backend virtual environment
 /backend/.venv/
+/backend/smart_logistics.db
+/backend/smart_logistics.db-*
 # ==============================
 # Windows system files
 # ==============================

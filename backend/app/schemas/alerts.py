@@ -6,6 +6,7 @@ from backend.app.schemas.common import Coordinates
 class Alert(BaseModel):
     alert_id: str
     route_id: Optional[str] = None
+    threshold: Optional[int] = None
     vehicle_id: Optional[str] = None
     severity: str = Field(..., json_schema_extra={"example": "high"})
     title: str
@@ -13,6 +14,17 @@ class Alert(BaseModel):
     location: Optional[Coordinates] = None
     distance_to_risk_km: Optional[float] = None
     created_at: str
+
+
+class AlertCreate(BaseModel):
+    route_id: Optional[str] = None
+    threshold: Optional[int] = Field(default=None, ge=0, le=100)
+    vehicle_id: Optional[str] = None
+    severity: str
+    title: str
+    message: str
+    location: Optional[Coordinates] = None
+    distance_to_risk_km: Optional[float] = None
 
 
 class AlertSubscribeRequest(BaseModel):

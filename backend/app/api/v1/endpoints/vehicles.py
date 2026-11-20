@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from backend.app.database import get_db
 from backend.app.schemas.vehicles import (
     VehiclePosition,
     VehicleSimulateRequest,
@@ -14,8 +17,8 @@ router = APIRouter()
     response_model=VehicleSimulateResponse,
     summary="Start a simulated vehicle trip along a planned route",
 )
-def simulate_vehicle(request: VehicleSimulateRequest):
-    return simulation_service.start_simulation(request)
+def simulate_vehicle(request: VehicleSimulateRequest, session: Session = Depends(get_db)):
+    return simulation_service.start_simulation(session, request)
 
 
 @router.get(
@@ -23,5 +26,5 @@ def simulate_vehicle(request: VehicleSimulateRequest):
     response_model=list[VehiclePosition],
     summary="Get current positions of all active vehicles",
 )
-def get_active_vehicles():
-    return simulation_service.get_positions()
+def get_active_vehicles(session: Session = Depends(get_db)):
+    return simulation_service.get_positions(session)
