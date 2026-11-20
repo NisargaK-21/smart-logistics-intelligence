@@ -37,6 +37,15 @@ class Settings(BaseModel):
     WEATHER_AVAILABLE: bool = Field(
         default_factory=lambda: os.getenv("WEATHER_AVAILABLE", "true").lower() in ("true", "1", "yes")
     )
+    TERRAIN_ENABLED: bool = Field(
+        default_factory=lambda: os.getenv("TERRAIN_ENABLED", "true").lower() in ("true", "1", "yes")
+    )
+    TERRAIN_DATA_DIR: str = Field(
+        default_factory=lambda: os.getenv(
+            "TERRAIN_DATA_DIR",
+            str(Path(__file__).resolve().parents[3] / "ml" / "data" / "processed" / "terrain"),
+        )
+    )
 
 
 settings = Settings()

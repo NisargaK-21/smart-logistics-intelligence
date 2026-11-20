@@ -64,6 +64,25 @@ class RiskService:
                     "contribution": slope_score,
                 })
 
+        # 1b. Ruggedness factor
+        raw_ruggedness = seg.get("ruggedness")
+        try:
+            ruggedness = float(raw_ruggedness) if raw_ruggedness is not None else 0.0
+            ruggedness_available = raw_ruggedness is not None
+        except (TypeError, ValueError):
+            ruggedness = 0.0
+            ruggedness_available = False
+
+        if ruggedness_available and ruggedness >= 15.0:
+            ruggedness_score = min(15.0, round(ruggedness * 0.5))
+            factors.append({
+                "name": "rugged_terrain",
+                "contribution": ruggedness_score,
+                "detail": f"Terrain ruggedness index is {ruggedness:.1f}, indicating high surface roughness.",
+            })
+        else:
+            ruggedness_score = 0.0
+
         # 2. Road infrastructure & class factor
         class_risk_map = {
             "expressway": 5.0,
@@ -130,7 +149,7 @@ class RiskService:
             })
             data_quality = "partial"
 
-        raw_score = (slope_score + road_score + weather_contribution) * vehicle_factor
+        raw_score = (slope_score + ruggedness_score + road_score + weather_contribution) * vehicle_factor
         final_score = int(min(max(round(raw_score), 0), 100))
 
         return {
