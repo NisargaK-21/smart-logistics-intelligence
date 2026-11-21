@@ -101,6 +101,9 @@ class ASGIClient:
     def post(self, path: str, json: Optional[Any] = None, headers: Optional[Dict[str, str]] = None) -> ASGIResponse:
         return self.request("POST", path, json_data=json, headers=headers)
 
+    def patch(self, path: str, json: Optional[Any] = None, headers: Optional[Dict[str, str]] = None) -> ASGIResponse:
+        return self.request("PATCH", path, json_data=json, headers=headers)
+
 
 @pytest.fixture
 def client():

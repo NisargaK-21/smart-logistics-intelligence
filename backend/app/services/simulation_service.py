@@ -63,6 +63,19 @@ class SimulationService:
         session.commit()
         session.refresh(record)
         speed = req.speed_kmh if req.speed_kmh is not None else 45.0
+        # Automatically update any consignments assigned to this vehicle to "In Transit"
+        try:
+            from backend.app.services.consignment_service import consignment_service
+            consignment_service.sync_with_vehicle(
+                session=session,
+                vehicle_id=req.vehicle_id,
+                lat=record.latitude,
+                lng=record.longitude,
+                new_status="In Transit",
+            )
+        except Exception:
+            pass
+
         return VehicleSimulateResponse(
             status="started",
             vehicle_id=req.vehicle_id,

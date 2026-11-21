@@ -172,6 +172,33 @@ def upgrade() -> None:
     _create_index_if_missing("vehicles", "ix_vehicles_status", ["status"])
     _create_index_if_missing("vehicles", "ix_vehicles_updated_at", ["updated_at"])
 
+    if "consignments" not in existing_tables:
+        op.create_table(
+            "consignments",
+            sa.Column("shipment_id", sa.String(length=64), nullable=False),
+            sa.Column("commodity_type", sa.String(length=64), nullable=False),
+            sa.Column("quantity", sa.String(length=128), nullable=False),
+            sa.Column("origin", sa.String(length=255), nullable=False),
+            sa.Column("destination", sa.String(length=255), nullable=False),
+            sa.Column("assigned_vehicle_id", sa.String(length=128), nullable=True),
+            sa.Column("route_id", sa.String(length=128), nullable=True),
+            sa.Column("lifecycle_status", sa.String(length=32), nullable=False, server_default="Dispatched"),
+            sa.Column("current_lat", sa.Float(), nullable=True),
+            sa.Column("current_lng", sa.Float(), nullable=True),
+            sa.Column("risk_score", sa.Integer(), nullable=True),
+            sa.Column("eta_minutes", sa.Float(), nullable=True),
+            sa.Column("notes", sa.String(), nullable=True),
+            sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+            sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
+            sa.PrimaryKeyConstraint("shipment_id"),
+        )
+    _create_index_if_missing("consignments", "ix_consignments_commodity_type", ["commodity_type"])
+    _create_index_if_missing("consignments", "ix_consignments_lifecycle_status", ["lifecycle_status"])
+    _create_index_if_missing("consignments", "ix_consignments_created_at", ["created_at"])
+    _create_index_if_missing("consignments", "ix_consignments_updated_at", ["updated_at"])
+    _create_index_if_missing("consignments", "ix_consignments_assigned_vehicle_id", ["assigned_vehicle_id"])
+    _create_index_if_missing("consignments", "ix_consignments_route_id", ["route_id"])
+
 
 def downgrade() -> None:
     op.drop_index(

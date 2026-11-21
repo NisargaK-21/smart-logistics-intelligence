@@ -208,6 +208,7 @@ class RouteOrchestrator:
         departure_time = dep_dt.isoformat()
         context = {
             "vehicle_type": request.vehicle_type,
+            "commodity_type": request.commodity_type,
             "departure_time": departure_time,
             "weather": weather,
         }

@@ -21,6 +21,7 @@ export default function Sidebar() {
       badgeColor: "bg-amber-100 text-amber-800",
     },
     { href: "/fleet", label: "Fleet", icon: "🚚" },
+    { href: "/consignments", label: "Consignments", icon: "📦" },
     { href: "/analytics", label: "Analytics", icon: "📈" },
     { href: "/reports", label: "Reports", icon: "📝" },
     { href: "/settings", label: "Settings", icon: "⚙️" },

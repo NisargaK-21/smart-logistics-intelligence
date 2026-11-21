@@ -19,6 +19,8 @@ export default function RoutesPage() {
     setDestination,
     vehicleType,
     setVehicleType,
+    commodityType,
+    setCommodityType,
     departureTime,
     setDepartureTime,
     pickingMode,
@@ -86,6 +88,8 @@ export default function RoutesPage() {
             onDestinationChange={setDestination}
             vehicleType={vehicleType}
             onVehicleTypeChange={setVehicleType}
+            commodityType={commodityType}
+            onCommodityTypeChange={setCommodityType}
             departureTime={departureTime}
             onDepartureTimeChange={setDepartureTime}
             pickingMode={pickingMode}

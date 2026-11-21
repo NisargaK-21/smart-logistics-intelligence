@@ -6,6 +6,7 @@ import {
   DEFAULT_ROUTE_DESTINATION,
   DEFAULT_ROUTE_ORIGIN,
   VEHICLE_OPTIONS,
+  COMMODITY_OPTIONS,
 } from "../lib/constants";
 import { isPointInBbox } from "../lib/validation";
 import PlaceSearch from "./PlaceSearch";
@@ -17,6 +18,8 @@ interface RouteFormProps {
   onDestinationChange: (coords: Coordinates | null) => void;
   vehicleType: VehicleType;
   onVehicleTypeChange: (type: VehicleType) => void;
+  commodityType?: string;
+  onCommodityTypeChange?: (commodity: string) => void;
   departureTime: string;
   onDepartureTimeChange: (time: string) => void;
   pickingMode: "origin" | "destination" | null;
@@ -52,6 +55,8 @@ export default function RouteForm({
   onDestinationChange,
   vehicleType,
   onVehicleTypeChange,
+  commodityType = "Medicine",
+  onCommodityTypeChange,
   departureTime,
   onDepartureTimeChange,
   pickingMode,
@@ -310,6 +315,45 @@ export default function RouteForm({
               required
             />
           </div>
+        </div>
+      </div>
+
+      {/* Essential Commodity Cargo Selector */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <span>📦</span> Essential Cargo / Commodity Priority
+          </span>
+          <span className="text-[10px] text-sky-600 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
+            Disaster Relief Mode
+          </span>
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {COMMODITY_OPTIONS.map((c) => {
+            const isSelected = commodityType === c.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => onCommodityTypeChange?.(c.id)}
+                className={`p-2 rounded-lg border text-left text-xs transition-all flex items-start gap-2 ${
+                  isSelected
+                    ? "border-emerald-600 bg-emerald-50/80 text-emerald-950 ring-1 ring-emerald-600 font-semibold shadow-2xs"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                }`}
+              >
+                <span className="text-base shrink-0 mt-0.5">{c.icon}</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="truncate block font-semibold text-[11px]">{c.label}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 block truncate leading-tight mt-0.5">
+                    {c.priority} Priority
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

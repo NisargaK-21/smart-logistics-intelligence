@@ -104,8 +104,34 @@ class RiskService:
                 "detail": f"Road classification '{road_class}' carries elevated baseline risk."
             })
 
-        # 3. Vehicle specific sensitivity factor
+        # 3. Vehicle & Commodity sensitivity factor
         vehicle_factor = 1.2 if vehicle_type == "truck" else (1.0 if vehicle_type == "van" else 0.8)
+        commodity_type = context.get("commodity_type")
+        commodity_factor = 1.0
+        if commodity_type:
+            # Sensitive commodities increase vulnerability to hazardous route conditions
+            commodity_lower = commodity_type.lower()
+            if "med" in commodity_lower or "pharma" in commodity_lower:
+                commodity_factor = 1.25
+                factors.append({
+                    "name": "sensitive_cargo_medicine",
+                    "contribution": 10.0,
+                    "detail": "Critical medical supplies: prioritized lower risk and smoother corridors.",
+                })
+            elif "emerg" in commodity_lower or "relief" in commodity_lower:
+                commodity_factor = 1.15
+                factors.append({
+                    "name": "sensitive_cargo_emergency",
+                    "contribution": 8.0,
+                    "detail": "Emergency relief cargo: heightened delivery reliability required.",
+                })
+            elif "fuel" in commodity_lower:
+                commodity_factor = 1.20
+                factors.append({
+                    "name": "hazardous_cargo_fuel",
+                    "contribution": 12.0,
+                    "detail": "Flammable liquid fuel: strict hazard exposure thresholds applied.",
+                })
 
         # 4. Use fetched conditions only; never infer rainfall from road terrain.
         # Prefer segment-specific arrival weather (ToA), fallback to global context weather
@@ -154,7 +180,7 @@ class RiskService:
             })
             data_quality = "partial"
 
-        raw_score = (slope_score + ruggedness_score + road_score + weather_contribution) * vehicle_factor
+        raw_score = (slope_score + ruggedness_score + road_score + weather_contribution) * vehicle_factor * commodity_factor
         final_score = int(min(max(round(raw_score), 0), 100))
 
         return {
