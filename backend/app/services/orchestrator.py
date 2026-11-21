@@ -281,6 +281,7 @@ class RouteOrchestrator:
                         elevation_m=seg_attr.get("elevation_m"),
                         ruggedness=seg_attr.get("ruggedness"),
                         weather_forecast=weather_forecast_obj,
+                        landslide_susceptibility=seg_risk_info.get("landslide_susceptibility"),
                     )
                 )
 
@@ -335,6 +336,27 @@ class RouteOrchestrator:
             # Sort factors by contribution descending
             compiled_factors.sort(key=lambda x: x.contribution, reverse=True)
 
+            # Compile ML landslide susceptibility summary for the route
+            susc_scores = [
+                seg.landslide_susceptibility.get("susceptibility_score", 0)
+                for seg in route_segments
+                if seg.landslide_susceptibility and "susceptibility_score" in seg.landslide_susceptibility
+            ]
+            if susc_scores:
+                any_fallback = any(
+                    seg.landslide_susceptibility.get("model_source") == "heuristic_fallback"
+                    for seg in route_segments
+                    if seg.landslide_susceptibility
+                )
+                ml_susc_summary = {
+                    "average_susceptibility_score": round(sum(susc_scores) / len(susc_scores), 1),
+                    "max_segment_susceptibility_score": max(susc_scores),
+                    "high_susceptibility_segments_count": sum(1 for s in susc_scores if s >= 60),
+                    "model_source": "heuristic_fallback" if any_fallback else "calibrated_random_forest",
+                }
+            else:
+                ml_susc_summary = None
+
             processed_routes.append(
                 Route(
                     route_id=route_id,
@@ -346,6 +368,7 @@ class RouteOrchestrator:
                     segments=route_segments,
                     risk_factors=compiled_factors,
                     data_quality=route_data_quality,
+                    ml_landslide_susceptibility_summary=ml_susc_summary,
                 )
             )
 
