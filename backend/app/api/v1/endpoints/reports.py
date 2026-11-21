@@ -12,7 +12,8 @@ from backend.app.services.reporting_service import reporting_service
 
 router = APIRouter()
 
-UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
+# Central backend uploads directory (shared with main.py)
+UPLOAD_DIR = Path(__file__).resolve().parents[4] / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 

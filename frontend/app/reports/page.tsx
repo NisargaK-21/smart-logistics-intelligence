@@ -311,10 +311,17 @@ export default function ReportsPage() {
                       src={
                         selectedReport.photo_url.startsWith("http")
                           ? selectedReport.photo_url
-                          : `http://localhost:8000${selectedReport.photo_url}`
+                          : `${(process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1").replace("/api/v1", "")}${selectedReport.photo_url}`
                       }
                       alt="Field incident evidence"
-                      className="max-h-48 w-auto object-contain"
+                      className="max-h-48 w-auto object-contain rounded"
+                      onError={(e) => {
+                        // Fallback if localhost vs 127.0.0.1 difference
+                        const target = e.currentTarget;
+                        if (!target.src.includes("127.0.0.1") && target.src.includes("localhost")) {
+                          target.src = target.src.replace("localhost", "127.0.0.1");
+                        }
+                      }}
                     />
                   </div>
                 </div>
