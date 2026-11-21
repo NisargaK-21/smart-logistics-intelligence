@@ -309,13 +309,25 @@ export async function uploadReportPhoto(
     };
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
+  // Convert file to base64 for universal zero-dependency server compatibility
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
 
   const url = `${getApiBaseUrl()}/reports/upload`;
   const res = await fetch(url, {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      data_base64: base64Data,
+    }),
     signal: options?.signal,
   });
 

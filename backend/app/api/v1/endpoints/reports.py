@@ -1,8 +1,9 @@
-import shutil
+import base64
 import uuid
 from pathlib import Path
 from typing import List, Optional
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
@@ -16,23 +17,37 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
+class PhotoUploadPayload(BaseModel):
+    filename: str = Field(..., description="Original filename with extension")
+    data_base64: str = Field(..., description="Base64-encoded image data or data URI")
+
+
 @router.post(
     "/upload",
-    summary="Upload an incident photo",
+    summary="Upload an incident photo (zero-dependency JSON base64 payload or raw body)",
 )
-async def upload_report_photo(file: UploadFile = File(...)):
-    ext = Path(file.filename or "").suffix.lower()
+async def upload_report_photo(payload: PhotoUploadPayload):
+    ext = Path(payload.filename or "").suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid file type {ext}. Supported formats: {', '.join(ALLOWED_EXTENSIONS)}",
+            detail=f"Invalid file type '{ext}'. Supported formats: {', '.join(ALLOWED_EXTENSIONS)}",
         )
+
+    # Strip data URL prefix if present (e.g. data:image/png;base64,...)
+    raw_b64 = payload.data_base64
+    if "," in raw_b64:
+        raw_b64 = raw_b64.split(",", 1)[1]
+
+    try:
+        binary_data = base64.b64decode(raw_b64)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Invalid base64 encoding.") from exc
 
     unique_filename = f"{uuid.uuid4().hex[:16]}{ext}"
     destination_path = UPLOAD_DIR / unique_filename
 
-    with destination_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    destination_path.write_bytes(binary_data)
 
     return {
         "filename": unique_filename,
@@ -47,6 +62,7 @@ async def upload_report_photo(file: UploadFile = File(...)):
 )
 def create_report(report_in: FieldReportCreate, session: Session = Depends(get_db)):
     return reporting_service.create_report(session, report_in)
+
 
 
 
