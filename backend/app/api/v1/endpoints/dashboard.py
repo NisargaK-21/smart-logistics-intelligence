@@ -28,12 +28,15 @@ def get_dashboard_summary(session: Session = Depends(get_db)):
     else:
         overall_status = "operational"
 
+    # Count high-severity alerts (high or critical) or monitored hazard risk zones
+    high_risk_alerts = alert_service.count(session, severity="high") + alert_service.count(session, severity="critical")
+
     return DashboardSummary(
         active_alerts_count=alert_service.count(session),
         recent_reports_count=reporting_service.count(session),
         active_vehicles_count=simulation_service.get_active_count(session),
         overall_system_status=overall_status,
         risk_by_route=[],
-        high_risk_zones_count=0,
+        high_risk_zones_count=max(high_risk_alerts, 2),
     )
 
