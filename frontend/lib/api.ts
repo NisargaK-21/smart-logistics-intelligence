@@ -296,6 +296,33 @@ export async function simulateVehicle(
 }
 
 /**
+ * Upload an incident photograph to the server
+ */
+export async function uploadReportPhoto(
+  file: File,
+  options?: { mock?: boolean; signal?: AbortSignal }
+): Promise<{ filename: string; photo_url: string }> {
+  if (options?.mock) {
+    return {
+      filename: file.name,
+      photo_url: `/uploads/mock_${file.name}`,
+    };
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const url = `${getApiBaseUrl()}/reports/upload`;
+  const res = await fetch(url, {
+    method: "POST",
+    body: formData,
+    signal: options?.signal,
+  });
+
+  return handleResponse<{ filename: string; photo_url: string }>(res);
+}
+
+/**
  * Fetch field incident reports
  */
 export async function getFieldReports(

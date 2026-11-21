@@ -300,6 +300,26 @@ export default function ReportsPage() {
                 </p>
               </div>
 
+              {selectedReport.photo_url && (
+                <div>
+                  <span className="text-slate-400 font-medium block text-[10px] mb-1">
+                    Attached Incident Photograph
+                  </span>
+                  <div className="rounded-lg overflow-hidden border border-slate-200 max-h-48 w-full bg-slate-50 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        selectedReport.photo_url.startsWith("http")
+                          ? selectedReport.photo_url
+                          : `http://localhost:8000${selectedReport.photo_url}`
+                      }
+                      alt="Field incident evidence"
+                      className="max-h-48 w-auto object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                 <div>
                   <span className="text-slate-400 font-medium block text-[10px]">Reporter</span>
@@ -331,6 +351,7 @@ export default function ReportsPage() {
       <FieldReportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        isMockMode={false}
         onSubmit={async (newRep) => {
           await submitReport(newRep);
         }}

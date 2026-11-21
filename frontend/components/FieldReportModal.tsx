@@ -1,18 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FieldReportCreate } from "../lib/types";
+import { uploadReportPhoto } from "../lib/api";
 
 interface FieldReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (report: FieldReportCreate) => Promise<void>;
+  isMockMode?: boolean;
 }
 
 export default function FieldReportModal({
   isOpen,
   onClose,
   onSubmit,
+  isMockMode = false,
 }: FieldReportModalProps) {
   const [category, setCategory] = useState("landslide");
   const [severity, setSeverity] = useState("high");
@@ -21,10 +24,30 @@ export default function FieldReportModal({
   const [locationName, setLocationName] = useState("NH-6 Umsning Bypass");
   const [reporterName, setReporterName] = useState("Field Officer");
   const [description, setDescription] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleClearFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +67,16 @@ export default function FieldReportModal({
     }
 
     setIsSubmitting(true);
+    let uploadedPhotoUrl: string | null = null;
+
     try {
+      if (selectedFile) {
+        setIsUploading(true);
+        const uploadRes = await uploadReportPhoto(selectedFile, { mock: isMockMode });
+        uploadedPhotoUrl = uploadRes.photo_url;
+        setIsUploading(false);
+      }
+
       await onSubmit({
         category,
         severity,
@@ -52,14 +84,19 @@ export default function FieldReportModal({
         location_name: locationName,
         description,
         reporter_name: reporterName,
+        photo_url: uploadedPhotoUrl || undefined,
       });
+
+      handleClearFile();
       onClose();
     } catch {
-      setError("Failed to submit report. Please try again.");
+      setError("Failed to submit report. Please check server connection and try again.");
     } finally {
+      setIsUploading(false);
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
@@ -191,6 +228,52 @@ export default function FieldReportModal({
             />
           </div>
 
+          <div>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Attach On-Ground Photograph (Camera / File)
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+                id="photo-upload-input"
+              />
+              <label
+                htmlFor="photo-upload-input"
+                className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold cursor-pointer flex items-center gap-2 transition-colors"
+              >
+                <span>📷</span>
+                <span>{selectedFile ? "Change Photo" : "Upload Photo"}</span>
+              </label>
+              {selectedFile && (
+                <div className="flex items-center gap-2 text-slate-600 truncate max-w-xs">
+                  <span className="truncate">{selectedFile.name}</span>
+                  <button
+                    type="button"
+                    onClick={handleClearFile}
+                    className="text-rose-500 hover:text-rose-700 font-bold ml-1 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {previewUrl && (
+              <div className="mt-2 relative w-32 h-24 rounded-lg overflow-hidden border border-slate-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewUrl}
+                  alt="Incident Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+          </div>
+
           <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
             <button
               type="button"
@@ -201,10 +284,14 @@ export default function FieldReportModal({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploading}
               className="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold shadow-xs transition-colors cursor-pointer"
             >
-              {isSubmitting ? "Submitting..." : "Submit Verified Report"}
+              {isUploading
+                ? "Uploading Photo..."
+                : isSubmitting
+                ? "Submitting..."
+                : "Submit Verified Report"}
             </button>
           </div>
         </form>
