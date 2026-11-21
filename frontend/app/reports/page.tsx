@@ -300,6 +300,33 @@ export default function ReportsPage() {
                 </p>
               </div>
 
+              {selectedReport.photo_url && (
+                <div>
+                  <span className="text-slate-400 font-medium block text-[10px] mb-1">
+                    Attached Incident Photograph
+                  </span>
+                  <div className="rounded-lg overflow-hidden border border-slate-200 max-h-48 w-full bg-slate-50 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        selectedReport.photo_url.startsWith("http")
+                          ? selectedReport.photo_url
+                          : `${(process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1").replace("/api/v1", "")}${selectedReport.photo_url}`
+                      }
+                      alt="Field incident evidence"
+                      className="max-h-48 w-auto object-contain rounded"
+                      onError={(e) => {
+                        // Fallback if localhost vs 127.0.0.1 difference
+                        const target = e.currentTarget;
+                        if (!target.src.includes("127.0.0.1") && target.src.includes("localhost")) {
+                          target.src = target.src.replace("localhost", "127.0.0.1");
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                 <div>
                   <span className="text-slate-400 font-medium block text-[10px]">Reporter</span>
@@ -331,6 +358,7 @@ export default function ReportsPage() {
       <FieldReportModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        isMockMode={false}
         onSubmit={async (newRep) => {
           await submitReport(newRep);
         }}
