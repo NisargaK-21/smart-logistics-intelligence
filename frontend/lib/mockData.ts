@@ -19,6 +19,7 @@ export const MOCK_ROUTE_SUCCESS: RoutePlanResponse = {
   recommended_route_id: "route-2",
   generated_at: "2026-10-28T10:00:00+05:30",
   risk_source: "baseline",
+  incident_avoidances: [],
   routes: [
     {
       route_id: "route-2",
@@ -125,6 +126,7 @@ export const MOCK_ROUTE_PARTIAL: RoutePlanResponse = {
   recommended_route_id: "route-1",
   generated_at: "2026-10-28T10:00:00+05:30",
   risk_source: "baseline",
+  incident_avoidances: [],
   routes: [
     {
       route_id: "route-1",

@@ -21,6 +21,9 @@ import type {
   VehiclePosition,
   VehicleSimulateRequest,
   VehicleSimulateResponse,
+  Consignment,
+  ConsignmentCreate,
+  ConsignmentUpdate,
 } from "./types.ts";
 import {
   MOCK_ALERTS,
@@ -65,6 +68,57 @@ export function getWebSocketUrl(): string {
   // Replace http(s)://host:port/api/v1 with ws(s)://host:port/ws/vehicles
   const hostPart = base.replace(/^https?:\/\//, "").replace(/\/api\/v1$/, "");
   return `${wsProto}://${hostPart}/ws/vehicles`;
+}
+
+export async function getConsignments(
+  params?: { status?: string; commodity?: string; vehicle_id?: string },
+  options?: { signal?: AbortSignal }
+): Promise<Consignment[]> {
+  const query = new URLSearchParams();
+  if (params?.status) query.set("status", params.status);
+  if (params?.commodity) query.set("commodity", params.commodity);
+  if (params?.vehicle_id) query.set("vehicle_id", params.vehicle_id);
+
+  const qs = query.toString();
+  const url = `${getApiBaseUrl()}/consignments/${qs ? `?${qs}` : ""}`;
+  const res = await fetch(url, {
+    headers: { Accept: "application/json" },
+    signal: options?.signal,
+  });
+  return handleResponse<Consignment[]>(res);
+}
+
+export async function createConsignment(
+  payload: ConsignmentCreate,
+  options?: { signal?: AbortSignal }
+): Promise<Consignment> {
+  const res = await fetch(`${getApiBaseUrl()}/consignments/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+    signal: options?.signal,
+  });
+  return handleResponse<Consignment>(res);
+}
+
+export async function updateConsignment(
+  shipmentId: string,
+  payload: ConsignmentUpdate,
+  options?: { signal?: AbortSignal }
+): Promise<Consignment> {
+  const res = await fetch(`${getApiBaseUrl()}/consignments/${shipmentId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+    signal: options?.signal,
+  });
+  return handleResponse<Consignment>(res);
 }
 
 export async function searchPlaces(

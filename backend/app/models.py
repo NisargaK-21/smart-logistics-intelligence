@@ -66,3 +66,23 @@ class VehicleRecord(Base):
     speed_kmh: Mapped[float] = mapped_column(Float)
     heading_deg: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
+class ConsignmentRecord(Base):
+    __tablename__ = "consignments"
+
+    shipment_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    commodity_type: Mapped[str] = mapped_column(String(64), index=True)  # Food Supplies, Medicine, Fuel, Emergency Kits
+    quantity: Mapped[str] = mapped_column(String(128))  # e.g., "500 Bags", "1200 Units"
+    origin: Mapped[str] = mapped_column(String(255))
+    destination: Mapped[str] = mapped_column(String(255))
+    assigned_vehicle_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
+    route_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
+    lifecycle_status: Mapped[str] = mapped_column(String(32), default="Dispatched", index=True)  # Dispatched, In Transit, Delayed due to Risk, Delivered
+    current_lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    current_lng: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    risk_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    eta_minutes: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from sqlalchemy.orm import Session
 
-from backend.app.models import AlertRecord, FieldReportRecord, VehicleRecord
+from backend.app.models import AlertRecord, ConsignmentRecord, FieldReportRecord, VehicleRecord
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +149,85 @@ def seed_initial_data(session: Session) -> None:
                 session.add(v)
             session.commit()
             logger.info("Seeded initial active vehicles.")
+
+        # 4. Seed Initial Essential Commodities Consignments if empty
+        consignment_count = session.query(ConsignmentRecord).count()
+        if consignment_count == 0:
+            now = datetime.now(timezone.utc)
+            initial_consignments = [
+                ConsignmentRecord(
+                    shipment_id="SHP-MED-8491",
+                    commodity_type="Medicine",
+                    quantity="250 Boxes of Trauma & Antibiotic Kits",
+                    origin="Guwahati Central Medical Depot",
+                    destination="Shillong Civil Hospital",
+                    assigned_vehicle_id="V001",
+                    route_id="OSRM-260FB0617369-1",
+                    lifecycle_status="In Transit",
+                    current_lat=26.050,
+                    current_lng=91.750,
+                    risk_score=28,
+                    eta_minutes=45.0,
+                    notes="Temperature-sensitive cargo, prioritized detour around active landslides.",
+                    created_at=now,
+                    updated_at=now,
+                ),
+                ConsignmentRecord(
+                    shipment_id="SHP-FOOD-2940",
+                    commodity_type="Food Supplies",
+                    quantity="500 Sacks of Rice & Fortified Pulses",
+                    origin="FCI Dispur Grain Silo",
+                    destination="Nongpoh Relief Staging Center",
+                    assigned_vehicle_id="V002",
+                    route_id="OSRM-260FB0617369-1",
+                    lifecycle_status="In Transit",
+                    current_lat=25.820,
+                    current_lng=91.810,
+                    risk_score=35,
+                    eta_minutes=70.0,
+                    notes="Monitored for water damage and flood detours.",
+                    created_at=now,
+                    updated_at=now,
+                ),
+                ConsignmentRecord(
+                    shipment_id="SHP-FUEL-1029",
+                    commodity_type="Fuel",
+                    quantity="12,000 Liters High-Speed Diesel",
+                    origin="IOCL Betkuchi Terminal",
+                    destination="Mawlai Emergency Power Generator Station",
+                    assigned_vehicle_id="V004",
+                    route_id="OSRM-260FB0617369-1",
+                    lifecycle_status="Delayed due to Risk",
+                    current_lat=25.680,
+                    current_lng=91.890,
+                    risk_score=68,
+                    eta_minutes=115.0,
+                    notes="Halted briefly near Nongpoh sector due to rockfall warning.",
+                    created_at=now,
+                    updated_at=now,
+                ),
+                ConsignmentRecord(
+                    shipment_id="SHP-KIT-5510",
+                    commodity_type="Emergency Kits",
+                    quantity="150 Inflatable Boats & Water Purifiers",
+                    origin="NDRF 1st Bn Base Patgaon",
+                    destination="Byrnihat Flood Evacuation Camp",
+                    assigned_vehicle_id="V003",
+                    route_id="OSRM-260FB0617369-1",
+                    lifecycle_status="Delivered",
+                    current_lat=26.1445,
+                    current_lng=91.7362,
+                    risk_score=15,
+                    eta_minutes=0.0,
+                    notes="Delivered successfully to camp commander.",
+                    created_at=now,
+                    updated_at=now,
+                ),
+            ]
+            for c in initial_consignments:
+                session.add(c)
+            session.commit()
+            logger.info("Seeded initial essential commodity consignments.")
     except Exception as exc:
         logger.warning(f"Error seeding initial data: {exc}")
         session.rollback()

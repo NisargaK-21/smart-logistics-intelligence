@@ -14,11 +14,15 @@ import {
   Route,
   VehiclePosition,
   VehicleType,
+  Consignment,
+  ConsignmentCreate,
 } from "./types";
 import {
   createFieldReport,
   getActiveVehicles,
   getAlerts,
+  getConsignments,
+  createConsignment,
   getCoverage,
   getDashboardSummary,
   getFieldReports,
@@ -62,6 +66,8 @@ interface AppContextType {
   setDestination: (coords: Coordinates | null) => void;
   vehicleType: VehicleType;
   setVehicleType: (type: VehicleType) => void;
+  commodityType: string;
+  setCommodityType: (type: string) => void;
   departureTime: string;
   setDepartureTime: (time: string) => void;
   pickingMode: "origin" | "destination" | null;
@@ -89,6 +95,12 @@ interface AppContextType {
   submitReport: (rep: FieldReportCreate) => Promise<FieldReport>;
   alerts: Alert[];
   refreshAlerts: () => Promise<void>;
+
+  // Essential Commodities Consignments
+  consignments: Consignment[];
+  isConsignmentsLoading: boolean;
+  refreshConsignments: (params?: { status?: string; commodity?: string; vehicle_id?: string }) => Promise<void>;
+  registerConsignment: (payload: ConsignmentCreate) => Promise<Consignment>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -114,6 +126,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     DEFAULT_ROUTE_DESTINATION
   );
   const [vehicleType, setVehicleType] = useState<VehicleType>("truck");
+  const [commodityType, setCommodityType] = useState<string>("Medicine");
   const [departureTime, setDepartureTime] = useState<string>("");
   const [pickingMode, setPickingMode] = useState<"origin" | "destination" | null>(null);
 
@@ -147,6 +160,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [fieldReports, setFieldReports] = useState<FieldReport[]>([]);
   const [isReportsLoading, setIsReportsLoading] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [consignments, setConsignments] = useState<Consignment[]>([]);
+  const [isConsignmentsLoading, setIsConsignmentsLoading] = useState(false);
 
   // Load health & summary
   const refreshHealth = useCallback(async () => {
@@ -218,18 +233,43 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [isMockMode]
   );
 
+  const refreshConsignments = useCallback(
+    async (params?: { status?: string; commodity?: string; vehicle_id?: string }) => {
+      setIsConsignmentsLoading(true);
+      try {
+        const res = await getConsignments(params);
+        setConsignments(res);
+      } catch {
+        // Fallback or ignore
+      } finally {
+        setIsConsignmentsLoading(false);
+      }
+    },
+    []
+  );
+
+  const registerConsignment = useCallback(
+    async (payload: ConsignmentCreate): Promise<Consignment> => {
+      const created = await createConsignment(payload);
+      setConsignments((prev) => [created, ...prev]);
+      return created;
+    },
+    []
+  );
+
   // Initial load
   useEffect(() => {
     let isSubscribed = true;
 
     async function init() {
-      const [hRes, cRes, sRes, vRes, rRes, aRes] = await Promise.allSettled([
+      const [hRes, cRes, sRes, vRes, rRes, aRes, csRes] = await Promise.allSettled([
         getHealth({ mock: isMockMode }),
         getCoverage({ mock: isMockMode }),
         getDashboardSummary({ mock: isMockMode }),
         getActiveVehicles({ mock: isMockMode }),
         getFieldReports(undefined, { mock: isMockMode }),
         getAlerts(undefined, { mock: isMockMode }),
+        getConsignments(),
       ]);
 
       if (!isSubscribed) return;
@@ -248,6 +288,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (vRes.status === "fulfilled") setVehicles(vRes.value);
       if (rRes.status === "fulfilled") setFieldReports(rRes.value);
       if (aRes.status === "fulfilled") setAlerts(aRes.value);
+      if (csRes.status === "fulfilled") setConsignments(csRes.value);
     }
 
     void init();
@@ -270,6 +311,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           origin,
           destination,
           vehicle_type: vehicleType,
+          commodity_type: commodityType,
           departure_time: departureTime ? new Date(departureTime).toISOString() : undefined,
         },
         {
@@ -325,6 +367,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setDestination: updateDestination,
         vehicleType,
         setVehicleType,
+        commodityType,
+        setCommodityType,
         departureTime,
         setDepartureTime,
         pickingMode,
@@ -350,6 +394,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         submitReport,
         alerts,
         refreshAlerts,
+        consignments,
+        isConsignmentsLoading,
+        refreshConsignments,
+        registerConsignment,
       }}
     >
       {children}

@@ -33,7 +33,62 @@ export interface RoutePlanRequest {
   origin: Coordinates;
   destination: Coordinates;
   vehicle_type: VehicleType;
+  commodity_type?: string;
   departure_time?: string; // ISO 8601 string with timezone offset
+}
+
+export type CommodityType =
+  | "Food Supplies"
+  | "Medicine"
+  | "Fuel"
+  | "Emergency Kits"
+  | "General Cargo";
+
+export type LifecycleStatus =
+  | "Dispatched"
+  | "In Transit"
+  | "Delayed due to Risk"
+  | "Delivered";
+
+export interface Consignment {
+  shipment_id: string;
+  commodity_type: string;
+  quantity: string;
+  origin: string;
+  destination: string;
+  assigned_vehicle_id?: string | null;
+  route_id?: string | null;
+  lifecycle_status: LifecycleStatus;
+  current_lat?: number | null;
+  current_lng?: number | null;
+  risk_score?: number | null;
+  eta_minutes?: number | null;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConsignmentCreate {
+  shipment_id?: string;
+  commodity_type: string;
+  quantity: string;
+  origin: string;
+  destination: string;
+  assigned_vehicle_id?: string;
+  route_id?: string;
+  lifecycle_status?: LifecycleStatus;
+  notes?: string;
+}
+
+export interface ConsignmentUpdate {
+  lifecycle_status?: LifecycleStatus;
+  assigned_vehicle_id?: string;
+  route_id?: string;
+  current_lat?: number;
+  current_lng?: number;
+  risk_score?: number;
+  eta_minutes?: number;
+  notes?: string;
 }
 
 export interface GeoJSONLineString {

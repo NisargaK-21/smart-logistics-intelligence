@@ -165,6 +165,47 @@ export const VEHICLE_OPTIONS = [
 ] as const;
 
 /**
+ * Essential Commodity types for disaster logistics and relief tracking
+ */
+export const COMMODITY_OPTIONS = [
+  {
+    id: "Medicine",
+    label: "Medicine & Vaccines",
+    icon: "💊",
+    priority: "Critical",
+    description: "Cold-chain medical cargo, trauma kits, vaccines (Prioritizes low risk & smooth roads)",
+  },
+  {
+    id: "Food Supplies",
+    label: "Food Supplies & Rations",
+    icon: "🍚",
+    priority: "High",
+    description: "Grain sacks, canned rations, drinking water supply",
+  },
+  {
+    id: "Fuel",
+    label: "Fuel & Energy",
+    icon: "⛽",
+    priority: "High Hazard",
+    description: "Diesel fuel tankers, generator power reserves",
+  },
+  {
+    id: "Emergency Kits",
+    label: "Emergency & Relief Kits",
+    icon: "📦",
+    priority: "Urgent",
+    description: "Inflatable rescue rafts, blankets, hygiene kits, water purifiers",
+  },
+  {
+    id: "General Cargo",
+    label: "General Supplies",
+    icon: "📦",
+    priority: "Standard",
+    description: "Standard non-perishable freight and maintenance gear",
+  },
+] as const;
+
+/**
  * Standard backend error code descriptions
  */
 export const ERROR_MESSAGES: Record<string, string> = {

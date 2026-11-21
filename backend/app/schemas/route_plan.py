@@ -8,6 +8,7 @@ class RoutePlanRequest(BaseModel):
     origin: Coordinates
     destination: Coordinates
     vehicle_type: Literal["truck", "van", "car"] = Field(..., description="Vehicle type: truck, van, or car")
+    commodity_type: Optional[str] = Field(default=None, description="Cargo/Commodity type: e.g. Medicine, Food Supplies, Fuel, Emergency Kits")
     departure_time: Optional[datetime] = Field(default=None, description="ISO 8601 departure timestamp with offset")
 
     @model_validator(mode="after")
