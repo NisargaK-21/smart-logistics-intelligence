@@ -99,6 +99,11 @@ class RouteOrchestrator:
                 blocked_segment_ids=blocked_segment_ids,
                 blocked_points=blocked_points,
             )
+            # Graceful fallback: If blocking all incidents completely severs graph connectivity,
+            # fall back to the primary routes so the system can still navigate while warning/penalizing risk
+            if not candidate_routes:
+                candidate_routes = primary_routes
+
 
             primary_segment_ids = primary_routes[0].get("segment_ids", [])
             primary_segments = gis_service.get_segments(primary_segment_ids)
