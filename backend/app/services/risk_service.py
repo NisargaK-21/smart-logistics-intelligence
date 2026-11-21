@@ -183,10 +183,30 @@ class RiskService:
         raw_score = (slope_score + ruggedness_score + road_score + weather_contribution) * vehicle_factor * commodity_factor
         final_score = int(min(max(round(raw_score), 0), 100))
 
+        # 5. ML Landslide Susceptibility feature (Objective 1)
+        landslide_pred = None
+        try:
+            from ml.landslide_susceptibility import landslide_service
+            seg_coords = seg.get("coordinates", [])
+            lat = float(seg_coords[0][1]) if seg_coords else 25.6
+            lon = float(seg_coords[0][0]) if seg_coords else 91.8
+            landslide_pred = landslide_service.predict_point(
+                lat=lat,
+                lon=lon,
+                slope_deg=slope if slope_available else None,
+                ruggedness=ruggedness if ruggedness_available else None,
+                elevation_m=float(seg["elevation_m"]) if seg.get("elevation_m") is not None else None,
+                road_distance_m=0.0,
+                road_class=road_class,
+            )
+        except Exception as exc:
+            logger.debug("Landslide susceptibility estimation omitted: %s", exc)
+
         return {
             "score": final_score,
             "factors": factors,
             "data_quality": data_quality,
+            "landslide_susceptibility": landslide_pred,
         }
 
     def _score_segment_model(

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field, model_validator
 from backend.app.schemas.common import Coordinates
 
@@ -46,6 +46,9 @@ class SegmentRisk(BaseModel):
     weather_forecast: Optional[SegmentWeatherForecast] = Field(
         default=None, description="Time-of-arrival weather forecast for this segment"
     )
+    landslide_susceptibility: Optional[Dict[str, Any]] = Field(
+        default=None, description="ML-estimated terrain landslide susceptibility metrics"
+    )
 
 
 class RiskFactor(BaseModel):
@@ -64,6 +67,9 @@ class Route(BaseModel):
     segments: List[SegmentRisk]
     risk_factors: List[RiskFactor]
     data_quality: Literal["complete", "partial", "stale", "unavailable"]
+    ml_landslide_susceptibility_summary: Optional[Dict[str, Any]] = Field(
+        default=None, description="Summary of ML-estimated landslide susceptibility along route"
+    )
 
 
 class IncidentAvoidance(BaseModel):
