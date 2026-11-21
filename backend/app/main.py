@@ -7,13 +7,16 @@ from sqlalchemy.orm import Session
 from backend.app.api.v1.api import api_router
 from backend.app.core.config import settings
 from backend.app.core.errors import register_exception_handlers
-from backend.app.database import get_db, upgrade_database
+from backend.app.database import SessionLocal, get_db, upgrade_database
+from backend.app.services.seed_service import seed_initial_data
 from backend.app.services.simulation_service import simulation_service
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     upgrade_database()
+    with SessionLocal() as session:
+        seed_initial_data(session)
     yield
 
 

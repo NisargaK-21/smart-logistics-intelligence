@@ -11,6 +11,7 @@ interface DashboardMetricsProps {
 
 export default function DashboardMetrics({
   summary,
+  routes = [],
   isLoading,
 }: DashboardMetricsProps) {
   if (isLoading) {
@@ -30,10 +31,20 @@ export default function DashboardMetrics({
   }
 
   if (!summary) return null;
-  // const highRiskRouteCount = routes.filter((route) => route.risk_level === "high").length;
+  const highRiskRouteCount = routes.filter((route) => route.risk_level === "high").length;
+  const highRiskHazardsCount = summary.high_risk_zones_count || 0;
+
+  // If routes have been evaluated, show the route-level high risk count, otherwise show monitored high-risk hazard zones
+  const highRiskDisplayCount = routes.length > 0 ? highRiskRouteCount : highRiskHazardsCount;
+  const highRiskBadge =
+    routes.length > 0
+      ? `${routes.length} options evaluated`
+      : `${highRiskHazardsCount} active corridor zones`;
+  const highRiskSubtext =
+    routes.length > 0 ? "Evaluated route candidates" : "Monitored hazard locations";
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 1. Active Hazard Alerts */}
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
@@ -48,7 +59,7 @@ export default function DashboardMetrics({
             {summary.active_alerts_count}
           </span>
           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/60">
-          Current count
+            Current count
           </span>
         </div>
         <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
@@ -57,29 +68,28 @@ export default function DashboardMetrics({
         </div>
       </div>
 
-      {/* 2. High-risk route candidates (Commented out as requested)
+      {/* 2. High-risk route candidates & active corridor hazard zones */}
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>
-            High-Risk Route Options
+            High-Risk Hazards & Routes
           </span>
           <span className="text-base">🚨</span>
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
-            {highRiskRouteCount}
+            {highRiskDisplayCount}
           </span>
           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200/60">
-            {routes.length} options planned
+            {highRiskBadge}
           </span>
         </div>
         <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-          <span>Current route plan</span>
-          <span className="font-medium text-rose-600">Rule-based score</span>
+          <span>{highRiskSubtext}</span>
+          <span className="font-medium text-rose-600">Risk Assessment</span>
         </div>
       </div>
-      */}
 
       {/* 3. Active Fleet Vehicles */}
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">

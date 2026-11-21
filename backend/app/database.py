@@ -1,8 +1,6 @@
 from collections.abc import Generator
 from pathlib import Path
 
-from alembic import command
-from alembic.config import Config
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -30,8 +28,17 @@ ALEMBIC_CONFIG_PATH = Path(__file__).resolve().parents[1] / "alembic.ini"
 
 
 def upgrade_database(target_engine: Engine = engine) -> None:
-    config = Config(str(ALEMBIC_CONFIG_PATH))
-    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
-    with target_engine.connect() as connection:
-        config.attributes["connection"] = connection
-        command.upgrade(config, "head")
+    try:
+        from alembic import command
+        from alembic.config import Config
+
+        config = Config(str(ALEMBIC_CONFIG_PATH))
+        config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
+        with target_engine.connect() as connection:
+            config.attributes["connection"] = connection
+            command.upgrade(config, "head")
+    except Exception:
+        # Fallback to direct SQLAlchemy metadata creation when Alembic is not installed/configured
+        import backend.app.models  # noqa: F401 - ensure models are registered
+        Base.metadata.create_all(bind=target_engine)
+

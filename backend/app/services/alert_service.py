@@ -42,8 +42,11 @@ class AlertService:
         statement = statement.order_by(AlertRecord.created_at.desc())
         return [self._to_schema(record) for record in session.scalars(statement)]
 
-    def count(self, session: Session) -> int:
-        return session.scalar(select(func.count()).select_from(AlertRecord)) or 0
+    def count(self, session: Session, severity: Optional[str] = None) -> int:
+        statement = select(func.count()).select_from(AlertRecord)
+        if severity:
+            statement = statement.where(func.lower(AlertRecord.severity) == severity.lower())
+        return session.scalar(statement) or 0
 
     def subscribe(
         self, session: Session, sub_req: AlertSubscribeRequest
