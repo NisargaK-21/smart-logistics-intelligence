@@ -36,7 +36,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>📊</span> Operational Intelligence Overview
+             Operational Intelligence Overview
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Route planning and current road-weather context for Northeast India
@@ -48,14 +48,14 @@ export default function DashboardPage() {
             href="/routes"
             className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <span>⚡</span>
+            
             <span>Plan New Route</span>
           </Link>
           <Link
             href="/risk-zones"
             className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <span>⚠️</span>
+            <span>️</span>
             <span>Risk Zones</span>
           </Link>
         </div>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <span>🗺️</span> OpenStreetMap Route Overview
+              <span>️</span> OpenStreetMap Route Overview
             </h2>
             <span className="text-[11px] text-slate-400 font-mono">
               OpenStreetMap roads and calculated routes
@@ -106,7 +106,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <span>🛣️</span> Monitored Corridor Routes
+                  <span>️</span> Monitored Corridor Routes
                 </h3>
                 <p className="text-[11px] text-slate-500 mt-0.5">
                   Active GIS road candidates evaluated for hazard exposure
@@ -142,7 +142,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="py-8 text-center text-xs text-slate-500 space-y-2">
-                <span className="text-2xl block">📍</span>
+                
                 <p className="font-medium text-slate-700">No active route planned in this session</p>
                 <p className="text-[11px] text-slate-400">
                   Calculate driving routes and score available road and modelled weather factors. Missing inputs are flagged.

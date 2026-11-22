@@ -264,14 +264,14 @@ export default function MapView({
 
       const catIcon =
         hzd.category === "heavy_rainfall" || hzd.category === "flood" || hzd.category === "flash_flood"
-          ? "🌧️"
+          ? "️"
           : hzd.category === "high_winds"
-          ? "💨"
+          ? ""
           : hzd.category === "severe_weather"
-          ? "⛈️"
+          ? "️"
           : hzd.category === "steep_slope" || hzd.category === "slope"
-          ? "⛰️"
-          : "🪨";
+          ? "️"
+          : "";
 
       el.innerHTML = `
         <div style="background-color: ${markerColor}; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.25);" 
@@ -331,7 +331,7 @@ export default function MapView({
       el.innerHTML = `
         <div style="background-color: ${isSelected ? "#0284c7" : "#1e293b"}; border: 2.5px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" 
              class="px-2 py-1 rounded-full text-white text-[10px] font-bold flex items-center gap-1 shadow-md cursor-pointer transition-transform hover:scale-110">
-          <span>🚚</span>
+          
           <span>${v.vehicle_id}</span>
         </div>
       `;
@@ -513,7 +513,7 @@ export default function MapView({
               `<div class="text-xs space-y-1">
                 <div class="font-bold flex items-center justify-between gap-2">
                   <span class="text-slate-900">Route: ${props.route_id.toUpperCase()}</span>
-                  ${props.is_recommended ? '<span class="text-sky-600 font-bold text-[10px] bg-sky-50 px-1.5 py-0.5 rounded">★ Recommended</span>' : ""}
+                  ${props.is_recommended ? '<span class="text-sky-600 font-bold text-[10px] bg-sky-50 px-1.5 py-0.5 rounded"> Recommended</span>' : ""}
                 </div>
                 <div class="text-slate-500 font-mono text-[11px]">Segment ID: ${props.segment_id}</div>
                 <div class="flex items-center gap-2 pt-1.5 border-t border-slate-100">
@@ -607,7 +607,7 @@ export default function MapView({
       {tileError && (
         <div className="absolute top-3 left-3 z-20 max-w-sm p-3 rounded-xl bg-amber-50/95 border border-amber-300 text-amber-900 shadow-md backdrop-blur-xs text-xs space-y-1.5 animate-in fade-in">
           <div className="flex items-center gap-1.5 font-bold">
-            <span>⚠️</span>
+            <span>️</span>
             <span>Base Map Tiles Degraded (Offline / Rate-Limited)</span>
           </div>
           <p className="text-[11px] text-amber-800 leading-relaxed">
@@ -629,7 +629,7 @@ export default function MapView({
       {/* Picking Mode Banner */}
       {pickingMode && (
         <div className="absolute top-3 right-14 sm:right-auto sm:left-3 z-10 bg-sky-600 text-white px-3.5 py-2 rounded-lg text-xs font-semibold shadow-md flex items-center gap-2 animate-pulse border border-sky-400">
-          <span className="w-2.5 h-2.5 rounded-full bg-white"></span>
+          
           <span>Click anywhere on the road corridor to set {pickingMode === "origin" ? "Origin (A)" : "Destination (B)"}</span>
         </div>
       )}
@@ -642,14 +642,14 @@ export default function MapView({
           title="Fit view to planned routes or fleet"
           className="bg-white/95 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-xs flex items-center gap-1.5 transition-all cursor-pointer"
         >
-          <span>🎯</span> Fit View
+           Fit View
         </button>
         <button
           onClick={handleResetCoverage}
           title="Reset view to Guwahati-Shillong corridor"
           className="bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-xs flex items-center gap-1.5 transition-all cursor-pointer"
         >
-          <span>🗺️</span> Reset Corridor
+          <span>️</span> Reset Corridor
         </button>
         {mode === "risk-zones" && (
           <button
@@ -661,7 +661,7 @@ export default function MapView({
                 : "bg-white/95 text-slate-700 border-slate-200 hover:bg-slate-50"
             }`}
           >
-            <span>⚠️</span> Hazards {showHazards ? "On" : "Off"}
+            <span>️</span> Hazards {showHazards ? "On" : "Off"}
           </button>
         )}
       </div>
@@ -672,40 +672,40 @@ export default function MapView({
           <div className="bg-white/95 border border-slate-200 p-3 rounded-xl shadow-lg backdrop-blur-xs text-xs w-52 transition-all">
             <div className="flex items-center justify-between font-bold pb-2 mb-2 border-b border-slate-100 text-slate-800">
               <span className="flex items-center gap-1.5">
-                <span>📊</span> Segment Risk Scale
+                 Segment Risk Scale
               </span>
               <button
                 onClick={() => setIsLegendOpen(false)}
                 className="text-slate-400 hover:text-slate-600 px-1 font-bold cursor-pointer"
                 aria-label="Collapse legend"
               >
-                ✕
+                
               </button>
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs"></span>
+                  
                   <span className="text-slate-700 font-medium">Low Risk</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-500 font-semibold">0 – 33</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-2xs"></span>
+                  
                   <span className="text-slate-700 font-medium">Medium Risk</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-500 font-semibold">34 – 66</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-2xs"></span>
+                  
                   <span className="text-slate-700 font-medium">High Risk</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-500 font-semibold">67 – 100</span>
               </div>
               <div className="pt-2 mt-1.5 border-t border-slate-100 flex items-center gap-2">
-                <span className="w-4 h-1.5 bg-sky-600 rounded"></span>
+                
                 <span className="text-[11px] text-slate-600 font-medium">Recommended Route</span>
               </div>
             </div>
@@ -715,7 +715,7 @@ export default function MapView({
             onClick={() => setIsLegendOpen(true)}
             className="bg-white/95 text-slate-700 hover:bg-slate-50 border border-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md backdrop-blur-xs cursor-pointer"
           >
-            📊 Show Legend
+            Show Legend
           </button>
         )}
       </div>

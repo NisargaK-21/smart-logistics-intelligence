@@ -101,7 +101,7 @@ export default function Header(props: HeaderProps) {
 
           {/* Regional Corridor Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-slate-400 text-sm hidden sm:inline">📍</span>
+            
             <div className="relative">
               <select
                 value={selectedCorridor}
@@ -110,7 +110,7 @@ export default function Header(props: HeaderProps) {
               >
                 {CORRIDOR_OPTIONS.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name} {c.isSupported ? "★ (Active)" : "(Planned)"}
+                    {c.name} {c.isSupported ? "(Active)" : "(Planned)"}
                   </option>
                 ))}
               </select>
@@ -142,7 +142,7 @@ export default function Header(props: HeaderProps) {
               className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:bg-white"
             />
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-              🔍
+              
             </span>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function Header(props: HeaderProps) {
           {/* Live IST Date/Time */}
           {currentDateTime && (
             <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100/80 text-[11px] font-mono text-slate-600 border border-slate-200/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+              
               <span>{currentDateTime}</span>
             </div>
           )}
@@ -166,7 +166,7 @@ export default function Header(props: HeaderProps) {
               aria-label="View notifications"
               title="Corridor hazard notifications"
             >
-              <span className="text-sm">🔔</span>
+              
               {activeAlertCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
                   {activeAlertCount}

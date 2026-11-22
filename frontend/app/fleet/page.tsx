@@ -65,7 +65,7 @@ export default function FleetPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>🚚</span> Fleet Management & Live GPS Telemetry
+             Fleet Management & Live GPS Telemetry
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Real-time positioning, transit speeds, and route-hazard proximity tracking
@@ -74,7 +74,7 @@ export default function FleetPage() {
 
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+            
             <span>{vehicles.length} Monitored Vehicles</span>
           </span>
           <button
@@ -153,13 +153,13 @@ export default function FleetPage() {
               disabled={isSimulating}
               className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold transition-colors cursor-pointer"
             >
-              {isSimulating ? "Dispatching..." : "⚡ Simulate Trip"}
+              {isSimulating ? "Dispatching..." : "Simulate Trip"}
             </button>
           </form>
 
           {simSuccessMsg && (
             <p className="text-[11px] text-emerald-700 mt-2 font-medium flex items-center gap-1">
-              <span>✅</span> {simSuccessMsg}
+               {simSuccessMsg}
             </p>
           )}
         </div>
@@ -193,7 +193,7 @@ export default function FleetPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                          <span>🚚</span> {v.vehicle_id}
+                           {v.vehicle_id}
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold capitalize border border-slate-200">
                           {v.status || "In Transit"}
@@ -251,7 +251,7 @@ export default function FleetPage() {
         <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-20">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <span>🗺️</span> Real-Time Fleet Map Tracking
+              <span>️</span> Real-Time Fleet Map Tracking
             </h2>
             <span className="text-[11px] text-slate-400 font-medium">
               Click vehicle icon on map to view status

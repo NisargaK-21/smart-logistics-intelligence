@@ -33,7 +33,7 @@ export default function RouteComparison({
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>⚖️</span> Route Comparison Matrix
+            <span>️</span> Route Comparison Matrix
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
             Comparative safety vs travel time trade-offs across candidates
@@ -47,7 +47,7 @@ export default function RouteComparison({
       {/* Safety Delta Highlight */}
       {otherRoutes.length > 0 && (
         <div className="p-3 rounded-lg bg-sky-50/80 border border-sky-200 text-xs text-sky-900 flex items-start gap-2">
-          <span className="text-base mt-0.5">💡</span>
+          
           <div>
             <span className="font-bold">Recommendation Analysis:</span>
             <p className="text-[11px] text-sky-800 mt-0.5 leading-relaxed">
@@ -96,7 +96,7 @@ export default function RouteComparison({
                       </span>
                       {isRec && (
                         <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-sky-600 text-white">
-                          ★ Best
+                          Recommended
                         </span>
                       )}
                     </div>

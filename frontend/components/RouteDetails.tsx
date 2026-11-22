@@ -60,7 +60,7 @@ export default function RouteDetails({
       {/* Actual Risk Source Banner - Honest Labeling per Rule 1 */}
       <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
         <div className="flex items-center gap-2 font-semibold text-slate-900">
-          <span>🛡️</span>
+          <span>️</span>
           <span>
             Risk Calculation Source:{" "}
             {riskSource === "baseline" ? (
@@ -92,7 +92,7 @@ export default function RouteDetails({
         }`}
       >
         <span className="text-sm mt-0.5">
-          {route.data_quality === "complete" ? "✅" : "⚠️"}
+          {route.data_quality === "complete" ? "Verified" : "Partial"}
         </span>
         <div>
           <span className="font-bold capitalize">
@@ -119,7 +119,7 @@ export default function RouteDetails({
         }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-bold text-slate-900">
-              <span className="text-base">🏔️</span>
+              <span className="text-base">️</span>
               <span>
                 {route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback"
                   ? "Terrain Susceptibility (Heuristic Fallback)"
@@ -139,7 +139,7 @@ export default function RouteDetails({
           <p className="text-[11px] text-slate-700 leading-relaxed">
             {route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback" ? (
               <span>
-                ⚠️ <strong>Partial DEM coverage:</strong> One or more segments lie outside high-resolution Copernicus DEM rasters. Estimates use baseline heuristic rules rather than genuine ML inference.
+                ️ <strong>Partial DEM coverage:</strong> One or more segments lie outside high-resolution Copernicus DEM rasters. Estimates use baseline heuristic rules rather than genuine ML inference.
               </span>
             ) : (
               <span>
@@ -175,7 +175,7 @@ export default function RouteDetails({
       ) : (
         <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span>🏔️</span> ML Susceptibility: Baseline terrain rules applied
+            <span>️</span> ML Susceptibility: Baseline terrain rules applied
           </span>
           <span className="text-[10px] text-slate-400 font-mono">DEM coverage active</span>
         </div>
@@ -265,9 +265,9 @@ export default function RouteDetails({
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[11px] font-medium text-slate-700">
-                      <span>🌡️ {wf.temperature_c.toFixed(1)}°C</span>
+                      <span>️ {wf.temperature_c.toFixed(1)}°C</span>
                       <span>
-                        🌧️{" "}
+                        ️{" "}
                         <strong
                           className={
                             wf.precipitation_mm > 2
@@ -280,7 +280,7 @@ export default function RouteDetails({
                           {wf.precipitation_mm.toFixed(1)} mm
                         </strong>
                       </span>
-                      <span>💨 {wf.wind_speed_kmh.toFixed(0)} km/h</span>
+                      <span> {wf.wind_speed_kmh.toFixed(0)} km/h</span>
                     </div>
                   </div>
                 );
@@ -345,7 +345,7 @@ export default function RouteDetails({
                   {seg.landslide_susceptibility && (
                     <div className="text-[10px] flex items-center justify-between pl-4 pt-1 border-t border-slate-100">
                       <span className={seg.landslide_susceptibility.model_source === "heuristic_fallback" ? "text-amber-800" : "text-emerald-800"}>
-                        🏔️ {seg.landslide_susceptibility.model_source === "heuristic_fallback" ? "Fallback Susceptibility" : "ML Susceptibility"}:{" "}
+                        ️ {seg.landslide_susceptibility.model_source === "heuristic_fallback" ? "Fallback Susceptibility" : "ML Susceptibility"}:{" "}
                         <strong className="uppercase">{seg.landslide_susceptibility.susceptibility_level}</strong> (LSS: {seg.landslide_susceptibility.susceptibility_score}/100 | RSSI: {(seg.landslide_susceptibility.relative_spatial_susceptibility_index ?? seg.landslide_susceptibility.calibrated_probability).toFixed(2)})
                       </span>
                       <div className="flex items-center gap-2">

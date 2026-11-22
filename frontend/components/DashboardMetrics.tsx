@@ -49,10 +49,10 @@ export default function DashboardMetrics({
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+            
             Reported Alerts
           </span>
-          <span className="text-base">⚠️</span>
+          <span className="text-base">️</span>
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
@@ -72,10 +72,10 @@ export default function DashboardMetrics({
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>
+            
             High-Risk Hazards & Routes
           </span>
-          <span className="text-base">🚨</span>
+          
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
@@ -95,10 +95,10 @@ export default function DashboardMetrics({
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>
+            
             Simulated Vehicles
           </span>
-          <span className="text-base">🚚</span>
+          
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
@@ -118,10 +118,10 @@ export default function DashboardMetrics({
       <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-slate-300 transition-all">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+            
             Session Reports
           </span>
-          <span className="text-base">📝</span>
+          
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <span className="text-2xl font-bold font-mono text-slate-900 tracking-tight">

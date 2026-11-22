@@ -39,7 +39,7 @@ export default function ErrorBanner({
       className="p-4 rounded-xl border border-rose-200 bg-rose-50/80 text-rose-950 shadow-xs flex items-start justify-between gap-3 transition-all"
     >
       <div className="flex items-start gap-3">
-        <span className="text-xl leading-none mt-0.5">⚠️</span>
+        <span className="text-xl leading-none mt-0.5">️</span>
         <div className="text-xs space-y-1">
           <div className="flex items-center gap-2">
             <span className="font-bold uppercase tracking-wide text-[11px] font-mono text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded border border-rose-200">
@@ -73,7 +73,7 @@ export default function ErrorBanner({
           className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg text-sm cursor-pointer"
           aria-label="Dismiss error banner"
         >
-          ✕
+          
         </button>
       </div>
     </div>

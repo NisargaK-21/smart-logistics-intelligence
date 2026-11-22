@@ -34,7 +34,7 @@ export default function RecentAlerts({ alerts, reportsCount }: RecentAlertsProps
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>🚨</span> Recent Alerts & Field Activity
+             Recent Alerts & Field Activity
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
             User-submitted reports and route alerts stored for this session
@@ -86,7 +86,7 @@ export default function RecentAlerts({ alerts, reportsCount }: RecentAlertsProps
             <p className="text-xs text-slate-600 leading-relaxed">{alert.message}</p>
             <div className="mt-2 pt-1.5 border-t border-slate-200/50 flex items-center justify-between text-[10px] text-slate-400">
               <span className="font-medium text-slate-600 flex items-center gap-1">
-                <span>📍</span>{" "}
+                {" "}
                 {alert.location
                   ? `${alert.location.lat.toFixed(3)}, ${alert.location.lng.toFixed(3)}`
                   : alert.route_id || "Route"}

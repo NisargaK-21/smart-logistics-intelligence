@@ -78,7 +78,7 @@ export default function WeatherTerrainOverview({
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>🌦️</span> Current Weather
+            <span>️</span> Current Weather
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
             {weather

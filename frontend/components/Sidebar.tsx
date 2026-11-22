@@ -11,20 +11,20 @@ export default function Sidebar() {
   const activeAlertCount = summary?.active_alerts_count ?? 0;
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: "📊" },
-    { href: "/routes", label: "Routes", icon: "🛣️" },
+    { href: "/", label: "Dashboard", icon: "" },
+    { href: "/routes", label: "Routes", icon: "️" },
     {
       href: "/risk-zones",
       label: "Risk Zones",
-      icon: "⚠️",
+      icon: "️",
       badge: activeAlertCount > 0 ? activeAlertCount : undefined,
       badgeColor: "bg-amber-100 text-amber-800",
     },
-    { href: "/fleet", label: "Fleet", icon: "🚚" },
-    { href: "/consignments", label: "Consignments", icon: "📦" },
-    { href: "/analytics", label: "Analytics", icon: "📈" },
-    { href: "/reports", label: "Reports", icon: "📝" },
-    { href: "/settings", label: "Settings", icon: "⚙️" },
+    { href: "/fleet", label: "Fleet", icon: "" },
+    { href: "/consignments", label: "Consignments", icon: "" },
+    { href: "/analytics", label: "Analytics", icon: "" },
+    { href: "/reports", label: "Reports", icon: "" },
+    { href: "/settings", label: "Settings", icon: "️" },
   ];
 
   return (
@@ -88,13 +88,13 @@ export default function Sidebar() {
               className="lg:hidden p-1.5 rounded-lg text-[#96A79F] hover:text-[#F9F6F0] hover:bg-[#243B33] cursor-pointer"
               aria-label="Close menu"
             >
-              ✕
+              
             </button>
           </div>
 
           {/* Regional Tagline */}
           <div className="px-5 py-2.5 bg-[#14221D] border-b border-[#243B33] text-[11px] text-[#AAB8B0] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#52B788] animate-pulse shrink-0"></span>
+            
             <span className="truncate tracking-wide">Northeast Corridor Active</span>
           </div>
 
@@ -142,7 +142,7 @@ export default function Sidebar() {
               Control Hub
             </span>
             <span className="text-[10px] font-semibold text-[#52B788] flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#52B788] inline-block"></span>
+              
               Live Grid
             </span>
           </div>
