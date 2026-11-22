@@ -126,7 +126,8 @@ export default function Header(props: HeaderProps) {
               </div>
             </Link>
 
-            {/* Active Corridor Selector */}
+            {/* Active Corridor Selector: Abstracted per request */}
+            {/*
             <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[#243B33]">
               <div className="relative">
                 <select
@@ -145,6 +146,7 @@ export default function Header(props: HeaderProps) {
                 </span>
               </div>
             </div>
+            */}
           </div>
 
           {/* Right Operational Controls */}
@@ -304,29 +306,6 @@ export default function Header(props: HeaderProps) {
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden py-3 border-t border-[#243B33] space-y-3">
-            {/* Mobile Corridor Selector */}
-            <div className="px-2">
-              <label className="text-[10px] uppercase font-bold text-[#96A79F] block mb-1">
-                Active Operational Corridor
-              </label>
-              <div className="relative">
-                <select
-                  value={selectedCorridor}
-                  onChange={(e) => onSelectCorridor(e.target.value)}
-                  className="w-full text-xs font-semibold px-2.5 py-2 rounded-md bg-[#243B33] border border-[#344F45] text-[#EFE9DE] hover:border-[#4B6B5F] focus:outline-none focus:ring-1 focus:ring-[#D4A392] cursor-pointer appearance-none"
-                >
-                  {CORRIDOR_OPTIONS.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} {c.isSupported ? "(Active)" : "(Planned)"}
-                    </option>
-                  ))}
-                </select>
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#AAB8B0] pointer-events-none">
-                  ▼
-                </span>
-              </div>
-            </div>
-
             <nav className="space-y-1">
               {navLinks.map((link) => {
                 const isActive =
