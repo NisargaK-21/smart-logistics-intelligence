@@ -126,7 +126,7 @@ export default function Header(props: HeaderProps) {
               </div>
             </Link>
 
-            {/* Active Corridor Selector: Abstracted per request */}
+            {/* Active Corridor Selector: Removed / Abstracted per request */}
             {/*
             <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[#243B33]">
               <div className="relative">
