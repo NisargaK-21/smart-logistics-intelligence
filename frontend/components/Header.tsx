@@ -74,7 +74,7 @@ export default function Header(props: HeaderProps) {
   }, []);
 
   return (
-    <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40 shadow-xs">
+    <header className="w-full bg-[#FAF8F5] border-b border-[#E8E1D5] sticky top-0 z-40 shadow-2xs">
       <div className="w-full px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
         {/* Left Section: Mobile Menu + Regional Location Selector */}
         <div className="flex items-center gap-3">
