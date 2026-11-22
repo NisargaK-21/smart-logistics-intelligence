@@ -258,8 +258,8 @@ export default function ReportsPage() {
 
       {/* Detail Dialog */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 text-xs animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 space-y-4 text-xs animate-in fade-in zoom-in-95 duration-150 my-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-base text-slate-900">
@@ -278,7 +278,7 @@ export default function ReportsPage() {
                 onClick={() => setSelectedReport(null)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded cursor-pointer"
               >
-                
+                ✕
               </button>
             </div>
 

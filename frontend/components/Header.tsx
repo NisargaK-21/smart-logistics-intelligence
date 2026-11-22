@@ -85,7 +85,7 @@ export default function Header(props: HeaderProps) {
     { href: "/consignments", label: "Consignments" },
     { href: "/analytics", label: "Analytics" },
     { href: "/reports", label: "Reports" },
-    { href: "/settings", label: "Settings" },
+    // { href: "/settings", label: "Settings" }, // Abstracted per design requirements
   ];
 
   return (
@@ -156,7 +156,8 @@ export default function Header(props: HeaderProps) {
               </span>
             )}
 
-            {/* Mode Toggle */}
+            {/* Mode Switch: Abstracted / Commented out per request */}
+            {/*
             <div className="flex items-center bg-[#14221D] p-0.5 rounded-lg border border-[#243B33]">
               <button
                 type="button"
@@ -181,6 +182,7 @@ export default function Header(props: HeaderProps) {
                 Mock
               </button>
             </div>
+            */}
 
             {/* Notifications Menu Trigger */}
             <div className="relative">
@@ -236,13 +238,15 @@ export default function Header(props: HeaderProps) {
               )}
             </div>
 
-            {/* System Health Badge */}
+            {/* System Health Diagnostic Badge: Abstracted / Commented out per request */}
+            {/*
             <SystemHealthBadge
               health={health}
               isLoading={isHealthLoading}
               onRefresh={onRefreshHealth}
               isMockMode={isMockMode}
             />
+            */}
 
             {/* Mobile Hamburger Button */}
             <button
@@ -299,34 +303,59 @@ export default function Header(props: HeaderProps) {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <nav className="lg:hidden py-3 border-t border-[#243B33] space-y-1">
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname === link.href || pathname.startsWith(`${link.href}/`);
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium cursor-pointer ${
-                    isActive
-                      ? "bg-[#243B33] text-[#F9F6F0] font-bold"
-                      : "text-[#AAB8B0] hover:bg-[#1E332B] hover:text-white"
-                  }`}
+          <div className="lg:hidden py-3 border-t border-[#243B33] space-y-3">
+            {/* Mobile Corridor Selector */}
+            <div className="px-2">
+              <label className="text-[10px] uppercase font-bold text-[#96A79F] block mb-1">
+                Active Operational Corridor
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedCorridor}
+                  onChange={(e) => onSelectCorridor(e.target.value)}
+                  className="w-full text-xs font-semibold px-2.5 py-2 rounded-md bg-[#243B33] border border-[#344F45] text-[#EFE9DE] hover:border-[#4B6B5F] focus:outline-none focus:ring-1 focus:ring-[#D4A392] cursor-pointer appearance-none"
                 >
-                  <span>{link.label}</span>
-                  {link.badge !== undefined && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-[#B87A68] text-white">
-                      {link.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+                  {CORRIDOR_OPTIONS.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} {c.isSupported ? "(Active)" : "(Planned)"}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] text-[#AAB8B0] pointer-events-none">
+                  ▼
+                </span>
+              </div>
+            </div>
+
+            <nav className="space-y-1">
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-md text-xs font-medium cursor-pointer ${
+                      isActive
+                        ? "bg-[#243B33] text-[#F9F6F0] font-bold"
+                        : "text-[#AAB8B0] hover:bg-[#1E332B] hover:text-white"
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {link.badge !== undefined && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-[#B87A68] text-white">
+                        {link.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
         )}
       </div>
     </header>

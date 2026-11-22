@@ -69,13 +69,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Subtle luxury botanical & topographic grid pattern */
+  /* Haute Horlogerie & Astrolabe Guilloché: Sacred Geometry & Elegant Celestial Navigation Circles */
   background-image: 
-    radial-gradient(circle at 100% 0%, rgba(212, 163, 146, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(36, 59, 51, 0.05) 0%, transparent 50%),
-    linear-gradient(to right, rgba(232, 225, 213, 0.45) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(232, 225, 213, 0.45) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    /* Ambient warm blush glow from top right */
+    radial-gradient(ellipse 65% 50% at 94% 2%, rgba(212, 163, 146, 0.18) 0%, transparent 68%),
+    /* Ambient deep forest glow from bottom left */
+    radial-gradient(ellipse 60% 45% at 5% 98%, rgba(24, 40, 34, 0.10) 0%, transparent 62%),
+    /* Complex luxury celestial navigation rings, interlacing rosettes and astrolabe curves */
+    url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23243B33' stroke-width='0.85' stroke-opacity='0.11'%3E%3C!-- Concentric precision rings --%3E%3Ccircle cx='100' cy='100' r='90' /%3E%3Ccircle cx='100' cy='100' r='72' stroke-dasharray='1 4' /%3E%3Ccircle cx='100' cy='100' r='54' /%3E%3Ccircle cx='100' cy='100' r='36' stroke-dasharray='3 3' /%3E%3Ccircle cx='100' cy='100' r='18' /%3E%3C!-- Corner overlapping astrolabe quadrant arcs --%3E%3Ccircle cx='0' cy='0' r='90' /%3E%3Ccircle cx='0' cy='0' r='54' stroke-dasharray='2 3' /%3E%3Ccircle cx='200' cy='0' r='90' /%3E%3Ccircle cx='200' cy='0' r='54' stroke-dasharray='2 3' /%3E%3Ccircle cx='0' cy='200' r='90' /%3E%3Ccircle cx='0' cy='200' r='54' stroke-dasharray='2 3' /%3E%3Ccircle cx='200' cy='200' r='90' /%3E%3Ccircle cx='200' cy='200' r='54' stroke-dasharray='2 3' /%3E%3C!-- Diagonal intersecting quadrant petals --%3E%3Cpath d='M10 100 Q 100 10 190 100' stroke-opacity='0.08' /%3E%3Cpath d='M10 100 Q 100 190 190 100' stroke-opacity='0.08' /%3E%3Cpath d='M100 10 Q 10 100 100 190' stroke-opacity='0.08' /%3E%3Cpath d='M100 10 Q 190 100 100 190' stroke-opacity='0.08' /%3E%3C!-- Fine navigation star point markers --%3E%3Ccircle cx='100' cy='10' r='2' fill='%23B87A68' fill-opacity='0.25' stroke='none' /%3E%3Ccircle cx='100' cy='190' r='2' fill='%23B87A68' fill-opacity='0.25' stroke='none' /%3E%3Ccircle cx='10' cy='100' r='2' fill='%23B87A68' fill-opacity='0.25' stroke='none' /%3E%3Ccircle cx='190' cy='100' r='2' fill='%23B87A68' fill-opacity='0.25' stroke='none' /%3E%3Ccircle cx='100' cy='100' r='2.5' fill='%23243B33' fill-opacity='0.25' stroke='none' /%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%, 100% 100%, 200px 200px;
   background-attachment: fixed;
 }
 
@@ -87,12 +89,54 @@ h1, h2, h3, .font-serif, .editorial-heading {
 }
 
 h1 {
-  font-size: 1.85rem;
-  letter-spacing: -0.02em;
+  font-size: 2.1rem;
+  letter-spacing: -0.025em;
+  color: #182822;
 }
 
 h2 {
-  font-size: 1.45rem;
+  font-size: 1.55rem;
+  color: #182822;
+}
+
+/* Card Elevation & Refined Aesthetics */
+.card-editorial,
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(8px);
+  border-color: #E8E1D5 !important;
+  box-shadow: 0 4px 20px -2px rgba(24, 40, 34, 0.05), 0 2px 6px -1px rgba(24, 40, 34, 0.03) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.bg-white:hover {
+  border-color: #D4A392 !important;
+  box-shadow: 0 10px 28px -4px rgba(24, 40, 34, 0.08), 0 4px 10px -2px rgba(24, 40, 34, 0.04) !important;
+}
+
+/* Luxury button styling */
+.btn-editorial-primary,
+.bg-sky-600 {
+  background-color: #182822 !important;
+  color: #F9F6F0 !important;
+  border: 1px solid #243B33 !important;
+  box-shadow: 0 2px 8px rgba(24, 40, 34, 0.18) !important;
+  letter-spacing: 0.02em;
+}
+
+.btn-editorial-primary:hover,
+.bg-sky-600:hover {
+  background-color: #243B33 !important;
+  border-color: #D4A392 !important;
+  box-shadow: 0 4px 14px rgba(24, 40, 34, 0.25) !important;
+}
+
+/* Accent Badges */
+.badge-editorial-accent,
+.bg-sky-50 {
+  background-color: #F2EBE4 !important;
+  color: #8C5343 !important;
+  border-color: #E0C7BC !important;
 }
 
 /* Global Interactive Cursor & Pointer System */
