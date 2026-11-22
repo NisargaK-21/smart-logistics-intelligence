@@ -3,7 +3,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
-load_dotenv()
+ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(ENV_FILE)
 
 DEFAULT_DATABASE_PATH = Path(__file__).resolve().parents[2] / "smart_logistics.db"
 
