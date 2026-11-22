@@ -24,6 +24,7 @@ import type {
   Consignment,
   ConsignmentCreate,
   ConsignmentUpdate,
+  LandslideSusceptibilityPrediction,
 } from "./types.ts";
 import {
   MOCK_ALERTS,
@@ -515,6 +516,49 @@ export async function subscribeToAlerts(
   });
 
   return handleResponse<AlertSubscribeResponse>(res);
+}
+
+/**
+ * Predict terrain landslide susceptibility for given coordinates (Objective 1 ML Service)
+ */
+export async function predictLandslideSusceptibility(
+  latitude: number,
+  longitude: number,
+  slopeDeg?: number,
+  options?: { signal?: AbortSignal }
+): Promise<LandslideSusceptibilityPrediction> {
+  const url = `${getApiBaseUrl()}/predict/landslide-susceptibility`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      latitude,
+      longitude,
+      slope_deg: slopeDeg,
+    }),
+    signal: options?.signal,
+  });
+
+  return handleResponse<LandslideSusceptibilityPrediction>(res);
+}
+
+/**
+ * Fetch transparent ML Model Architecture, training provenance, and spatial holdout metrics
+ */
+export async function getPredictionModelInfo(options?: { signal?: AbortSignal }): Promise<any> {
+  const url = `${getApiBaseUrl()}/predict/model-info`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+    signal: options?.signal,
+  });
+
+  return handleResponse<any>(res);
 }
 
 /**

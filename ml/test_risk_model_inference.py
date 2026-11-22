@@ -229,7 +229,10 @@ def test_current_failed_artifact_is_rejected(monkeypatch):
         monkeypatch,
         risk_assessment.MODEL_DIR / "weather_risk_logistic_regression.joblib",
     )
-    with pytest.raises(RuntimeError, match="data provenance is missing or invalid"):
+    with pytest.raises(
+        RuntimeError,
+        match="failed the predefined evaluation acceptance criteria|data provenance is missing or invalid",
+    ):
         risk_assessment.score_segment_model(_segment(), _weather_context())
 
 

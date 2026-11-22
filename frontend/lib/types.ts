@@ -107,6 +107,33 @@ export interface SegmentWeatherForecast {
   wind_gusts_kmh: number;
 }
 
+export interface LandslideFactorContribution {
+  factor: string;
+  importance_weight: number;
+  value: number;
+  contribution: number;
+  detail: string;
+}
+
+export interface LandslideSusceptibilityPrediction {
+  susceptibility_score: number; // Landslide Susceptibility Score (LSS: 0 to 100)
+  landslide_susceptibility_score?: number; // LSS (0 to 100)
+  relative_spatial_susceptibility_index?: number; // RSSI (0.00 to 1.00)
+  calibrated_probability: number; // Backward-compatible alias for RSSI
+  susceptibility_level: "low" | "moderate" | "high" | "very_high";
+  model_source: string;
+  contributing_factors: LandslideFactorContribution[];
+  data_quality: string;
+  warnings?: string[];
+}
+
+export interface RouteLandslideSusceptibilitySummary {
+  average_susceptibility_score: number;
+  max_segment_susceptibility_score: number;
+  high_susceptibility_segments_count: number;
+  model_source: string;
+}
+
 export interface SegmentRisk {
   segment_id: string;
   risk_score: number; // 0–100 integer, higher = riskier
@@ -115,6 +142,7 @@ export interface SegmentRisk {
   elevation_m?: number | null;
   ruggedness?: number | null;
   weather_forecast?: SegmentWeatherForecast | null;
+  landslide_susceptibility?: LandslideSusceptibilityPrediction | null;
 }
 
 export interface RiskFactor {
@@ -137,6 +165,7 @@ export interface Route {
   segments: SegmentRisk[];
   risk_factors: RiskFactor[];
   data_quality: DataQuality;
+  ml_landslide_susceptibility_summary?: RouteLandslideSusceptibilitySummary | null;
 }
 
 export interface RoutePlanResponse {

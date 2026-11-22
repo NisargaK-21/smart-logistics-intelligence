@@ -6,6 +6,7 @@ from backend.app.api.v1.endpoints import (
     health,
     meta,
     places,
+    predict,
     reports,
     routes,
     vehicles,
@@ -19,6 +20,7 @@ api_router.include_router(routes.router, prefix="/routes", tags=["routes"])
 api_router.include_router(health.router, tags=["health"])
 api_router.include_router(meta.router, prefix="/meta", tags=["metadata"])
 api_router.include_router(places.router, prefix="/places", tags=["places"])
+api_router.include_router(predict.router, prefix="/predict", tags=["prediction"])
 api_router.include_router(weather.router, prefix="/weather", tags=["weather"])
 
 # Extended Endpoints (Vehicle Simulation, Field Reports, Alerts, Consignments, Dashboard)

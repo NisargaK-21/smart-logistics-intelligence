@@ -110,6 +110,77 @@ export default function RouteDetails({
         </div>
       </div>
 
+      {/* ML Landslide Susceptibility Assessment (Objective 1) */}
+      {route.ml_landslide_susceptibility_summary ? (
+        <div className={`p-3.5 rounded-lg border text-xs space-y-2 ${
+          route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback"
+            ? "bg-amber-50/70 border-amber-200"
+            : "bg-emerald-50/70 border-emerald-200"
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <span className="text-base">🏔️</span>
+              <span>
+                {route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback"
+                  ? "Terrain Susceptibility (Heuristic Fallback)"
+                  : "Terrain Landslide Susceptibility Assessment"}
+              </span>
+            </div>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${
+              route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback"
+                ? "bg-amber-700 text-white"
+                : "bg-emerald-700 text-white"
+            }`}>
+              {route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback"
+                ? "Heuristic Fallback"
+                : "Spatial RF Model"}
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-700 leading-relaxed">
+            {route.ml_landslide_susceptibility_summary.model_source === "heuristic_fallback" ? (
+              <span>
+                ⚠️ <strong>Partial DEM coverage:</strong> One or more segments lie outside high-resolution Copernicus DEM rasters. Estimates use baseline heuristic rules rather than genuine ML inference.
+              </span>
+            ) : (
+              <span>
+                Relative Spatial Susceptibility Index (RSSI) based on <strong>GSI historical landslide inventory</strong>,{" "}
+                <strong>Copernicus GLO-30 DEM (30m)</strong>, and road toe cut geometry. Validated across a <strong>10 km spatial holdout buffer</strong>.
+              </span>
+            )}
+          </p>
+          <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200/60 text-center font-mono">
+            <div className="p-1.5 rounded bg-white/80 border border-slate-100">
+              <div className="text-sm font-bold text-slate-900">
+                {route.ml_landslide_susceptibility_summary.average_susceptibility_score}/100
+              </div>
+              <div className="text-[9px] text-slate-600">Mean LSS (0-100)</div>
+            </div>
+            <div className="p-1.5 rounded bg-white/80 border border-slate-100">
+              <div className="text-sm font-bold text-slate-900">
+                {route.ml_landslide_susceptibility_summary.max_segment_susceptibility_score}/100
+              </div>
+              <div className="text-[9px] text-slate-600">Peak Segment LSS</div>
+            </div>
+            <div className="p-1.5 rounded bg-white/80 border border-slate-100">
+              <div className="text-sm font-bold text-slate-900">
+                {route.ml_landslide_susceptibility_summary.high_susceptibility_segments_count}
+              </div>
+              <div className="text-[9px] text-slate-600">High LSS Segments</div>
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-500 italic mt-1">
+            * Reflects relative geomorphological terrain propensity, NOT real-world failure probability or temporal forecasting.
+          </p>
+        </div>
+      ) : (
+        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between text-slate-500">
+          <span className="flex items-center gap-1.5">
+            <span>🏔️</span> ML Susceptibility: Baseline terrain rules applied
+          </span>
+          <span className="text-[10px] text-slate-400 font-mono">DEM coverage active</span>
+        </div>
+      )}
+
       {/* Contributing Risk Factors - RAW VALUES preserved */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-bold text-slate-800">
@@ -269,6 +340,26 @@ export default function RouteDetails({
                         {seg.weather_forecast.precipitation_mm}mm rain,{" "}
                         {seg.weather_forecast.wind_speed_kmh}km/h wind
                       </span>
+                    </div>
+                  )}
+                  {seg.landslide_susceptibility && (
+                    <div className="text-[10px] flex items-center justify-between pl-4 pt-1 border-t border-slate-100">
+                      <span className={seg.landslide_susceptibility.model_source === "heuristic_fallback" ? "text-amber-800" : "text-emerald-800"}>
+                        🏔️ {seg.landslide_susceptibility.model_source === "heuristic_fallback" ? "Fallback Susceptibility" : "ML Susceptibility"}:{" "}
+                        <strong className="uppercase">{seg.landslide_susceptibility.susceptibility_level}</strong> (LSS: {seg.landslide_susceptibility.susceptibility_score}/100 | RSSI: {(seg.landslide_susceptibility.relative_spatial_susceptibility_index ?? seg.landslide_susceptibility.calibrated_probability).toFixed(2)})
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {seg.landslide_susceptibility.model_source === "heuristic_fallback" && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">
+                            Fallback
+                          </span>
+                        )}
+                        {seg.slope_deg !== undefined && seg.slope_deg !== null && (
+                          <span className="text-slate-500 font-mono">
+                            Slope: {seg.slope_deg.toFixed(1)}°
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
