@@ -54,7 +54,7 @@ export default function RoutesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>🛣️</span> Route Planning & Risk Optimization Workspace
+            <span>️</span> Route Planning & Risk Optimization Workspace
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Compare live driving routes and available weather and road factors; unavailable attributes are flagged.
@@ -104,7 +104,7 @@ export default function RoutesPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <span>🛣️</span> Candidate Routes ({routes.length})
+                  <span>️</span> Candidate Routes ({routes.length})
                 </h3>
                 <span className="text-[11px] text-slate-500 font-medium">
                   Click route card to highlight
@@ -152,7 +152,7 @@ export default function RoutesPage() {
         <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-20">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <span>🗺️</span> Interactive Corridor Routing Canvas
+              <span>️</span> Interactive Corridor Routing Canvas
             </h2>
             <span className="text-[11px] text-slate-400 font-medium">
               Click &quot;Pick on Map&quot; to set waypoints visually

@@ -82,7 +82,7 @@ export default function SettingsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>⚙️</span> Platform Settings & Operational Configuration
+            <span>️</span> Platform Settings & Operational Configuration
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Configure regional corridors, telemetry thresholds, notification alerts, and API diagnostics
@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
         {savedSuccess && (
           <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 animate-in fade-in">
-            ✓ Preferences Saved
+            Preferences Saved
           </span>
         )}
       </div>
@@ -128,7 +128,7 @@ export default function SettingsPage() {
               </select>
               {!CORRIDOR_OPTIONS.find((c) => c.id === selectedCorridor)?.isSupported && (
                 <p className="mt-1.5 text-[11px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200/80 leading-relaxed">
-                  ⚠️ <strong>Notice:</strong> Road network topology, GIS routing, and hazard models are actively operational for the <strong>Guwahati–Shillong (NH-6)</strong> corridor in this MVP. The selected corridor is scheduled for future regional phases.
+                  ️ <strong>Notice:</strong> Road network topology, GIS routing, and hazard models are actively operational for the <strong>Guwahati–Shillong (NH-6)</strong> corridor in this MVP. The selected corridor is scheduled for future regional phases.
                 </p>
               )}
             </div>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <span>🔔</span> Automated Corridor Hazard Alerts
+                   Automated Corridor Hazard Alerts
                 </h2>
                 <p className="text-[11px] text-slate-500 mt-0.5">
                   Connects to backend /api/v1/alerts/subscribe
@@ -235,7 +235,7 @@ export default function SettingsPage() {
 
             {subMessage && (
               <p className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium">
-                ✓ {subMessage}
+                {subMessage}
               </p>
             )}
           </form>
@@ -247,7 +247,7 @@ export default function SettingsPage() {
           <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs space-y-3.5 text-xs">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                <span>🛰️</span> Service Dependencies Diagnostic
+                <span>️</span> Service Dependencies Diagnostic
               </h2>
               <button
                 type="button"

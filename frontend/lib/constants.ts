@@ -159,9 +159,9 @@ export const OSM_ATTRIBUTION =
  * Supported vehicle types per docs/api-contract.md
  */
 export const VEHICLE_OPTIONS = [
-  { id: "truck", label: "Commercial Truck", icon: "🚚", speed: "40-60 km/h" },
-  { id: "van", label: "Delivery Van", icon: "🚐", speed: "50-70 km/h" },
-  { id: "car", label: "Emergency / Utility Car", icon: "🚗", speed: "60-80 km/h" },
+  { id: "truck", label: "Commercial Truck", icon: "", speed: "40-60 km/h" },
+  { id: "van", label: "Delivery Van", icon: "", speed: "50-70 km/h" },
+  { id: "car", label: "Emergency / Utility Car", icon: "", speed: "60-80 km/h" },
 ] as const;
 
 /**
@@ -171,35 +171,35 @@ export const COMMODITY_OPTIONS = [
   {
     id: "Medicine",
     label: "Medicine & Vaccines",
-    icon: "💊",
+    icon: "",
     priority: "Critical",
     description: "Cold-chain medical cargo, trauma kits, vaccines (Prioritizes low risk & smooth roads)",
   },
   {
     id: "Food Supplies",
     label: "Food Supplies & Rations",
-    icon: "🍚",
+    icon: "",
     priority: "High",
     description: "Grain sacks, canned rations, drinking water supply",
   },
   {
     id: "Fuel",
     label: "Fuel & Energy",
-    icon: "⛽",
+    icon: "",
     priority: "High Hazard",
     description: "Diesel fuel tankers, generator power reserves",
   },
   {
     id: "Emergency Kits",
     label: "Emergency & Relief Kits",
-    icon: "📦",
+    icon: "",
     priority: "Urgent",
     description: "Inflatable rescue rafts, blankets, hygiene kits, water purifiers",
   },
   {
     id: "General Cargo",
     label: "General Supplies",
-    icon: "📦",
+    icon: "",
     priority: "Standard",
     description: "Standard non-perishable freight and maintenance gear",
   },

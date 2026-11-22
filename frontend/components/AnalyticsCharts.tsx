@@ -43,7 +43,7 @@ export function HistoricalIncidentChart() {
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-            <span>📈</span> Historical Disaster Disruptions (Northeast Corridor)
+             Historical Disaster Disruptions (Northeast Corridor)
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
             Monthly distribution derived from GSI Landslide & CWC Flood Archives
@@ -53,11 +53,11 @@ export function HistoricalIncidentChart() {
         {/* Legend */}
         <div className="flex items-center gap-3 text-xs">
           <span className="flex items-center gap-1.5 font-medium text-slate-600">
-            <span className="w-2.5 h-2.5 rounded bg-amber-500 inline-block"></span>
+            
             Landslides
           </span>
           <span className="flex items-center gap-1.5 font-medium text-slate-600">
-            <span className="w-2.5 h-2.5 rounded bg-sky-500 inline-block"></span>
+            
             Monsoon Floods
           </span>
         </div>
@@ -181,7 +181,7 @@ export function ElevationProfileChart() {
       <div className="flex items-center justify-between pb-2 border-b border-slate-100">
         <div>
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-            <span>⛰️</span> Terrain Elevation & Slope Gradient Profile
+            <span>️</span> Terrain Elevation & Slope Gradient Profile
           </h3>
           <p className="text-[11px] text-slate-500 mt-0.5">
             Guwahati Basin (55m) → Shillong Plateau (1,496m) Digital Elevation Model

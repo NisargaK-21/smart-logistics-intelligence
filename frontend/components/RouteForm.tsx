@@ -178,7 +178,7 @@ export default function RouteForm({
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
           <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span className="text-sky-600">📍</span> Route Planning & Parameters
+             Route Planning & Parameters
           </h2>
           <p className="text-[11px] text-slate-500 mt-0.5">
             Evaluate road risks & calculate multi-segment alternatives
@@ -213,7 +213,7 @@ export default function RouteForm({
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
           <label className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-2xs"></span>
+            
             Origin Point (A)
           </label>
           <button
@@ -227,7 +227,7 @@ export default function RouteForm({
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80"
             }`}
           >
-            {pickingMode === "origin" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
+            {pickingMode === "origin" ? " Cancel Picking" : "Pick on Map"}
           </button>
         </div>
         <PlaceSearch
@@ -268,7 +268,7 @@ export default function RouteForm({
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs">
           <label className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-2xs"></span>
+            
             Destination Point (B)
           </label>
           <button
@@ -282,7 +282,7 @@ export default function RouteForm({
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80"
             }`}
           >
-            {pickingMode === "destination" ? "✕ Cancel Picking" : "🎯 Pick on Map"}
+            {pickingMode === "destination" ? " Cancel Picking" : "Pick on Map"}
           </button>
         </div>
         <PlaceSearch
@@ -322,7 +322,7 @@ export default function RouteForm({
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-slate-800 flex items-center justify-between">
           <span className="flex items-center gap-1.5">
-            <span>📦</span> Essential Cargo / Commodity Priority
+             Essential Cargo / Commodity Priority
           </span>
           <span className="text-[10px] text-sky-600 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
             Disaster Relief Mode
@@ -404,7 +404,7 @@ export default function RouteForm({
       {/* Validation Message */}
       {(clientValidationMsg || formError) && (
         <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2 shadow-2xs">
-          <span className="text-base leading-none">⚠️</span>
+          <span className="text-base leading-none">️</span>
           <span className="leading-relaxed font-medium">{clientValidationMsg || formError}</span>
         </div>
       )}
@@ -441,7 +441,7 @@ export default function RouteForm({
           </>
         ) : (
           <>
-            <span>⚡</span>
+            
             <span>Plan Disaster-Resilient Route</span>
           </>
         )}

@@ -40,7 +40,7 @@ export default function RouteCard({
       {/* Recommended Tag */}
       {isRecommended && (
         <div className="inline-flex items-center gap-1 mb-2 px-2.5 py-0.5 rounded-full bg-sky-600 text-white text-[10px] font-bold tracking-wide shadow-2xs">
-          <span>★</span>
+          
           <span>RECOMMENDED (LOWEST RISK)</span>
         </div>
       )}
@@ -81,7 +81,7 @@ export default function RouteCard({
       {/* Metrics Row */}
       <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100 text-xs">
         <div className="flex items-center gap-2 text-slate-700">
-          <span className="text-slate-400">📏</span>
+          
           <div>
             <span className="font-bold text-slate-900">{route.distance_km.toFixed(1)} km</span>
             <span className="text-[10px] text-slate-400 block">Total Distance</span>

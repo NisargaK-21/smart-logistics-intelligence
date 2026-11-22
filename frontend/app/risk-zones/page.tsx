@@ -27,7 +27,7 @@ export default function RiskZonesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>⚠️</span> Hazard Risk Zones & Corridor Monitoring
+            <span>️</span> Hazard Risk Zones & Corridor Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Geospatial surveillance of landslide vulnerabilities, flash flood culverts, and slope gradients
@@ -206,7 +206,7 @@ export default function RiskZonesPage() {
           {/* Research Data Integrity Notice */}
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
             <span className="font-bold text-slate-800 flex items-center gap-1.5">
-              <span>🔬</span> Data Provenance & Telemetry Notice:
+               Data Provenance & Telemetry Notice:
             </span>
             <p className="text-[11px] leading-relaxed">
               Historical landslide points are aligned with the Geological Survey of India (GSI) National Landslide Susceptibility Mapping (NLSM) inventory for Assam and Meghalaya. Road culvert drainage, wind shear, and thunderstorm models represent calculated GIS baselines and illustrative engineering profiles along NH-6.
@@ -221,7 +221,7 @@ export default function RiskZonesPage() {
         <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-20">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <span>🗺️</span> Spatial Risk Layer Visualization
+              <span>️</span> Spatial Risk Layer Visualization
             </h2>
             <span className="text-[11px] text-slate-400 font-medium">
               Click hazard pin on map to inspect details

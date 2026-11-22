@@ -90,7 +90,7 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>📝</span> Field Incident & Ground Verification Reports
+             Field Incident & Ground Verification Reports
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Log, verify, and export geo-tagged obstacle reports submitted by corridor field officials
@@ -103,7 +103,7 @@ export default function ReportsPage() {
             onClick={exportToCSV}
             className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <span>📥</span>
+            
             <span>Export CSV</span>
           </button>
           <button
@@ -111,7 +111,7 @@ export default function ReportsPage() {
             onClick={() => setIsModalOpen(true)}
             className="px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <span>➕</span>
+            
             <span>New Field Report</span>
           </button>
         </div>
@@ -129,7 +129,7 @@ export default function ReportsPage() {
             className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:bg-white"
           />
           <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">
-            🔍
+            
           </span>
         </div>
 
@@ -278,7 +278,7 @@ export default function ReportsPage() {
                 onClick={() => setSelectedReport(null)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded cursor-pointer"
               >
-                ✕
+                
               </button>
             </div>
 

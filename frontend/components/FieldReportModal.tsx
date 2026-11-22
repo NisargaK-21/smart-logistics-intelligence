@@ -103,7 +103,7 @@ export default function FieldReportModal({
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">📝</span>
+            
             <h2 className="text-base font-bold text-slate-900">
               Submit Ground Incident Report
             </h2>
@@ -113,7 +113,7 @@ export default function FieldReportModal({
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg text-sm cursor-pointer"
           >
-            ✕
+            
           </button>
         </div>
 
@@ -245,7 +245,7 @@ export default function FieldReportModal({
                 htmlFor="photo-upload-input"
                 className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold cursor-pointer flex items-center gap-2 transition-colors"
               >
-                <span>📷</span>
+                
                 <span>{selectedFile ? "Change Photo" : "Upload Photo"}</span>
               </label>
               {selectedFile && (
@@ -256,7 +256,7 @@ export default function FieldReportModal({
                     onClick={handleClearFile}
                     className="text-rose-500 hover:text-rose-700 font-bold ml-1 cursor-pointer"
                   >
-                    ✕
+                    
                   </button>
                 </div>
               )}

@@ -14,7 +14,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>📈</span> Logistics & Risk Intelligence Analytics
+             Logistics & Risk Intelligence Analytics
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Empirical evaluations across road classifications, slope gradients, and historical disaster patterns
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
           <div>
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <span>🛣️</span> Corridor Risk Breakdown & Vehicle Sensitivity
+              <span>️</span> Corridor Risk Breakdown & Vehicle Sensitivity
             </h3>
             <p className="text-[11px] text-slate-500 mt-0.5">
               Risk factor amplification under vehicle class weight constraints
@@ -128,7 +128,7 @@ export default function AnalyticsPage() {
             <tbody className="divide-y divide-slate-100">
               <tr className="hover:bg-slate-50/80 transition-colors">
                 <td className="py-2.5 pr-3 font-semibold text-slate-800 flex items-center gap-1.5">
-                  <span>🚚</span> Commercial Heavy Truck
+                   Commercial Heavy Truck
                 </td>
                 <td className="py-2.5 px-3 font-mono text-slate-700">1.2x (High Inertia)</td>
                 <td className="py-2.5 px-3 font-mono text-rose-600 font-bold">64 / 100</td>
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
               </tr>
               <tr className="hover:bg-slate-50/80 transition-colors">
                 <td className="py-2.5 pr-3 font-semibold text-slate-800 flex items-center gap-1.5">
-                  <span>🚐</span> Delivery Medium Van
+                   Delivery Medium Van
                 </td>
                 <td className="py-2.5 px-3 font-mono text-slate-700">1.0x (Standard)</td>
                 <td className="py-2.5 px-3 font-mono text-amber-600 font-bold">53 / 100</td>
@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
               </tr>
               <tr className="hover:bg-slate-50/80 transition-colors">
                 <td className="py-2.5 pr-3 font-semibold text-slate-800 flex items-center gap-1.5">
-                  <span>🚗</span> Emergency Utility Car
+                   Emergency Utility Car
                 </td>
                 <td className="py-2.5 px-3 font-mono text-slate-700">0.8x (Agile)</td>
                 <td className="py-2.5 px-3 font-mono text-amber-600 font-bold">42 / 100</td>
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
       {/* Research Credibility Disclosure */}
       <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
         <div className="font-bold text-slate-800 flex items-center gap-2">
-          <span>🔬</span> Scientific & Research Provenance Disclosure
+           Scientific & Research Provenance Disclosure
         </div>
         <p className="leading-relaxed">
           The evaluations presented above follow the strict contractual constraints of the project: all scoring is performed by the deterministic rules baseline using Digital Elevation Models (DEM), road classification weights, and historical Geological Survey of India (GSI) landslide coordinates. Synthetic or machine-learning labels from experimental models are not represented as real-world disruption observations.
