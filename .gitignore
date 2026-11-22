@@ -1,3 +1,7 @@
+# Temporary debugging scripts and files
+backend/check_backend.py
+ml/check_ml_imports.py
+/scratch/
 # ==============================
 # Python virtual environments
 # ==============================
