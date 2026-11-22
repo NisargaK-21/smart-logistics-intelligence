@@ -99,11 +99,10 @@ export default function FieldReportModal({
 
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150 my-auto">
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            
             <h2 className="text-base font-bold text-slate-900">
               Submit Ground Incident Report
             </h2>
@@ -113,11 +112,11 @@ export default function FieldReportModal({
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg text-sm cursor-pointer"
           >
-            
+            ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs">
           {error && (
             <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 font-medium">
               {error}
